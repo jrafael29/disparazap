@@ -29,7 +29,9 @@ class Home extends Component
     {
 
         $this->warning("Will delete #$id", 'It is fake.', position: 'toast-bottom');
+        // $this->redirect('/home');
     }
+
 
     // Table headers
     public function headers(): array

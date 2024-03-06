@@ -4,6 +4,7 @@ namespace App\Livewire\Pages\Auth;
 
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Service\UserService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Rule;
 use Livewire\Component;
@@ -19,20 +20,17 @@ class Register extends Component
     #[Rule('required|min:6')]
     public ?string $password_confirmation = '';
 
-    function mount()
+    private UserService $userService;
+
+    function boot(UserService $userService)
     {
+        $this->userService = $userService;
     }
 
     function createUser($name, $email, $password)
     {
-        $user = User::query()->create([
-            'name' => $name,
-            'email' => $email,
-            'password' => $password
-        ]);
-
+        $user = $this->userService->newUser($name, $email, $password);
         Auth::login($user);
-
         $this->redirect(RouteServiceProvider::HOME);
     }
 

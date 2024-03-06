@@ -21,7 +21,10 @@
                 <x-slot:actions>
                     {{-- Notice `onclick` is HTML --}}
                     <x-button label="Cancelar" onclick="document.getElementById('modal_{{ $user->id }}').close()" />
-                    <x-button label="Confirmar" class="btn-success" wire:click='delete({{$user->id}})' />
+                    <x-form wire:submit='handleSubmit'>
+                        <x-button label="Confirmar" class="btn-success" wire:click='delete({{$user->id}})' spinner />
+                    </x-form>
+
                 </x-slot:actions>
             </x-modal>
             <x-button icon="o-trash" onclick="document.getElementById('modal_{{ $user->id }}').showModal()" spinner
@@ -31,6 +34,8 @@
 
 
     </x-card>
+
+
 
     <!-- FILTER DRAWER -->
     <x-drawer wire:model="drawer" title="Filters" right separator with-close-button class="lg:w-1/3">
