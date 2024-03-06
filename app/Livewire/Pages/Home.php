@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Pages;
 
+use App\Models\User;
 use Livewire\Component;
 use Illuminate\Support\Collection;
 use Mary\Traits\Toast;
@@ -26,6 +27,7 @@ class Home extends Component
     // Delete action
     public function delete($id): void
     {
+
         $this->warning("Will delete #$id", 'It is fake.', position: 'toast-bottom');
     }
 
@@ -35,7 +37,6 @@ class Home extends Component
         return [
             ['key' => 'id', 'label' => '#', 'class' => 'w-1'],
             ['key' => 'name', 'label' => 'Name', 'class' => 'w-64'],
-            ['key' => 'age', 'label' => 'Age', 'class' => 'w-20'],
             ['key' => 'email', 'label' => 'E-mail', 'sortable' => false],
         ];
     }
@@ -48,15 +49,15 @@ class Home extends Component
      */
     public function users(): Collection
     {
-        return collect([
-            ['id' => 1, 'name' => 'Mary', 'email' => 'mary@mary-ui.com', 'age' => 23],
-            ['id' => 2, 'name' => 'Giovanna', 'email' => 'giovanna@mary-ui.com', 'age' => 7],
-            ['id' => 3, 'name' => 'Marina', 'email' => 'marina@mary-ui.com', 'age' => 5],
-        ])
-            ->sortBy([[...array_values($this->sortBy)]])
-            ->when($this->search, function (Collection $collection) {
-                return $collection->filter(fn (array $item) => str($item['name'])->contains($this->search, true));
+        $users = User::query()->get();
+        $sortedUsers = $users->sortBy($this->sortBy);
+        if ($this->search) {
+            $filteredUsers = $sortedUsers->filter(function ($user) {
+                return stripos($user->name, $this->search) !== false;
             });
+            return $filteredUsers;
+        }
+        return $sortedUsers;
     }
 
     public function render()
