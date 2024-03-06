@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 
-Route::get('/', Home::class);
+Route::get('/', Welcome::class);
 
 Route::middleware(['guest'])->group(function () {
     Route::get('/register', Register::class)->name('register');
@@ -27,5 +27,5 @@ Route::middleware(['guest'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/home', Welcome::class);
+    Route::get('/home', Home::class)->name('home');
 });
