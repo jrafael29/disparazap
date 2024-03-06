@@ -2,6 +2,7 @@
 
 use App\Livewire\Pages\Auth\Register;
 use App\Livewire\Pages\Auth\Login;
+use App\Livewire\Pages\Flow\Index as FlowIndex;
 
 use App\Livewire\Pages\Home;
 use App\Livewire\Welcome;
@@ -28,4 +29,6 @@ Route::middleware(['guest'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/home', Home::class)->name('home');
+
+    Route::get('/message-flow', FlowIndex::class)->name('flow');
 });
