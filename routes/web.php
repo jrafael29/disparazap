@@ -1,5 +1,7 @@
 <?php
 
+use App\Livewire\Pages\Auth\Register;
+use App\Livewire\Pages\Home;
 use App\Livewire\Welcome;
 use Illuminate\Support\Facades\Route;
 
@@ -14,4 +16,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', Welcome::class);
+
+Route::get('/', Home::class);
+
+Route::middleware(['guest'])->group(function () {
+    Route::get('/register', Register::class);
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/home', Welcome::class);
+});
