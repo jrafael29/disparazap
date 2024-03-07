@@ -46,7 +46,9 @@
                 </x-list-item>
 
                 <x-menu-item title="Inicio" icon="o-sparkles" link="{{route('home')}}" />
+                <x-menu-item title="Instancias" icon="o-sparkles" link="{{route('instance')}}" />
                 <x-menu-item title="Fluxo de Mensagens" icon="o-sparkles" link="{{route('flow')}}" />
+
                 @endif
 
 
