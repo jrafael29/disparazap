@@ -6,6 +6,7 @@ use App\Helpers\Base64ToFile;
 use App\Models\Instance;
 use App\Repository\InstanceRepository;
 use App\Service\Evolution\EvolutionInstanceService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class InstanceService
@@ -15,6 +16,36 @@ class InstanceService
         private InstanceRepository $instanceRepository,
         private EvolutionInstanceService $evolutionInstanceService
     ) {
+    }
+
+    function getInstance($instanceName)
+    {
+
+
+        $cacheKey = 'instanceData:' . $instanceName;
+        $cachedPayback = Cache::get($cacheKey);
+
+        if (!$cachedPayback) {
+            $instanceData = $this->evolutionInstanceService->getInstance($instanceName);
+            if (!$instanceData) {
+                $payback = [
+                    'error' => true,
+                    'message' => "Instancia não encontrada"
+                ];
+                return $payback;
+            }
+            $payback = [
+                'error' => false,
+                'data' => [
+                    'profilePictureUrl' => $instanceData['profilePictureUrl'],
+                    'profileName' => $instanceData['profileName'],
+                    'profileStatus' => $instanceData['profileStatus'],
+                ]
+            ];
+            Cache::set($cacheKey, $payback);
+            return $payback;
+        }
+        return $cachedPayback;
     }
 
     function createInstance($userId, $description, $phonenumber)
@@ -48,13 +79,19 @@ class InstanceService
 
 
     function deleteInstance($instanceName)
-    { {
+    {
+        try {
             $this->instanceRepository->deleteInstanceByName($instanceName);
             $instanceState = $this->evolutionInstanceService->getStateInstance($instanceName);
             if ($instanceState === 'open') {
                 $this->evolutionInstanceService->logoutInstance($instanceName);
             }
             $this->evolutionInstanceService->removeInstance($instanceName);
+        } catch (\Exception $e) {
+            return [
+                'error' => true,
+                'message' => $e->getMessage()
+            ];
         }
     }
 

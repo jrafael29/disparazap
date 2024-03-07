@@ -1,4 +1,4 @@
-<div wire:poll class="flex gap-5 flex-wrap">
+<div class="flex gap-5 flex-wrap">
 
 
     @foreach($instances as $instance)

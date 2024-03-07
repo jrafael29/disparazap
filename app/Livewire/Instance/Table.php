@@ -43,11 +43,11 @@ class Table extends Component
     }
 
 
-    function deleteInstanceClick()
-    {
-        $this->instanceService->deleteInstance($this->instance->name);
-        $this->dispatch('instance::deleted');
-    }
+    // function deleteInstanceClick()
+    // {
+    //     $this->instanceService->deleteInstance($this->instance->name);
+    //     $this->dispatch('instance::deleted');
+    // }
 
     function getQrClick(Instance $instance)
     {
@@ -80,7 +80,7 @@ class Table extends Component
         $this->instanceService = $instanceService;
     }
 
-    #[On("instance::deleted")]
+
     #[On("instance::created")]
     #[On("qrcode::updated")]
     public function render()

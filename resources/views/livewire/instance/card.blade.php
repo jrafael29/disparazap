@@ -1,4 +1,4 @@
-<div>
+<div wire:poll>
     <x-card class="text-wrap" title="{!!$instance->description!!}"
         subtitle='{{$instance->online ? "Conectado": "Desconectado" }}'>
         <div class="mb-3">
@@ -31,7 +31,8 @@
             @endif
         </div>
         <div class="flex justify-center gap-3">
-            <x-button wire:click='deleteInstanceClick' icon="o-trash" label="Deletar Instancia" class="btn-error" />
+            <x-button wire:click='deleteInstanceClick' spinner icon="o-trash" label="Deletar Instancia"
+                class="btn-error" />
             @if(!$instance->online)
             <x-button icon="o-home" label="Buscar QRCode" class="btn-outline" />
             @endif
