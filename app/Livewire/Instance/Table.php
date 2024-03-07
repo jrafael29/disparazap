@@ -43,9 +43,9 @@ class Table extends Component
     }
 
 
-    function deleteInstanceClick(Instance $instance)
+    function deleteInstanceClick()
     {
-        $this->instanceService->deleteInstance($instance->name);
+        $this->instanceService->deleteInstance($this->instance->name);
         $this->dispatch('instance::deleted');
     }
 

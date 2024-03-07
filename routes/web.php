@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\Base64ToFile;
+use App\Http\Controllers\Webhook;
 use App\Livewire\Pages\Auth\Register;
 use App\Livewire\Pages\Auth\Login;
 use App\Livewire\Pages\Flow\Index as FlowIndex;
@@ -47,82 +48,4 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-// Route::post('/updated-qrcode/webhook', function (Request $request) {
-
-//     try {
-//         $body = $request->all();
-
-
-//         // $filename = 'test' . uniqid() . '.txt';
-//         // File::put($filename, json_encode($body));
-
-
-//         $instanceName = $body['instance'];
-//         $qrCodeBase64 = $body['data']['qrcode']['base64'];
-
-//         $instanceModel = Instance::query()->where('name', $instanceName)->first();
-
-//         if (!empty($instanceModel->qrcode_path)) {
-//             // remover imagem existente
-//             Storage::delete('public/' . $instanceModel->qrcode_path);
-//         }
-//         $filename = 'qrcodes/qr_' . uniqid() . '.png';
-//         $storedFilename = Base64ToFile::storeImageFromBase64($qrCodeBase64, $filename);
-//         if ($storedFilename) {
-//             $instanceModel->qrcode_path = $storedFilename;
-//             $instanceModel->save();
-//         }
-//     } catch (\Exception $e) {
-//         $filename = 'error-' . uniqid() . '.txt';
-//         File::put($filename, $e->getMessage());
-//         report($e);
-//     }
-// });
-
-Route::post('/webhook', function (Request $request) {
-    try {
-        $body = $request->all();
-
-        $event = $body['event'];
-
-        switch ($event) {
-            case 'qrcode.updated':
-                $newBase64 = $body['data']['qrcode']['base64'];
-                $instanceName = $body['instance'];
-                $instanceModel = Instance::query()->where('name', $instanceName)->first();
-                if (!empty($instanceModel->qrcode_path)) {
-                    // remover imagem existente
-                    Storage::delete('public/' . $instanceModel->qrcode_path);
-                }
-                $filename = 'qrcodes/qr_' . uniqid() . '.png';
-                $storedFilename = Base64ToFile::storeImageFromBase64($newBase64, $filename);
-                if ($storedFilename) {
-                    $instanceModel->qrcode_path = $storedFilename;
-                    $instanceModel->save();
-                }
-
-                $filename = 'qrcode-updated-' . uniqid() . '.txt';
-                break;
-            case 'connection.update':
-
-                $state = $body['data']['state'];
-                $instanceName = $body['instance'];
-                $instanceModel = Instance::query()->where('name', $instanceName)->first();
-
-                if ($state === 'open') {
-                    $instanceModel->online = true;
-                    $instanceModel->save();
-                }
-
-                $filename = 'connection-update-' . uniqid() . '.txt';
-                break;
-        }
-
-
-        File::put($filename, json_encode($body));
-    } catch (\Exception $e) {
-        $filename = 'error-' . uniqid() . '.txt';
-        File::put($filename, $e->getMessage());
-        report($e);
-    }
-});
+Route::post('/webhook', [Webhook::class, 'webhookHandle']);
