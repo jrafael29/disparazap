@@ -23,6 +23,7 @@ return new class extends Migration
             $table->boolean('online')->default(false);
             $table->string('token')->nullable();
             $table->boolean('active')->default(true);
+            $table->text('qrcode_path')->nullable();
             $table->timestamps();
         });
     }

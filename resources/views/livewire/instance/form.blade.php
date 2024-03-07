@@ -7,7 +7,7 @@
 
         <x-slot:actions>
             <x-button label="Limpar Campos" type="reset" />
-            <x-button label="Salvar Instancia" class="btn-primary" type="submit" spinner="save" />
+            <x-button label="Salvar Instancia" class="btn-primary" type="submit" spinner="handleSubmit" />
         </x-slot:actions>
     </x-form>
 </div>
