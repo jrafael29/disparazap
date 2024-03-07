@@ -17,6 +17,7 @@
                     <x-button label="Cadastrar" class="btn-primary" type="submit" spinner="save" />
                 </x-slot:actions>
             </x-form>
+            <p class="text-1xl">Já tem uma conta? <a class="text-blue-900" href="{{route('login')}}">Faça login</a>.</p>
         </div>
         {{-- If your happiness depends on money, you will never be happy with yourself. --}}
     </div>
