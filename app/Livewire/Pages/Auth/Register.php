@@ -7,20 +7,37 @@ use App\Providers\RouteServiceProvider;
 use App\Service\UserService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Rule;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class Register extends Component
 {
-    #[Rule('required|min:4')]
+    #[Validate('required|min:4')]
     public ?string $name = '';
-    #[Rule('required|email|unique:users')]
+    #[Validate('required|email|unique:users')]
     public ?string $email = '';
-    #[Rule('required|min:6|confirmed')]
+    #[Validate('required|min:6|confirmed')]
     public ?string $password = '';
-    #[Rule('required|min:6')]
     public ?string $password_confirmation = '';
 
     private UserService $userService;
+
+
+    public function messages()
+    {
+        return [
+            'email.required' => 'Email obrigatório',
+            'email.email' => 'Email inválido',
+
+            'name.required' => 'Nome obrigatório',
+            'name.min' => 'O nome precisa ter pelo menos 4 letras',
+
+            'password.required' => 'Senha obrigatória',
+            'password.min' => 'A senha precisa ter pelo menos 6 caracteres',
+            'password.confirmed' => 'As senhas não correspondem',
+
+        ];
+    }
 
     function boot(UserService $userService)
     {
