@@ -17,7 +17,7 @@ class EvolutionInstanceService
         $this->webhookUrl = env("WEBHOOK_URL");
     }
 
-    function createInstance($instanceName, $phonenumber, $token)
+    function createInstance($instanceName, $phonenumber, $token = null)
     {
         try {
             $createInstanceRoute = '/instance/create';
@@ -26,7 +26,7 @@ class EvolutionInstanceService
                 'instanceName' => $instanceName,
                 'number' => $phonenumber,
                 'qrcode' => true,
-                'token' => $token
+                'token' => $token ?? ''
             ];
 
             $headers = [
@@ -155,6 +155,7 @@ class EvolutionInstanceService
                 ->post($url, $body);
 
             $data = $response->body();
+            // dd($data);
             return true;
             // dd($data);
             // $this->dispatch("update-qr", $instanceData);

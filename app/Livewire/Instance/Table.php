@@ -51,8 +51,6 @@ class Table extends Component
 
     function getQrClick(Instance $instance)
     {
-        // solicitar um qr pro usuario
-        // dd("Bora buscar");
         $this->instanceService->updateQrInstance($instance->name);
         $this->dispatch('qrcode::updated');
         $this->success("Sucesso ao gerar qrCode da instancia $instance->description");
