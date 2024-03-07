@@ -140,6 +140,7 @@ class Form extends Component
         if (!$done) {
             $this->error("Ocorreu um erro ao tentar criar a instancia");
         }
+        $this->dispatch("instance::created");
         $this->success("Instancia criada com sucesso!");
     }
 
