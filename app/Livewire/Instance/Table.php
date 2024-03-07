@@ -10,9 +10,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Livewire\Attributes\On;
 use Livewire\Component;
+use Mary\Traits\Toast;
 
 class Table extends Component
 {
+    use Toast;
+    public $updatedQrCodePath;
     public string $search = '';
 
     public array $sortBy = ['column' => 'name', 'direction' => 'asc'];
@@ -25,9 +28,20 @@ class Table extends Component
     {
         return [
             ['key' => 'id', 'label' => '#', 'class' => 'w-1'],
-            ['key' => 'description', 'label' => 'Descrição', 'class' => 'w-64', 'sortable' => false],
+            ['key' => 'description', 'label' => 'Descrição', 'class' => 'w-64', 'sortable' => false]
+
         ];
     }
+
+    public function rowDecoration(): array
+    {
+        return [
+            'text-red-500' => function (Instance $instance) {
+                return !$instance->online;
+            }
+        ];
+    }
+
 
     function deleteInstanceClick(Instance $instance)
     {
@@ -35,16 +49,13 @@ class Table extends Component
         $this->dispatch('instance::deleted');
     }
 
-    function getQrClick()
+    function getQrClick(Instance $instance)
     {
         // solicitar um qr pro usuario
-        dd("Bora buscar");
-    }
-
-    function updateQrClick()
-    {
-        // atualizar o qrCode
-        dd("Bora atualizar");
+        // dd("Bora buscar");
+        $this->instanceService->updateQrInstance($instance->name);
+        $this->dispatch('qrcode::updated');
+        $this->success("Sucesso ao gerar qrCode da instancia $instance->description");
     }
 
 
@@ -73,11 +84,13 @@ class Table extends Component
 
     #[On("instance::deleted")]
     #[On("instance::created")]
+    #[On("qrcode::updated")]
     public function render()
     {
         return view('livewire.instance.table',  [
             'instances' => $this->instances(),
-            'headers' => $this->headers()
+            'headers' => $this->headers(),
+            'rowDecoration' => $this->rowDecoration()
         ]);
     }
 }

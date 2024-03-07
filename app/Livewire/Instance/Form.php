@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Instance;
 
+use App\Helpers\Base64ToFile;
 use App\Models\Instance;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -83,23 +84,7 @@ class Form extends Component
         return $instanceData;
     }
 
-    function storeImageFromBase64($base64, $filename)
-    {
-        try {
-            if (empty($base64)) return false;
-            // $filename = 'qrcodes/qr_' . uniqid() . '.png';
-            $base64String = $base64;
-            if (preg_match('/^data:image\/(\w+);base64,/', $base64String)) {
-                $data = substr($base64String, strpos($base64String, ',') + 1);
-                $data = base64_decode($data);
-                Storage::put('public/' . $filename, $data);
-                return $filename;
-            }
-        } catch (\Exception $e) {
-            dd($e);
-            return false;
-        }
-    }
+
 
     function createInstance($userId, $description, $phonenumber)
     {
@@ -112,8 +97,9 @@ class Form extends Component
             instanceName: $instanceModel->name,
             phonenumber: $instanceModel->phonenumber
         );
+
         if (!empty($evolutionInstanceData['base64'])) {
-            $filename = $this->storeImageFromBase64($evolutionInstanceData['base64'], 'qrcodes/qr_' . uniqid() . '.png');
+            $filename = Base64ToFile::storeImageFromBase64($evolutionInstanceData['base64'], 'qrcodes/qr_' . uniqid() . '.png');
             if ($filename) {
                 $instanceModel->qrcode_path = $filename;
                 $instanceModel->save();

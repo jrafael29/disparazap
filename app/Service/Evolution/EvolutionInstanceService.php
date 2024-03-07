@@ -64,7 +64,6 @@ class EvolutionInstanceService
             'apiKey' => $this->apiKey
         ];
         $response = Http::withHeaders($headers)->get($url . '?instanceName=' . $instanceName);
-
         if ($response->json('instance')) {
             return $response->json('instance')['state'];
         }

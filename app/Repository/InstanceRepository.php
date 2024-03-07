@@ -16,4 +16,9 @@ class InstanceRepository
         Instance::query()->where('name', $name)->first()?->delete();
         return true;
     }
+
+    function updateInstance($name, $values)
+    {
+        Instance::query()->where('name', $name)->update($values);
+    }
 }
