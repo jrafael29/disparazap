@@ -3,6 +3,7 @@
 namespace App\Livewire\Instance;
 
 use App\Models\Instance;
+use App\Repository\InstanceRepository;
 use App\Service\Evolution\EvolutionInstanceService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -16,6 +17,7 @@ class Table extends Component
     public array $sortBy = ['column' => 'name', 'direction' => 'asc'];
 
     private EvolutionInstanceService $evolutionInstanceService;
+    private InstanceRepository $instanceRepository;
 
     // Table headers
     public function headers(): array
@@ -26,16 +28,10 @@ class Table extends Component
         ];
     }
 
-    function deleteInstanceRepository($name)
-    {
-        Instance::query()->where('name', $name)->first()?->delete();
-        return true;
-    }
-
 
     function deleteInstanceService($instanceName)
     {
-        $this->deleteInstanceRepository($instanceName);
+        $this->instanceRepository->deleteInstanceByName($instanceName);
         $instanceState = $this->evolutionInstanceService->getStateInstance($instanceName);
         if ($instanceState === 'open') {
             $this->evolutionInstanceService->logoutInstance($instanceName);
@@ -78,9 +74,13 @@ class Table extends Component
     }
 
 
-    function boot(EvolutionInstanceService $evolutionInstanceService)
-    {
+    function boot(
+        EvolutionInstanceService $evolutionInstanceService,
+        InstanceRepository $instanceRepository
+    ) {
         $this->evolutionInstanceService = $evolutionInstanceService;
+
+        $this->instanceRepository = $instanceRepository;
     }
 
     #[On("instance::deleted")]
