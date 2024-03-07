@@ -81,12 +81,27 @@ class InstanceService
     function deleteInstance($instanceName)
     {
         try {
-            $this->instanceRepository->deleteInstanceByName($instanceName);
-            $instanceState = $this->evolutionInstanceService->getStateInstance($instanceName);
-            if ($instanceState === 'open') {
-                $this->evolutionInstanceService->logoutInstance($instanceName);
+            $instanceModel = Instance::query()->where('name', $instanceName)->first();
+            if (!$instanceModel) {
+                return [
+                    'error' => true,
+                    'message' => "Instancia não encontrada"
+                ];
             }
-            $this->evolutionInstanceService->removeInstance($instanceName);
+
+            Storage::delete('public/' . $instanceModel->qrcode_path);
+            $this->instanceRepository->deleteInstanceByName($instanceModel->name);
+            $instanceState = $this->evolutionInstanceService->getStateInstance($instanceModel->name);
+            if ($instanceState === 'open') {
+                $this->evolutionInstanceService->logoutInstance($instanceModel->name);
+            }
+            $this->evolutionInstanceService->removeInstance($instanceModel->name);
+            return [
+                'error' => false,
+                'data' => [
+                    'success' => true
+                ]
+            ];
         } catch (\Exception $e) {
             return [
                 'error' => true,
