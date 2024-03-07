@@ -135,8 +135,9 @@ class EvolutionInstanceService
         // dd($response->body());
     }
 
-    function setWebhooks($instanceName, $endPoint, $webhooks = ["CONNECTION_UPDATE"])
+    function setWebhooks($instanceName)
     {
+        $endPoint = '/webhook';
         try {
             $createInstanceRoute = '/webhook/set/' . $instanceName;
             $url = $this->apiUrl . $createInstanceRoute;
@@ -144,7 +145,10 @@ class EvolutionInstanceService
                 "enabled" => true,
                 "url" => $this->webhookUrl . $endPoint,
                 "webhookByEvents" => true,
-                "events" => $webhooks
+                "events" => [
+                    "QRCODE_UPDATED",
+                    "CONNECTION_UPDATE",
+                ]
             ];
 
             $headers = [
@@ -163,6 +167,9 @@ class EvolutionInstanceService
             dd($e);
         }
     }
+
+
+
     function removeInstance($instanceName)
     {
         try {

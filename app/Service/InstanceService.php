@@ -29,15 +29,11 @@ class InstanceService
             instanceName: $instanceModel->name,
             phonenumber: $instanceModel->phonenumber
         );
-
+        $this->evolutionInstanceService->setWebhooks(
+            instanceName: $instanceModel->name,
+            // endPoint: '/updated-connection/webhook'
+        );
         if (!empty($evolutionInstanceData['base64'])) {
-            // $filename = Base64ToFile::storeImageFromBase64($evolutionInstanceData['base64'], 'qrcodes/qr_' . uniqid() . '.png');
-            // if ($filename) {
-            //     $instanceModel->qrcode_path = $filename;
-            //     $instanceModel->save();
-
-            //     return true;
-            // }
             $result = $this->updateQrInstance($instanceModel->name);
             if ($result['error'] === false) {
                 $filename = $result['data']['filename'];
@@ -90,8 +86,8 @@ class InstanceService
 
             $this->evolutionInstanceService->setWebhooks(
                 instanceName: $instanceModel->name,
-                endPoint: '/updated-qrcode/webhook',
-                webhooks: ["QRCODE_UPDATED"]
+                // endPoint: '/updated-qrcode/webhook',
+                // webhooks: ["QRCODE_UPDATED"]
             );
 
             $filename = 'qrcodes/qr_' . uniqid() . '.png';

@@ -47,43 +47,54 @@ Route::middleware(['auth'])->group(function () {
 });
 
 
-Route::post('/updated-qrcode/webhook', function (Request $request) {
+// Route::post('/updated-qrcode/webhook', function (Request $request) {
 
+//     try {
+//         $body = $request->all();
+
+
+//         // $filename = 'test' . uniqid() . '.txt';
+//         // File::put($filename, json_encode($body));
+
+
+//         $instanceName = $body['instance'];
+//         $qrCodeBase64 = $body['data']['qrcode']['base64'];
+
+//         $instanceModel = Instance::query()->where('name', $instanceName)->first();
+
+//         if (!empty($instanceModel->qrcode_path)) {
+//             // remover imagem existente
+//             Storage::delete('public/' . $instanceModel->qrcode_path);
+//         }
+//         $filename = 'qrcodes/qr_' . uniqid() . '.png';
+//         $storedFilename = Base64ToFile::storeImageFromBase64($qrCodeBase64, $filename);
+//         if ($storedFilename) {
+//             $instanceModel->qrcode_path = $storedFilename;
+//             $instanceModel->save();
+//         }
+//     } catch (\Exception $e) {
+//         $filename = 'error-' . uniqid() . '.txt';
+//         File::put($filename, $e->getMessage());
+//         report($e);
+//     }
+// });
+
+Route::post('/webhook', function (Request $request) {
     try {
         $body = $request->all();
 
+        $event = $body['event'];
 
-        // $filename = 'test' . uniqid() . '.txt';
-        // File::put($filename, json_encode($body));
-
-
-        $instanceName = $body['instance'];
-        $qrCodeBase64 = $body['data']['qrcode']['base64'];
-
-        $instanceModel = Instance::query()->where('name', $instanceName)->first();
-
-        if (!empty($instanceModel->qrcode_path)) {
-            // remover imagem existente
-            Storage::delete('public/' . $instanceModel->qrcode_path);
+        switch ($event) {
+            case 'qrcode.updated':
+                $filename = 'qrcode-updated-' . uniqid() . '.txt';
+                break;
+            case 'connection.update':
+                $filename = 'connection-update-' . uniqid() . '.txt';
+                break;
         }
-        $filename = 'qrcodes/qr_' . uniqid() . '.png';
-        $storedFilename = Base64ToFile::storeImageFromBase64($qrCodeBase64, $filename);
-        if ($storedFilename) {
-            $instanceModel->qrcode_path = $storedFilename;
-            $instanceModel->save();
-        }
-    } catch (\Exception $e) {
-        $filename = 'error-' . uniqid() . '.txt';
-        File::put($filename, $e->getMessage());
-        report($e);
-    }
-});
 
-Route::post('/updated-connection/webhook', function (Request $request) {
-    try {
-        $body = $request->all();
 
-        $filename = 'connection-update-' . uniqid() . '.txt';
         File::put($filename, json_encode($body));
     } catch (\Exception $e) {
         $filename = 'error-' . uniqid() . '.txt';
