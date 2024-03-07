@@ -87,9 +87,33 @@ Route::post('/webhook', function (Request $request) {
 
         switch ($event) {
             case 'qrcode.updated':
+                $newBase64 = $body['data']['qrcode']['base64'];
+                $instanceName = $body['instance'];
+                $instanceModel = Instance::query()->where('name', $instanceName)->first();
+                if (!empty($instanceModel->qrcode_path)) {
+                    // remover imagem existente
+                    Storage::delete('public/' . $instanceModel->qrcode_path);
+                }
+                $filename = 'qrcodes/qr_' . uniqid() . '.png';
+                $storedFilename = Base64ToFile::storeImageFromBase64($newBase64, $filename);
+                if ($storedFilename) {
+                    $instanceModel->qrcode_path = $storedFilename;
+                    $instanceModel->save();
+                }
+
                 $filename = 'qrcode-updated-' . uniqid() . '.txt';
                 break;
             case 'connection.update':
+
+                $state = $body['data']['state'];
+                $instanceName = $body['instance'];
+                $instanceModel = Instance::query()->where('name', $instanceName)->first();
+
+                if ($state === 'open') {
+                    $instanceModel->online = true;
+                    $instanceModel->save();
+                }
+
                 $filename = 'connection-update-' . uniqid() . '.txt';
                 break;
         }

@@ -1,83 +1,36 @@
-<div>
-    <x-card subtitle="Campos em vermelho estão desconectados">
-
-        <x-table :headers="$headers" :rows="$instances" :row-decoration="$rowDecoration" :sort-by="$sortBy">
-            <div>
-                @scope('cell_name', $instance)
-                {{ $instance}}
-                @endscope
-                @scope('actions', $instance)
+<div wire:poll class="flex gap-5 flex-wrap">
 
 
-                <div>
+    @foreach($instances as $instance)
 
-                    {{-- modal view --}}
+    <x-card class="w-1/3 text-wrap" title="{{$instance->description}}"
+        subtitle='{{$instance->online ? "Conectado": "Desconectado" }}'>
+        <div class="mb-3">
+            <span>
+                <p>Numero: <b>{{$instance->phonenumber}}</b></p>
+            </span>
+        </div>
 
-                    <x-modal :id="'modal_view_' . $instance->id"
-                        :title="'Detalhes da instancia: ' . $instance->description"
-                        subtitle='Status: {{$instance->online ? " Conectado" : "Desconectado" }}'>
-                        @if ( !empty($instance->qrcode_path))
-                        <!-- Verifique se há um novo caminho do QR Code -->
-                        <div class="flex justify-center">
-                            <img src="{{ asset('storage/' . $instance->qrcode_path) }}"
-                                alt="Qr code instancia {{ $instance->description }}">
-                        </div>
-                        @elseif($this->updatedQrCodePath)
-                        <div class="flex justify-center">
-                            <img src="{{ asset('storage/' . $this->updatedQrCodePath) }}"
-                                alt="Qr code instancia {{ $instance->description }}">
-                            @else
-                            <h1 class="text-2xl">Solicite um QRCode</h1>
-                            @endif
-
-                            <x-slot name="actions">
-                                <x-button label="Fechar"
-                                    onclick="document.getElementById('modal_view_{{ $instance->id }}').close()" />
-                                @if ($this->updatedQrCodePath)
-                                <x-button wire:click="getQrClick({{ $instance->id }})" label="Atualizar QRCode"
-                                    class="btn-success" />
-                                @else
-                                <x-button wire:click="getQrClick({{ $instance->id }})" label="Solicitar QRCode"
-                                    class="btn-primary" />
-                                @endif
-                            </x-slot>
-                    </x-modal>
-
-                    {{-- modal delete --}}
-
-                    <x-modal :id="'modal_exclude_' . $instance->id"
-                        :title="'Confirmar exclusão da instancia: ' . $instance->description . '?'">
-                        <div>Clique em "cancelar" ou aperte ESC para sair.</div>
-                        <x-slot:actions>
-                            {{-- Notice `onclick` is HTML --}}
-                            <x-button label="Cancelar"
-                                onclick="document.getElementById('modal_exclude_{{ $instance->id }}').close()" />
-
-                            <x-button label="Confirmar" class="btn-error"
-                                wire:click='deleteInstanceClick({{$instance->id}})' spinner />
-
-
-                        </x-slot:actions>
-                    </x-modal>
-                </div>
-
-
-                <div class="flex">
-
-                    <x-button icon="c-arrows-pointing-out"
-                        onclick="document.getElementById('modal_view_{{ $instance->id }}').showModal()" spinner
-                        class="btn-ghost btn-sm " />
-
-                    <x-button icon="o-trash"
-                        onclick="document.getElementById('modal_exclude_{{ $instance->id }}').showModal()" spinner
-                        class="btn-ghost btn-sm text-red-500" />
-                </div>
-                @endscope
-
+        <div class="mb-3">
+            {{-- Success is as dangerous as failure. --}}
+            @if(!$instance->online)
+            @if($instance->qrcode_path)
+            <img src="{{ asset('storage/'.$instance->qrcode_path) }}" alt="QR Code">
+            @endif
+            @else
+            <div class="text-center">
+                <p class="text-2xl"><b>Instancia Conectada.</b></p>
+                <p>Agora você pode utiliza-la para enviar mensagens.</p>
             </div>
-        </x-table>
-
-
+            @endif
+        </div>
+        <div class="flex justify-center gap-3">
+            <x-button wire:click='deleteInstanceClick({{$instance->id}})' icon="o-trash" label="Buscar QRCode"
+                class="btn-error" />
+            <x-button icon="o-home" label="Buscar QRCode" class="btn-outline" />
+        </div>
     </x-card>
+    @endforeach
+
 
 </div>
