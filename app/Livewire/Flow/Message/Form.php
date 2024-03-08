@@ -3,6 +3,7 @@
 namespace App\Livewire\Flow\Message;
 
 use App\Models\MessageFlow;
+use App\Models\MessageType;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -96,21 +97,7 @@ class Form extends Component
 
     public function render()
     {
-        // $types = MessageType::query()->where('active', 1)->get();
-        $types = [
-            [
-                'name' => "text",
-                'description' => "Mensagem de Texto"
-            ],
-            [
-                'name' => "image",
-                'description' => "Mensagem de Imagem"
-            ],
-            [
-                'name' => "video",
-                'description' => "Mensagem de Video"
-            ]
-        ];
+        $types = MessageType::query()->where('active', 1)->get();
         return view('livewire.flow.message.form', [
             'types' => $types
         ]);

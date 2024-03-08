@@ -15,39 +15,39 @@ class MessageTypeSeeder extends Seeder
     {
         MessageType::query()->create([
             'name' => 'text',
-            'description' => 'Tipo de mensagem texto',
+            'description' => 'Mensagem de texto',
             'media_type' => "text"
         ]);
 
         MessageType::query()->create([
             'name' => 'audio',
-            'description' => 'Tipo de mensagem áudio',
+            'description' => 'Áudio',
             'media_type' => "audio",
             'active' => 0
         ]);
 
         MessageType::query()->create([
             'name' => 'image',
-            'description' => 'Tipo de mensagem imagem',
+            'description' => 'Imagem',
             'media_type' => "image"
         ]);
 
         MessageType::query()->create([
             'name' => 'video',
-            'description' => 'Tipo de mensagem video',
+            'description' => 'Vídeo',
             'media_type' => "video"
         ]);
 
         MessageType::query()->create([
             'name' => 'document',
-            'description' => 'Tipo de mensagem documento',
+            'description' => 'Documento',
             'media_type' => "document",
             'active' => 0
         ]);
 
         MessageType::query()->create([
             'name' => 'sticky',
-            'description' => 'Tipo de mensagem figurinha',
+            'description' => 'Figurinha',
             'media_type' => "image"
         ]);
     }
