@@ -7,4 +7,7 @@
 
     {{-- Care about people's approval and you will be their prisoner. --}}
     <h1>página de fluxos linda</h1>
+
+
+    <livewire:flow.form />
 </div>
