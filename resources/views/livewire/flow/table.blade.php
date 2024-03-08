@@ -10,7 +10,9 @@
                     <x-button wire:click='deleteFlowClick({{$flow->id}})' spinner icon="o-trash" label=""
                         class="btn-error" />
                     <x-button icon="m-bars-arrow-up" Label="Gerenciar Envios" />
-                    <x-button icon="o-chat-bubble-bottom-center-text" Label="Gerenciar Mensagens" />
+                    <a href="{{route('flow.message', ['flow' => $flow->id])}}">
+                        <x-button icon="o-chat-bubble-bottom-center-text" Label="Gerenciar Mensagens" />
+                    </a>
                 </div>
             </div>
         </x-card>

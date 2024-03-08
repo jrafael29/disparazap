@@ -5,7 +5,9 @@ use App\Http\Controllers\Webhook;
 use App\Livewire\Pages\Auth\Register;
 use App\Livewire\Pages\Auth\Login;
 use App\Livewire\Pages\Flow\Index as FlowIndex;
+use App\Livewire\Pages\Flow\Message\Index as MessageIndex;
 use App\Livewire\Pages\Instance\Index as InstanceIndex;
+
 
 
 use App\Livewire\Pages\Home;
@@ -45,6 +47,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/instance', InstanceIndex::class)->name('instance');
     Route::get('/message-flow', FlowIndex::class)->name('flow');
+    Route::get('/message-flow/{flow}/message', MessageIndex::class)->name('flow.message');
 });
 
 
