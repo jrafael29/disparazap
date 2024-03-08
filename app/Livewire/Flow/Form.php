@@ -21,6 +21,8 @@ class Form extends Component
             userId: Auth::user()->id,
             description: $this->description
         );
+        $this->reset(['description']);
+        $this->dispatch("flow::created");
     }
 
     public function messages()
