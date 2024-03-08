@@ -6,6 +6,7 @@ use App\Models\Message;
 use App\Models\MessageFlow;
 use App\Models\MessageType;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -27,7 +28,7 @@ class Form extends Component
     public $video;
 
 
-    function createMediaMessage()
+    function createMediaMessage($flowId, $text, $typeId, $delay)
     {
         $userId = Auth::user()->id;
         $extension = '';
@@ -39,12 +40,12 @@ class Form extends Component
             $filename =  $filename . $extension;
             $filepath = 'videos-upload/' . $filename;
             $this->video->storeAs(path: 'public/videos-upload', name: $filename);
-            Message::query()->insert([
+            Message::query()->create([
                 'flow_id' => $flowId,
-                'text' => $this->text,
-                'type_id' => MessageType::query()->where('name', 'video')->first()?->id,
+                'text' => $text,
+                'type_id' => $typeId,
                 'filepath' => $filepath,
-                'delay' => $this->delay
+                'delay' => $delay
             ]);
         }
         if ($this->image) {
@@ -52,37 +53,52 @@ class Form extends Component
             $filename =  $filename . $extension;
             $filepath = 'images-upload/' . $filename;
             $this->image->storeAs(path: 'public/images-upload', name: $filename);
-            Message::query()->insert([
+            Message::query()->create([
                 'flow_id' => $flowId,
-                'text' => $this->text,
-                'type_id' => MessageType::query()->where('name', 'image')->first()?->id,
+                'text' => $text,
+                'type_id' => $typeId,
                 'filepath' => $filepath,
-                'delay' => $this->delay
+                'delay' => $delay
             ]);
         }
         $this->reset(['image', 'video', 'text', 'delay']);
         $this->dispatch("message::created");
     }
 
-    function createTextMessage()
+    function createTextMessage($flowId, $text, $typeId, $delay)
     {
-        Message::query()->insert([
-            'flow_id' => $this->flow->id,
-            'text' => $this->text,
-            'type_id' => MessageType::query()->where('name', 'text')->first()?->id,
-            'delay' => $this->delay
+        $flow = MessageFlow::query()->find($flowId);
+
+        Message::query()->create([
+            'flow_id' => $flow->id,
+            'type_id' => $typeId,
+            'text' => $text,
+            'delay' => $delay
         ]);
-        $this->reset(['image', 'video', 'text', 'delay']);
-        $this->dispatch("message::created");
+        return true;
     }
 
     function handleSubmit()
     {
+        $typeId = MessageType::query()->where('name', $this->messageTypeSelected)->first()?->id;
+        if (!$typeId) return false;
         if ($this->messageTypeSelected !== 'text') {
-            $this->createMediaMessage();
+            $this->createMediaMessage(
+                flowId: $this->flow->id,
+                text: $this->text,
+                typeId: $typeId,
+                delay: $this->delay
+            );
             return;
         }
-        $this->createTextMessage();
+        $this->createTextMessage(
+            flowId: $this->flow->id,
+            text: $this->text,
+            typeId: $typeId,
+            delay: $this->delay
+        );
+        $this->reset(['image', 'video', 'text', 'delay']);
+        $this->dispatch("message::created");
     }
 
     function changeTypeSelected($type)

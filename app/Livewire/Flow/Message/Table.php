@@ -17,7 +17,7 @@ class Table extends Component
             ->findMany($messageIds)
             ->map(function (Message $message) use ($messageIds) {
                 $message->position = array_flip($messageIds)[$message->id];
-                return $message;
+                return $message->only(['id', 'flow_id', 'type_id', 'text', 'filepath', 'position', 'delay']);
             });
         Message::query()->upsert($messages->toArray(), ['id'], ['position']);
     }
