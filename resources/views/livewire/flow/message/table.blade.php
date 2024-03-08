@@ -1,0 +1,63 @@
+<div>
+    <div class=" mb-4">
+        <h1 class="text-black text-2xl">No icone de lista você pode arrastar as mensagens para alterar a ordem de
+            envio.
+        </h1>
+        <small>Da esquerda pra direita. </small>
+    </div>
+    <div class="flex gap-10 flex-wrap text-white " x-init="Sortable.create($el, {
+    animation: 150,
+    handle: '.cursor-pointer',
+    onSort({to}){
+        const ids = Array.from(to.children).map(item => item.getAttribute('message-id'))
+        console.log('ids', ids)
+        @this.reOrderMessages(ids)
+    }
+})">
+
+        {{-- Care about people's approval and you will be their prisoner. --}}
+        @forelse($messages as $message)
+
+        <div class="" message-id="{{$message->id}}">
+
+            <x-card class="w-64" title="# {{$message->type->description}}"
+                subtitle="{{$message->delay}} segundos digitando..." shadow separator>
+                <x-slot:menu>
+
+                </x-slot:menu>
+                <div>
+
+                    @if($message->text)
+                    <div class="mb-3">
+                        <b>Texto da mensagem:</b>
+                        {{$message->text}}
+                    </div>
+                    @endif
+
+                    @if($message->filepath)
+                    @switch($message->type->name)
+                    @case('video')
+                    <video width="320" height="240" controls>
+                        <source src="{{asset('storage/'.$message->filepath)}}" type="video/mp4">
+                    </video>
+                    @break;
+                    @case('image')
+                    <img width="320" src="{{asset('storage/'.$message->filepath)}}" alt="oxe">
+                    @break;
+                    @endswitch
+                    @endif
+
+                </div>
+            </x-card>
+
+        </div>
+
+        @empty
+        <p class="text-2xl text-black ">
+            Ops... Parece que você ainda não adicionou nenhuma mensagem a este
+            fluxo.
+        </p>
+
+        @endforelse
+    </div>
+</div>
