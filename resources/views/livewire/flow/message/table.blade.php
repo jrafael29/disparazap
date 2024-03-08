@@ -1,6 +1,6 @@
 <div>
-    <div class=" mb-4">
-        <h1 class="text-black text-2xl">No icone de lista você pode arrastar as mensagens para alterar a ordem de
+    <div class="mb-4">
+        <h1 class="text-2xl">No icone você pode arrastar as mensagens para alterar a ordem de
             envio.
         </h1>
         <small>Da esquerda pra direita. </small>
@@ -9,22 +9,23 @@
     animation: 150,
     handle: '.cursor-pointer',
     onSort({to}){
+        const flowId = {{$this->flow->id}}
         const ids = Array.from(to.children).map(item => item.getAttribute('message-id'))
-        console.log('ids', ids)
-        @this.reOrderMessages(ids)
+        console.log('flowId', flowId)
+        @this.reOrderMessages(ids, flowId)
     }
 })">
 
         {{-- Care about people's approval and you will be their prisoner. --}}
         @forelse($messages as $message)
 
-        <div class="" message-id="{{$message->id}}">
+        <div message-id="{{$message->id}}">
 
             <x-card class="w-64" title="# {{$message->type->description}}"
                 subtitle="{{$message->delay}} segundos digitando..." shadow separator>
                 <x-slot:menu>
 
-                    <x-icon name="o-heart" class="cursor-pointer" />
+                    <x-icon name="o-arrows-pointing-in" class="cursor-pointer" />
 
                 </x-slot:menu>
                 <div>

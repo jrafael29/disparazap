@@ -8,11 +8,12 @@ use Livewire\Component;
 
 class Table extends Component
 {
-    private MessageFlow $flow;
-    function reOrderMessages($messageIds)
+    public MessageFlow $flow;
+
+    function reOrderMessages($messageIds, $flowId)
     {
         $messages = Message::query()
-            ->where('flow_id', $this->flow->id)
+            ->where('flow_id', $flowId)
             ->findMany($messageIds)
             ->map(function (Message $message) use ($messageIds) {
                 $message->position = array_flip($messageIds)[$message->id];
@@ -32,6 +33,7 @@ class Table extends Component
 
     public function mount(MessageFlow $flow)
     {
+        // dd($flow);
         $this->flow = $flow;
     }
 
