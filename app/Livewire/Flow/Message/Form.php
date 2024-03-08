@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Flow\Message;
 
+use App\Models\Message;
 use App\Models\MessageFlow;
 use App\Models\MessageType;
 use Illuminate\Support\Facades\Auth;
@@ -38,26 +39,26 @@ class Form extends Component
             $filename =  $filename . $extension;
             $filepath = 'videos-upload/' . $filename;
             $this->video->storeAs(path: 'public/videos-upload', name: $filename);
-            // Message::query()->insert([
-            //     'flow_id' => $flowId,
-            //     'text' => $this->text,
-            //     'message_type' => 'video',
-            //     'filepath' => $filepath,
-            //     'delay' => $this->delay
-            // ]);
+            Message::query()->insert([
+                'flow_id' => $flowId,
+                'text' => $this->text,
+                'type_id' => MessageType::query()->where('name', 'video')->first()?->id,
+                'filepath' => $filepath,
+                'delay' => $this->delay
+            ]);
         }
         if ($this->image) {
             $extension = '.' . $this->image->getClientOriginalExtension();
             $filename =  $filename . $extension;
             $filepath = 'images-upload/' . $filename;
             $this->image->storeAs(path: 'public/images-upload', name: $filename);
-            // Message::query()->insert([
-            //     'flow_id' => $flowId,
-            //     'text' => $this->text,
-            //     'message_type' => 'image',
-            //     'filepath' => $filepath,
-            //     'delay' => $this->delay
-            // ]);
+            Message::query()->insert([
+                'flow_id' => $flowId,
+                'text' => $this->text,
+                'type_id' => MessageType::query()->where('name', 'image')->first()?->id,
+                'filepath' => $filepath,
+                'delay' => $this->delay
+            ]);
         }
         $this->reset(['image', 'video', 'text', 'delay']);
         $this->dispatch("message::created");
@@ -65,12 +66,12 @@ class Form extends Component
 
     function createTextMessage()
     {
-        // Message::query()->insert([
-        //     'flow_id' => $this->flow->id,
-        //     'text' => $this->text,
-        //     'message_type' => 'text',
-        //     'delay' => $this->delay
-        // ]);
+        Message::query()->insert([
+            'flow_id' => $this->flow->id,
+            'text' => $this->text,
+            'type_id' => MessageType::query()->where('name', 'text')->first()?->id,
+            'delay' => $this->delay
+        ]);
         $this->reset(['image', 'video', 'text', 'delay']);
         $this->dispatch("message::created");
     }

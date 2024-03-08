@@ -60,7 +60,7 @@
         </div>
         <x-slot:actions>
             <div>
-                <x-button class="btn-primary" label="Adicionar Mensagem" />
+                <x-button type="submit" class="btn-primary" label="Adicionar Mensagem" />
             </div>
         </x-slot:actions>
     </x-form>

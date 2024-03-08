@@ -3,6 +3,6 @@
     </x-header>
 
     <div>
-        <livewire:flow.message.form />
+        <livewire:flow.message.form :flow="$flow" />
     </div>
 </div>
