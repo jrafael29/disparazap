@@ -5,7 +5,7 @@
         </h1>
         <small>Da esquerda pra direita. </small>
     </div>
-    <div class="flex gap-10 flex-wrap text-white " x-init="Sortable.create($el, {
+    <div class="flex gap-10 flex-wrap text-white " x-init="Sortablejs.create($el, {
     animation: 150,
     handle: '.cursor-pointer',
     onSort({to}){
@@ -23,6 +23,8 @@
             <x-card class="w-64" title="# {{$message->type->description}}"
                 subtitle="{{$message->delay}} segundos digitando..." shadow separator>
                 <x-slot:menu>
+
+                    <x-icon name="o-heart" class="cursor-pointer" />
 
                 </x-slot:menu>
                 <div>
