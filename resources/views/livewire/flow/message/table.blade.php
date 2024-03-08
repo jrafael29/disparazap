@@ -21,12 +21,12 @@
 
         <div wire:key='{{$message->id}}' message-id="{{$message->id}}">
 
-            <x-card class="w-64" title="# {{$message->type->description}}"
+            <x-card class="w-64" title="{{$message->type->description}}"
                 subtitle="{{$message->delay}} segundos digitando..." shadow separator>
                 <x-slot:menu>
 
                     <x-button icon="o-trash" type="button" wire:click='handleDeleteMessageClick({{$message->id}})'
-                        class="btn-error btn-sm" />
+                        class="btn-outline text-red-500 btn-sm" />
                     <x-icon name="o-arrows-pointing-in" class="cursor-pointer" />
 
                 </x-slot:menu>
