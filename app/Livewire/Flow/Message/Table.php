@@ -10,6 +10,12 @@ class Table extends Component
 {
     public MessageFlow $flow;
 
+    function handleDeleteMessageClick(Message $message)
+    {
+        // dd($message);
+        $message->delete();
+    }
+
     function reOrderMessages($messageIds, $flowId)
     {
         $messages = Message::query()
