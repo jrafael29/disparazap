@@ -10,4 +10,6 @@
 
 
     <livewire:flow.form />
+
+    <livewire:flow.table />
 </div>

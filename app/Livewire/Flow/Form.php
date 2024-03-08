@@ -13,6 +13,7 @@ class Form extends Component
     public ?string $description = '';
 
     private MessageFlowRepository $messageFlowRepository;
+
     public function handleSubmit()
     {
         $this->validate();
