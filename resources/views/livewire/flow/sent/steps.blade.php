@@ -3,7 +3,9 @@
         <x-step step="1" text="Instancias">
 
             <div class="">
-                <h1>Selecione quais instancias você deseja utilizar</h1>
+                <div class="mb-5">
+                    <h1 class="text-2xl">Selecione quais instancias você deseja utilizar</h1>
+                </div>
 
                 <x-form action="">
                     <x-choices label="Instancias" wire:model="instances_multi_ids" :options="$instances" />
@@ -38,36 +40,40 @@
 
                             @case('group-contacts')
                             <div>
-                                <h1 class="text-2xl">Seus grupos...</h1>
-
-                                <div>
+                                <div class="mb-3">
+                                    <h1 class="text-2xl">Seus grupos...</h1>
+                                    <p>Selecione até {{$public_max_groups_selected_allowed}} grupos.</p>
+                                </div>
+                                <div class="">
                                     @forelse($instances_groups as $instanceId => $groups)
-                                    @php
-                                    $instance = \App\Models\Instance::query()->find($instanceId);
-                                    @endphp
-                                    <x-card title="Grupos da instancia: {{$instance->description}}"
-                                        subtitle="{{count($groups)}} Grupos Encontrados.">
-                                        <div class="flex gap-5 flex-wrap">
-                                            @forelse($groups as $group)
-                                            @php
-                                            $index = $this->groupsSelected->search($group['id']);
-                                            @endphp
-                                            <div
-                                                class="p-5 rounded {{$index === false ? 'bg-blue-900' : 'bg-red-900'}}">
-                                                <h1>{{$group['subject']}}</h1>
-                                                <x-button wire:click="selectGroup('{{$group['id']}}')">
-                                                    @if($index === false)
-                                                    Selecionar Grupo
-                                                    @else
-                                                    Esquecer Grupo
-                                                    @endif
-                                                </x-button>
+                                    <div class="mb-3">
+                                        @php
+                                        $instance = \App\Models\Instance::query()->find($instanceId);
+                                        @endphp
+                                        <x-card title="Grupos da instancia: {{$instance->description}}"
+                                            subtitle="{{count($groups)}} Grupos Encontrados.">
+                                            <div class="flex gap-5 flex-wrap">
+                                                @forelse($groups as $group)
+                                                @php
+                                                $index = $this->groupsSelected->search($group['id']);
+                                                @endphp
+                                                <div
+                                                    class="p-5 rounded {{$index === false ? 'bg-blue-900' : 'bg-red-900'}}">
+                                                    <h1>{{$group['subject']}}</h1>
+                                                    <x-button wire:click="selectGroup('{{$group['id']}}')">
+                                                        @if($index === false)
+                                                        Selecionar Grupo
+                                                        @else
+                                                        Esquecer Grupo
+                                                        @endif
+                                                    </x-button>
+                                                </div>
+                                                @empty
+                                                <h1>alguma coisa</h1>
+                                                @endforelse
                                             </div>
-                                            @empty
-                                            <h1>alguma coisa</h1>
-                                            @endforelse
-                                        </div>
-                                    </x-card>
+                                        </x-card>
+                                    </div>
                                     @empty
                                     <h1 class="text-3xl">Nenhum grupo encontrado</h1>
                                     @endforelse
@@ -98,11 +104,7 @@
 
 
                         </div>
-
-
-
                     </div>
-
                 </div>
 
             </div>
@@ -110,6 +112,30 @@
         <x-step step="3" text="Agendamento" class="">
             <div>
                 <h1> Selecione uma data/horario para iniciar o envio. </h1>
+
+                <div>
+
+                    <div class="mb-5">
+                        <x-datetime class="text-white" required label="Data e horario do envio" wire:model="toSendDate"
+                            icon="o-calendar" type="datetime-local" />
+                    </div>
+
+                    <div class="mb-5">
+                        <x-range wire:model.live.debounce="delay"
+                            label="Arraste para alterar o tempo entre os envios dos fluxos"
+                            hint="É o tempo entre um chat e outro, menor tempo maior risco de bloqueio no whatsapp"
+                            min="15" max="35" />
+                        <span class="text-2xl">
+                            {{$delay}}
+                            segundos
+                        </span>
+                    </div>
+
+                    <div>
+                        <x-button class="btn-primary" type="submit">Agendar</x-button>
+                    </div>
+
+                </div>
             </div>
         </x-step>
     </x-steps>

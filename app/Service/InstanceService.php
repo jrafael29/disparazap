@@ -42,7 +42,7 @@ class InstanceService
                     'profileStatus' => $instanceData['profileStatus'],
                 ]
             ];
-            Cache::set($cacheKey, $payback);
+            Cache::add($cacheKey, $payback, 600);
             return $payback;
         }
         return $cachedPayback;
