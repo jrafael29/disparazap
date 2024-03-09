@@ -6,6 +6,7 @@ use App\Models\Instance;
 use App\Service\Evolution\EvolutionGroupService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 class Steps extends Component
@@ -27,12 +28,17 @@ class Steps extends Component
     public $delay = 21; // delay entre um chat e outro (step de agendamento)
     public string $sendOption = ''; // opção de envio (step de alvos)
 
+    #[Validate('required')]
+    public $toSendDate = '';
+
     public $groupsSelected; // grupos do whatsapp selecionados (step de alvos / contatos de um grupo)
     public $groups; // todos os grupos do whatsapp.
 
     public $rawText = ''; // caso o usuario selecione texto cru (step de alvos / colar texto)
+    public $rawPhonenumbers = [];
+    public $groupsParticipantsPhonenumber = []; // numero dos participantes dos grupos selecionados
 
-    public $groupsParticipantsPhonenumber = [];
+    public $phonenumbers = [];
 
     private EvolutionGroupService $evolutionGroupService;
 
@@ -43,7 +49,6 @@ class Steps extends Component
             $this->getSelectedInstancesGroups();
         }
     }
-
 
     public function customValidate()
     {
@@ -112,11 +117,14 @@ class Steps extends Component
     {
         switch ($this->sendOption) {
             case 'raw-text':
-                dd($this->rawText);
+                $this->rawPhonenumbers = explode("\n", $this->rawText);
+                $this->phonenumbers = array_values($this->rawPhonenumbers);
+                return true;
                 break;
             case 'group-contacts':
                 $groupsPhonenumber = $this->getGroupsParticipantsPhonenumber($this->groupsSelected, 55);
                 $this->groupsParticipantsPhonenumber = array_values($groupsPhonenumber);
+                $this->phonenumbers = $this->getPhonenumbersFromGroupsParticipants();
                 return true;
                 break;
             default:
@@ -126,7 +134,10 @@ class Steps extends Component
 
     public function next()
     {
-        if ($this->step === 2) if (!$this->validateTarget()) return false;
+        if ($this->step === 2) {
+            if (!$this->validateTarget())
+                return false;
+        }
         if (!$this->customValidate()) return false;
         if ($this->step === $this->steps) return false;
         $this->step++;
@@ -163,9 +174,56 @@ class Steps extends Component
         $this->instances_groups = $fullData;
     }
 
-    public function handleRawTextChange()
+    public function getPhonenumbersFromRawText()
     {
-        dd($this->rawText);
+        $numbers = explode("\n", $this->rawText);
+        dd('bora', $numbers);
+    }
+    public function getPhonenumbersFromGroupsParticipants()
+    {
+        $numbers = [];
+        // dd($this->groupsParticipantsPhonenumber);
+        foreach ($this->groupsParticipantsPhonenumber as $groups) {
+            foreach ($groups as $groupJid => $participants) {
+                foreach ($participants as $participantNumber)
+                    array_push($numbers, $participantNumber);
+            }
+        }
+        return $numbers;
+    }
+
+
+
+    public function handleFinalizeClick()
+    {
+        $this->validate();
+
+        $numbers = $this->phonenumbers;
+        $instances = $this->instances_multi_ids;
+
+        $numbersPerInstance = count($this->phonenumbers) / count($this->instances_multi_ids);
+        $separated = [];
+        $offset = 0;
+        foreach ($instances as $index => $instance) {
+            if ($index + 1 === count($instances))
+                $separated[$instance] = array_slice($numbers, $offset, $numbersPerInstance + 1);
+            else
+                $separated[$instance] = array_slice($numbers, $offset, $numbersPerInstance);
+
+            $offset = $offset + $numbersPerInstance;
+        }
+        dd($separated);
+
+
+
+        // dividir numeros entre as instancias;
+
+
+        dd($this->groupsParticipantsPhonenumber);
+    }
+
+    public function scheduleSent($numbers = [], $sendDate, $delayBetweenChats,)
+    {
     }
 
     public function boot(EvolutionGroupService $evolutionGroupService)

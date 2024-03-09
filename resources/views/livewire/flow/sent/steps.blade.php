@@ -111,10 +111,12 @@
         <x-step step="3" text="Verificar contatos" class="">
             <div>
                 <div class="mb-3">
-                    <h1> Veja os numeros encontrados.</h1>
+                    <h1> Revise os numeros a serem enviados.</h1>
                 </div>
 
                 <div class="max-h-80 font-mono overflow-auto">
+                    @switch($sendOption)
+                    @case('group-contacts')
                     @forelse($groupsParticipantsPhonenumber as $groups)
                     @forelse($groups as $groupJid => $participants)
 
@@ -140,6 +142,19 @@
                     @empty
                     <h1 class="text-2xl">Nada aqui...</h1>
                     @endforelse
+                    @break
+                    @case('raw-text')
+                    <div class="flex flex-wrap gap-5">
+                        @forelse($phonenumbers as $key => $phonenumber)
+                        <div class="bg-green-800 p-5 rounded">
+                            {{$phonenumber}}
+                        </div>
+                        @empty
+                        <h1 class="text-1xl">Nenhum participante no grupo...</h1>
+                        @endforelse
+                    </div>
+                    @break
+                    @endswitch
                 </div>
             </div>
         </x-step>
@@ -166,7 +181,7 @@
                     </div>
 
                     <div>
-                        <x-button class="btn-primary" type="submit">Agendar</x-button>
+                        <x-button wire:click='handleFinalizeClick' class="btn-primary" type="submit">Agendar</x-button>
                     </div>
 
                 </div>
@@ -176,10 +191,10 @@
 
     @if($step === 1)
     @else
-    <x-button class="btn-outline" label="Previous" wire:click="prev" />
+    <x-button class="btn-outline" label="Voltar" wire:click="prev" />
     @endif
     @if($step === $steps)
     @else
-    <x-button spinner class="btn-primary" label="Next" wire:click="next" />
+    <x-button spinner class="btn-primary" label="Avançar" wire:click="next" />
     @endif
 </div>
