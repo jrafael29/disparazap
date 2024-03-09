@@ -42,8 +42,41 @@ class EvolutionGroupService
             $groups = $response->json();
             Cache::add($groupsKeyName, $groups, 600);
             return $groups;
-        } else {
-            return $cachedData;
         }
+        return $cachedData;
+    }
+
+    function getParticipantsByJid($instanceName, $groupJid)
+    {
+        if (!$instanceName) return false;
+
+        $groupParticipantsKeyName = "$instanceName:group-$groupJid:participants";
+        $cachedData = Cache::get($groupParticipantsKeyName);
+
+        if (!$cachedData) {
+            $getGroupParticipantsRoute = '/group/participants/' . $instanceName . '?groupJid=' . $groupJid;
+            $url = $this->apiUrl . $getGroupParticipantsRoute;
+            $headers = [
+                'apiKey' => $this->apiKey
+            ];
+            $response = Http::withHeaders($headers)->get($url);
+            $data = $response->json();
+            if (!empty($data['participants'])) {
+                $payback = [
+                    'error' => false,
+                    'data' => [
+                        $groupJid => $data['participants']
+                    ]
+                ];
+                Cache::add($groupParticipantsKeyName, $payback, 600);
+                return $payback;
+            }
+
+            return [
+                'error' => true,
+                'message' => "foobar"
+            ];
+        }
+        return $cachedData;
     }
 }

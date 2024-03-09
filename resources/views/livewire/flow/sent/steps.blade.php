@@ -17,50 +17,52 @@
         </x-step>
         <x-step step="2" text="Alvos">
             <div>
-
                 <div>
+                    <div class="mb-5">
+                        <h1 class="text-2xl">Seleciona para quem deseja enviar</h1>
+                    </div>
+                    @foreach($sendOptions as $key => $option)
+                    @if($key === $sendOption)
+                    <x-button spinner class="btn-outline" wire:key='{{$key}}' wire:click="selectSendOption('{{$key}}')">
+                        {{$option}}
+                    </x-button>
 
-                    <div>
-                        <h1>Seleciona para quem deseja enviar</h1>
-                        @foreach($sendOptions as $key => $option)
-                        @if($key === $sendOption)
-                        <x-button class="btn-outline" wire:key='{{$key}}' wire:click="selectSendOption('{{$key}}')">
-                            {{$option}}
-                        </x-button>
+                    @else
+                    <x-button spinner wire:key='{{$key}}' wire:click="selectSendOption('{{$key}}')">{{$option}}
+                    </x-button>
 
-                        @else
-                        <x-button wire:key='{{$key}}' wire:click="selectSendOption('{{$key}}')">{{$option}}</x-button>
-
-                        @endif
-                        @endforeach
-                        <div class="">
+                    @endif
+                    @endforeach
+                    <div class="">
 
 
-                            @switch($sendOption)
+                        @switch($sendOption)
 
-                            @case('group-contacts')
-                            <div>
+                        @case('group-contacts')
+                        <div>
+                            <div class="mb-3">
+                                <h1 class="text-2xl">Seus grupos...</h1>
+                                <p>Selecione até {{$public_max_groups_selected_allowed}} grupos.</p>
+                            </div>
+                            <div class="max-h-80 font-mono overflow-auto">
+                                @forelse($instances_groups as $instanceId => $groups)
                                 <div class="mb-3">
-                                    <h1 class="text-2xl">Seus grupos...</h1>
-                                    <p>Selecione até {{$public_max_groups_selected_allowed}} grupos.</p>
-                                </div>
-                                <div class="">
-                                    @forelse($instances_groups as $instanceId => $groups)
-                                    <div class="mb-3">
-                                        @php
-                                        $instance = \App\Models\Instance::query()->find($instanceId);
-                                        @endphp
-                                        <x-card title="Grupos da instancia: {{$instance->description}}"
-                                            subtitle="{{count($groups)}} Grupos Encontrados.">
-                                            <div class="flex gap-5 flex-wrap">
-                                                @forelse($groups as $group)
-                                                @php
-                                                $index = $this->groupsSelected->search($group['id']);
-                                                @endphp
-                                                <div
-                                                    class="p-5 rounded {{$index === false ? 'bg-blue-900' : 'bg-red-900'}}">
-                                                    <h1>{{$group['subject']}}</h1>
-                                                    <x-button wire:click="selectGroup('{{$group['id']}}')">
+                                    @php
+                                    $instance = \App\Models\Instance::query()->find($instanceId);
+                                    @endphp
+                                    <x-card title="Grupos da instancia: {{$instance->description}}"
+                                        subtitle="{{count($groups)}} Grupos Encontrados.">
+                                        <div class="flex gap-5 flex-wrap">
+                                            @forelse($groups as $group)
+                                            @php
+                                            $id = $group['id'] . ":$instance->id";
+                                            $index = $this->groupsSelected->search($id);
+                                            @endphp
+                                            <div
+                                                class="p-5 rounded {{$index === false ? 'bg-gray-800' : 'bg-blue-900'}}">
+                                                <h1 class="text-center">{{$group['subject']}}</h1>
+                                                <div class="flex justify-center mt-5">
+                                                    <x-button wire:click="selectGroup('{{$id}}')">
                                                         @if($index === false)
                                                         Selecionar Grupo
                                                         @else
@@ -68,50 +70,82 @@
                                                         @endif
                                                     </x-button>
                                                 </div>
-                                                @empty
-                                                <h1>alguma coisa</h1>
-                                                @endforelse
-                                            </div>
-                                        </x-card>
-                                    </div>
-                                    @empty
-                                    <h1 class="text-3xl">Nenhum grupo encontrado</h1>
-                                    @endforelse
-                                </div>
-                            </div>
-                            @break
-                            @case('raw-text')
-                            <div>
-                                <h1 class="text-2xl">Informe um texto abaixo do outro, sem pontuação</h1>
 
-                                <x-form action="">
-                                    <x-textarea label="Numeros" wire:model="bio" placeholder="Digite um numero abaixo do outro. ex:
+                                            </div>
+                                            @empty
+                                            <h1>alguma coisa</h1>
+                                            @endforelse
+                                        </div>
+                                    </x-card>
+                                </div>
+                                @empty
+                                <h1 class="text-3xl">Nenhum grupo encontrado</h1>
+                                @endforelse
+                            </div>
+                        </div>
+                        @break
+                        @case('raw-text')
+                        <div class="my-3">
+                            <div class="mb-3">
+                                <h1 class="text-2xl">Informe um número abaixo do outro, sem pontuação</h1>
+                            </div>
+
+                            <x-form>
+                                <x-textarea label="Numeros" wire:model="rawText" placeholder="Digite um numero abaixo do outro. ex:
                                     5581991827364
                                     5581991827366
                                     5581991827368" rows="5" inline />
-                                </x-form>
-
-                            </div>
-                            @break
-                            @case('import-excel')
-                            <div>
-                                <h1 class="text-2xl">Importe uma planilha</h1>
-                            </div>
-                            @break
-                            @endswitch
-                            Opção selecionada {{$sendOption}}
-
-
-
+                            </x-form>
                         </div>
+                        @break
+                        @case('import-excel')
+                        <div>
+                            <h1 class="text-2xl">Importe uma planilha</h1>
+                        </div>
+                        @break
+                        @endswitch
                     </div>
                 </div>
-
             </div>
         </x-step>
-        <x-step step="3" text="Agendamento" class="">
+        <x-step step="3" text="Verificar contatos" class="">
             <div>
-                <h1> Selecione uma data/horario para iniciar o envio. </h1>
+                <div class="mb-3">
+                    <h1> Veja os numeros encontrados.</h1>
+                </div>
+
+                <div class="max-h-80 font-mono overflow-auto">
+                    @forelse($groupsParticipantsPhonenumber as $groups)
+                    @forelse($groups as $groupJid => $participants)
+
+                    <x-card title="{{$groupJid}}">
+
+                        <div class="flex flex-wrap gap-5">
+                            @forelse($participants as $key => $phonenumber)
+                            <div class="bg-green-800 p-5 rounded">
+                                {{$phonenumber}}
+                            </div>
+                            @empty
+                            <h1 class="text-1xl">Nenhum participante no grupo...</h1>
+                            @endforelse
+
+                        </div>
+
+
+                    </x-card>
+                    @empty
+                    <h1 class="text-1xl">Nenhum participante no grupo...</h1>
+
+                    @endforelse
+                    @empty
+                    <h1 class="text-2xl">Nada aqui...</h1>
+                    @endforelse
+                </div>
+            </div>
+        </x-step>
+        <x-step step="4" text="Agendamento" class="">
+            <div>
+                <h1> Selecione uma data/horario para iniciar o envio.</h1>
 
                 <div>
 
@@ -140,7 +174,12 @@
         </x-step>
     </x-steps>
 
+    @if($step === 1)
+    @else
     <x-button class="btn-outline" label="Previous" wire:click="prev" />
-    <x-button class="btn-primary" label="Next" wire:click="next" />
-    {{-- If your happiness depends on money, you will never be happy with yourself. --}}
+    @endif
+    @if($step === $steps)
+    @else
+    <x-button spinner class="btn-primary" label="Next" wire:click="next" />
+    @endif
 </div>
