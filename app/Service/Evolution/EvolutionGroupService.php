@@ -40,7 +40,7 @@ class EvolutionGroupService
             $response = Http::withHeaders($headers)->get($url);
 
             $groups = $response->json();
-            Cache::add($groupsKeyName, $groups, 600);
+            Cache::add($groupsKeyName, $groups, (int) env('CACHE_DEFAULT_LIFETIME'));
             return $groups;
         }
         return $cachedData;
@@ -68,7 +68,7 @@ class EvolutionGroupService
                         $groupJid => $data['participants']
                     ]
                 ];
-                Cache::add($groupParticipantsKeyName, $payback, 600);
+                Cache::add($groupParticipantsKeyName, $payback, (int) env('CACHE_DEFAULT_LIFETIME'));
                 return $payback;
             }
 
