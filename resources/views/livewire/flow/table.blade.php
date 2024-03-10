@@ -4,7 +4,7 @@
     @foreach($flows as $flow)
 
     <div>
-        <x-card class="text-wrap" title="{!!$flow->description!!}">
+        <x-card class="text-wrap" title="{!!$flow->description!!}" subtitle="Gerencie o seu fluxo de mensagens">
             <div class="flex flex-col gap-3">
                 <div class="flex justify-center flex-wrap gap-3">
 
