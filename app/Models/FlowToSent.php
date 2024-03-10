@@ -19,4 +19,17 @@ class FlowToSent extends Model
         "to_sent_at",
         'delay_in_seconds',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function flow()
+    {
+        return $this->belongsTo(MessageFlow::class);
+    }
+    public function instance()
+    {
+        return $this->belongsTo(Instance::class);
+    }
 }

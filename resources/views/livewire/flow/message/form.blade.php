@@ -54,7 +54,7 @@
 
         <div>
 
-            <x-input label="Tempo de espera" min="1" max="5" type="number" wire:model="delay"
+            <x-input label="Tempo de espera" min="1" max="29" type="number" wire:model="delay"
                 hint="Tempo (digitando...) em segundos" />
 
         </div>

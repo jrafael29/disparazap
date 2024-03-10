@@ -23,4 +23,8 @@ class Instance extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+    public function flowToSent()
+    {
+        return $this->hasMany(FlowToSent::class);
+    }
 }
