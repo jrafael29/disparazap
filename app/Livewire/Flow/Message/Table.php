@@ -4,6 +4,7 @@ namespace App\Livewire\Flow\Message;
 
 use App\Models\Message;
 use App\Models\MessageFlow;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Table extends Component
@@ -43,6 +44,7 @@ class Table extends Component
         $this->flow = $flow;
     }
 
+    #[On("message::created")]
     public function render()
     {
         return view('livewire.flow.message.table', [
