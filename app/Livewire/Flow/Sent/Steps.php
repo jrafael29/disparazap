@@ -2,15 +2,19 @@
 
 namespace App\Livewire\Flow\Sent;
 
+use App\Models\FlowToSent;
 use App\Models\Instance;
+use App\Models\MessageFlow;
 use App\Service\Evolution\EvolutionGroupService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Mary\Traits\Toast;
 
 class Steps extends Component
 {
+    use Toast;
     private int $max_groups_selected_allowed = 15;
     // if want update the value, must be updated both values
     // for security because this props is visible in frontend;
@@ -23,7 +27,7 @@ class Steps extends Component
         'raw-text' => "Colar texto",
         // 'import-excel' => "Importar excel"
     ]; // opções de "alvos"
-    public $steps = 4; // quantidade de passos no
+    public $steps = 5; // quantidade de passos no
     public $step = 1; // step atual
     public $delay = 21; // delay entre um chat e outro (step de agendamento)
     public string $sendOption = ''; // opção de envio (step de alvos)
@@ -32,13 +36,18 @@ class Steps extends Component
     public $toSendDate = '';
 
     public $groupsSelected; // grupos do whatsapp selecionados (step de alvos / contatos de um grupo)
-    public $groups; // todos os grupos do whatsapp.
+    // public $groups; // todos os grupos do whatsapp.
+    public MessageFlow $flow;
 
     public $rawText = ''; // caso o usuario selecione texto cru (step de alvos / colar texto)
     public $rawPhonenumbers = [];
     public $groupsParticipantsPhonenumber = []; // numero dos participantes dos grupos selecionados
 
     public $phonenumbers = [];
+
+    public $hours = '';
+    public $minutes = '';
+    public $seconds = '';
 
     private EvolutionGroupService $evolutionGroupService;
 
@@ -192,7 +201,16 @@ class Steps extends Component
         return $numbers;
     }
 
-
+    function getTotalDuration()
+    {
+        if (count($this->instances_multi_ids) > 0 && count($this->phonenumbers) > 0) {
+            $total_minutes = ((30 + $this->delay) * count($this->phonenumbers) / count($this->instances_multi_ids)) / 60;
+            $total_seconds = $total_minutes * 60;
+            $this->hours = floor($total_seconds / 3600);
+            $this->minutes = floor(($total_seconds % 3600) / 60);
+            $this->seconds = $total_seconds % 60;
+        }
+    }
 
     public function handleFinalizeClick()
     {
@@ -202,24 +220,40 @@ class Steps extends Component
         $instances = $this->instances_multi_ids;
 
         $numbersPerInstance = count($this->phonenumbers) / count($this->instances_multi_ids);
-        $separated = [];
+        $allInstancesPhonenumbers = [];
         $offset = 0;
         foreach ($instances as $index => $instance) {
             if ($index + 1 === count($instances))
-                $separated[$instance] = array_slice($numbers, $offset, $numbersPerInstance + 1);
+                $allInstancesPhonenumbers[$instance] = array_slice($numbers, $offset, $numbersPerInstance + 1);
             else
-                $separated[$instance] = array_slice($numbers, $offset, $numbersPerInstance);
+                $allInstancesPhonenumbers[$instance] = array_slice($numbers, $offset, $numbersPerInstance);
 
             $offset = $offset + $numbersPerInstance;
         }
-        dd($separated);
 
+        foreach ($allInstancesPhonenumbers as $instanceId => $phonenumbers) {
+            foreach ($phonenumbers as $phonenumber) {
 
+                FlowToSent::query()->create([
+                    'user_id' => Auth::user()->id,
+                    'flow_id' => $this->flow->id,
+                    'instance_id' => $instanceId,
+                    "to" => $phonenumber,
+                    "to_sent_at" => $this->toSendDate,
+                    'delay_in_seconds' => $this->delay,
+                ]);
+            }
+            // dd($numbers);
+        }
+        $this->success("Agendamento feito com sucesso");
+        $this->getTotalDuration();
+        $this->next();
+
+        // dd();
 
         // dividir numeros entre as instancias;
 
-
-        dd($this->groupsParticipantsPhonenumber);
+        // dd($this->groupsParticipantsPhonenumber);
     }
 
     public function scheduleSent($numbers = [], $sendDate, $delayBetweenChats,)
@@ -231,9 +265,10 @@ class Steps extends Component
         $this->evolutionGroupService = $evolutionGroupService;
     }
 
-    public function mount()
+    public function mount(MessageFlow $flow)
     {
-        $this->groups = [];
+        $this->flow = $flow;
+        // $this->groups = [];
         $this->groupsSelected = collect();
     }
 

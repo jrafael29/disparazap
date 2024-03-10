@@ -108,7 +108,7 @@
                 </div>
             </div>
         </x-step>
-        <x-step step="3" text="Verificar contatos" class="">
+        <x-step step="3" text="Verificação" class="">
             <div>
                 <div class="mb-3">
                     <h1> Revise os numeros a serem enviados.</h1>
@@ -171,7 +171,7 @@
 
                     <div class="mb-5">
                         <x-range wire:model.live.debounce="delay"
-                            label="Arraste para alterar o tempo entre os envios dos fluxos"
+                            label="Arraste para alterar o tempo entre as conversas"
                             hint="É o tempo entre um chat e outro, menor tempo maior risco de bloqueio no whatsapp"
                             min="15" max="35" />
                         <span class="text-2xl">
@@ -181,14 +181,41 @@
                     </div>
 
                     <div>
-                        <x-button wire:click='handleFinalizeClick' class="btn-primary" type="submit">Agendar</x-button>
+                        <x-button spinner wire:click='handleFinalizeClick' class="btn-primary" type="submit">Agendar
+                        </x-button>
                     </div>
 
                 </div>
             </div>
         </x-step>
+        <x-step step="5" text="Detalhes" class="">
+            <div>
+                <h1> Selecione uma data/horario para iniciar o envio.</h1>
+
+                <div>
+                    <h1 class="text-3xl">Estimativa da duração do disparo:</h1>
+                    <span class="text-3xl">
+                        @if(count($instances_multi_ids) > 0 && count($phonenumbers) > 0)
+
+                        @if ($hours > 0)
+                        {{ $hours }} horas,
+                        @endif
+
+                        @if ($minutes > 0)
+                        {{ $minutes }} minutos e
+                        @endif
+
+                        @if ($seconds > 0)
+                        {{ $seconds }} segundos
+                        @endif
+                        @endif
+                    </span>
+                </div>
+            </div>
+        </x-step>
     </x-steps>
 
+    @if($step !== 5)
     @if($step === 1)
     @else
     <x-button class="btn-outline" label="Voltar" wire:click="prev" />
@@ -196,5 +223,6 @@
     @if($step === $steps)
     @else
     <x-button spinner class="btn-primary" label="Avançar" wire:click="next" />
+    @endif
     @endif
 </div>
