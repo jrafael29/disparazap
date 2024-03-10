@@ -27,7 +27,7 @@
     {{-- MAIN --}}
     <x-main full-width>
         {{-- SIDEBAR --}}
-        <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100 lg:bg-inherit">
+        <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100 lg:bg-base-100">
 
             {{-- BRAND --}}
             {{--
@@ -35,7 +35,6 @@
 
             {{-- MENU --}}
             <x-menu activate-by-route>
-
                 {{-- User --}}
                 @if($user = auth()->user())
                 <x-list-item :item="$user" value="name" sub-value="email" no-separator no-hover
@@ -51,12 +50,6 @@
                 <x-menu-item title="Fluxo de Mensagens" icon="o-sparkles" link="{{route('flow')}}" />
 
                 @endif
-
-
-                <x-menu-sub title="Settings" icon="o-cog-6-tooth">
-                    <x-menu-item title="Wifi" icon="o-wifi" link="####" />
-                    <x-menu-item title="Archives" icon="o-archive-box" link="####" />
-                </x-menu-sub>
             </x-menu>
         </x-slot:sidebar>
 
