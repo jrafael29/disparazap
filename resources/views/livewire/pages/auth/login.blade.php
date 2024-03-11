@@ -5,7 +5,7 @@
         </div>
         <div class="">
             <x-form wire:submit="handleSubmit">
-                <x-input label="Nome" type="name" wire:model="email" placeholder="Jane Doe" />
+                <x-input label="Email" type="email" wire:model="email" placeholder="janedoe@mail.com" />
                 <x-input label="Senha" type="password" wire:model="password" placeholder="******" />
 
                 <x-slot:actions>

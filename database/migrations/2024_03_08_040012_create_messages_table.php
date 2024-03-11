@@ -23,7 +23,7 @@ return new class extends Migration
                 ->on('message_types')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string('text'); // caption or content
+            $table->text('text'); // caption or content
             // $table->string('message_type'); // text || image || video || audio etc
             $table->string('filepath')->nullable();
             $table->unsignedInteger('position')->default(0);

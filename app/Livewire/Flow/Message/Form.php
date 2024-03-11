@@ -91,6 +91,7 @@ class Form extends Component
             );
             return;
         }
+        if (!$this->text) return false;
         $this->createTextMessage(
             flowId: $this->flow->id,
             text: $this->text,

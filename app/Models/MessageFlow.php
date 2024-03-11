@@ -10,4 +10,14 @@ class MessageFlow extends Model
     use HasFactory;
 
     protected $fillable = ['user_id', 'description', 'active'];
+
+    public function flowToSent()
+    {
+        return $this->hasMany(FlowToSent::class, 'flow_id', 'id');
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'flow_id', 'id');
+    }
 }

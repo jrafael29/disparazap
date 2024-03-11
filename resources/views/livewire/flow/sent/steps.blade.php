@@ -4,7 +4,7 @@
 
             <div class="">
                 <div class="mb-5">
-                    <h1 class="text-2xl">Selecione quais instancias você deseja utilizar</h1>
+                    <h1 class="text-2xl">Selecione quais instancias você deseja utilizar no disparo</h1>
                 </div>
 
                 <x-form action="">
