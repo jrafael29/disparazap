@@ -1,4 +1,4 @@
-<div class="my-16">
+<div class="">
     <div class="mb-3">
         <span>
             <p>Escolha um tipo de mensagem</p>
@@ -25,9 +25,9 @@
         @switch($messageTypeSelected)
 
         @case('text')
-        <div>
+        <div class="mb-3">
             <x-textarea max=500 label="Conteudo" wire:model="text" placeholder="Digite o conteudo da mensagem"
-                hint="Maximo de 500 caractere" rows="1" inline />
+                hint="O texto da mensagem" rows="1" inline />
         </div>
         @break
 
@@ -54,7 +54,7 @@
 
         <div>
 
-            <x-input label="Tempo de espera" min="1" max="29" type="number" wire:model="delay"
+            <x-input label="Tempo de digitação" min="1" max="29" type="number" wire:model="delay"
                 hint="Tempo (digitando...) em segundos" />
 
         </div>

@@ -27,7 +27,7 @@
 
                     <x-button icon="o-trash" type="button" wire:click='handleDeleteMessageClick({{$message->id}})'
                         class="btn-outline text-red-500 btn-sm" />
-                    <x-icon name="o-arrows-pointing-in" class="cursor-pointer" />
+                    <x-icon name="m-cursor-arrow-rays" class="cursor-pointer" />
 
                 </x-slot:menu>
 

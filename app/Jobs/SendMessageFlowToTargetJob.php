@@ -15,13 +15,16 @@ use Illuminate\Support\Facades\App;
 class SendMessageFlowToTargetJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    public EvolutionSendMessageService $messageService;
+    private EvolutionSendMessageService $messageService;
+    private FlowToSent $flowToSent;
+
     /**
      * Create a new job instance.
      */
-    public function __construct(private FlowToSent $flowToSent)
+    public function __construct(FlowToSent $flowToSent)
     {
         $this->messageService = App::make(EvolutionSendMessageService::class);
+        $this->flowToSent = $flowToSent;
     }
 
     /**
@@ -30,9 +33,11 @@ class SendMessageFlowToTargetJob implements ShouldQueue
     public function handle(): void
     {
         $messages = $this->flowToSent->flow->messages;
+        // dd($messages);
         if (empty($messages)) return;
         foreach ($messages as $message) {
             $instance = $this->flowToSent->instance;
+            $delayInMs = ($message->delay * 1000);
             switch ($message->type->name) {
                 case 'image':
                     $image = public_path('storage/' . $message->filepath);
@@ -42,7 +47,7 @@ class SendMessageFlowToTargetJob implements ShouldQueue
                         imageBase64OrUrl: $base64,
                         text: $message->text,
                         to: $this->flowToSent->to,
-                        delay: ($message->delay * 1000) // in ms
+                        delay: $delayInMs // in ms
                     );
                     break;
                 case 'video':
@@ -53,7 +58,7 @@ class SendMessageFlowToTargetJob implements ShouldQueue
                         videoBase64OrUrl: $base64,
                         text: $message->text,
                         to: $this->flowToSent->to,
-                        delay: ($message->delay * 1000) // in ms
+                        delay: $delayInMs // in ms
                     );
                     break;
 
@@ -62,7 +67,7 @@ class SendMessageFlowToTargetJob implements ShouldQueue
                         instanceName: $instance->name,
                         text: $message->text,
                         to: $this->flowToSent->to,
-                        delay: ($message->delay * 1000) // in ms
+                        delay: $delayInMs // in ms
                     );
                     break;
             }
