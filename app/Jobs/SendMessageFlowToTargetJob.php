@@ -79,8 +79,7 @@ class SendMessageFlowToTargetJob implements ShouldQueue
                 }
                 sleep(1); // 1 segundo entre uma mensagem e outra.
             }
-            // $delayBetweenChats = $this->flowToSent->delay_in_seconds ?? 15; // 15 segundos entre um chat e outro.
-            $delayBetweenChats = 5;
+            $delayBetweenChats = $this->flowToSent->delay_in_seconds ?? 15; // 15 segundos entre um chat e outro.
             sleep((int)$delayBetweenChats);
             $this->flowToSent->sent = 1;
             $this->flowToSent->save();
