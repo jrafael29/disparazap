@@ -37,48 +37,52 @@ class SendMessageFlowToTargetJob implements ShouldQueue
         Log::alert('starting send message');
         Log::alert($messages);
         if (empty($messages)) return;
-        foreach ($messages as $message) {
-            $instance = $this->flowToSent->instance;
-            $delayInMs = ($message->delay * 1000);
-            switch ($message->type->name) {
-                case 'image':
-                    $image = public_path('storage/' . $message->filepath);
-                    $base64 = base64_encode(file_get_contents($image));
-                    $this->messageService->sendImage(
-                        instanceName: $instance->name,
-                        imageBase64OrUrl: $base64,
-                        text: $message->text,
-                        to: $this->flowToSent->to,
-                        delay: $delayInMs // in ms
-                    );
-                    break;
-                case 'video':
-                    $video = public_path('storage/' . $message->filepath);
-                    $base64 = base64_encode(file_get_contents($video));
-                    $this->messageService->sendVideo(
-                        instanceName: $instance->name,
-                        videoBase64OrUrl: $base64,
-                        text: $message->text,
-                        to: $this->flowToSent->to,
-                        delay: $delayInMs // in ms
-                    );
-                    break;
+        try {
+            foreach ($messages as $message) {
+                $instance = $this->flowToSent->instance;
+                $delayInMs = ($message->delay * 1000);
+                switch ($message->type->name) {
+                    case 'image':
+                        $image = public_path('storage/' . $message->filepath);
+                        $base64 = base64_encode(file_get_contents($image));
+                        $this->messageService->sendImage(
+                            instanceName: $instance->name,
+                            imageBase64OrUrl: $base64,
+                            text: $message->text,
+                            to: $this->flowToSent->to,
+                            delay: $delayInMs // in ms
+                        );
+                        break;
+                    case 'video':
+                        $video = public_path('storage/' . $message->filepath);
+                        $base64 = base64_encode(file_get_contents($video));
+                        $this->messageService->sendVideo(
+                            instanceName: $instance->name,
+                            videoBase64OrUrl: $base64,
+                            text: $message->text,
+                            to: $this->flowToSent->to,
+                            delay: $delayInMs // in ms
+                        );
+                        break;
 
-                case 'text':
-                    $this->messageService->sendText(
-                        instanceName: $instance->name,
-                        text: $message->text,
-                        to: $this->flowToSent->to,
-                        delay: $delayInMs // in ms
-                    );
-                    break;
+                    case 'text':
+                        $this->messageService->sendText(
+                            instanceName: $instance->name,
+                            text: $message->text,
+                            to: $this->flowToSent->to,
+                            delay: $delayInMs // in ms
+                        );
+                        break;
+                }
+                sleep(1); // 1 segundo entre uma mensagem e outra.
             }
-            sleep(1); // 1 segundo entre uma mensagem e outra.
+            // $delayBetweenChats = $this->flowToSent->delay_in_seconds ?? 15; // 15 segundos entre um chat e outro.
+            $delayBetweenChats = 5;
+            sleep((int)$delayBetweenChats);
+            $this->flowToSent->sent = 1;
+            $this->flowToSent->save();
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
         }
-        // $delayBetweenChats = $this->flowToSent->delay_in_seconds ?? 15; // 15 segundos entre um chat e outro.
-        $delayBetweenChats = 5;
-        sleep((int)$delayBetweenChats);
-        $this->flowToSent->sent = 1;
-        $this->flowToSent->save();
     }
 }
