@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 
 class SendMessageFlowToTargetJob implements ShouldQueue
 {
@@ -33,6 +34,8 @@ class SendMessageFlowToTargetJob implements ShouldQueue
     public function handle(): void
     {
         $messages = $this->flowToSent->flow->messages;
+        Log::alert('starting send message');
+        Log::alert($messages);
         if (empty($messages)) return;
         foreach ($messages as $message) {
             $instance = $this->flowToSent->instance;
