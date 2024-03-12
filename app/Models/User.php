@@ -45,6 +45,11 @@ class User extends Authenticatable
 
     public function flowToSent()
     {
-        return $this->hasMany(FlowToSent::class);
+        return $this->hasMany(FlowToSent::class, 'user_ud', 'id');
+    }
+
+    public function instances()
+    {
+        return $this->hasMany(Instance::class, 'user_id', 'id');
     }
 }

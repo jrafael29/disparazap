@@ -1,4 +1,4 @@
-<div>
+<div class="my-3">
     <x-steps wire:model="step" class="border my-5 p-5">
         <x-step step="1" text="Instancias">
 

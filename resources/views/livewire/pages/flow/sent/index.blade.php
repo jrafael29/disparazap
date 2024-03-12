@@ -11,5 +11,12 @@
         separator progress-indicator>
     </x-header>
     {{-- The best athlete wants his opponent at his best. --}}
+    @if($onlineInstances > 0)
     <livewire:flow.sent.steps :flow="$flow" />
+    @else
+    <div>
+        <p class="text-3xl mb-5">Você não tem nenhuma instancia conectada</p>
+    </div>
+    @endif
+    <livewire:flow.sent.table :flow="$flow" />
 </div>
