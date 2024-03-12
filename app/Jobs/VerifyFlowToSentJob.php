@@ -32,11 +32,10 @@ class VerifyFlowToSentJob implements ShouldQueue
             ->first();
         // se ja existir algum 'flow_to_sent' sendo enviado por essa instancia, retorna falso;
         // a instancia deve enviar 1 fluxo por vez.
-        if ($sameOwnerAlreadyHasBusyFlow) {
-            return;
+        if (!$sameOwnerAlreadyHasBusyFlow) {
+            SendMessageFlowToTargetJob::dispatch($this->flowToSent);
+            $this->flowToSent->busy = 1;
+            $this->flowToSent->save();
         }
-        SendMessageFlowToTargetJob::dispatch($this->flowToSent)->onQueue('send:flowToSent');
-        $this->flowToSent->busy = 1;
-        $this->flowToSent->save();
     }
 }

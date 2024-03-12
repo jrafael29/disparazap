@@ -33,7 +33,6 @@ class SendMessageFlowToTargetJob implements ShouldQueue
     public function handle(): void
     {
         $messages = $this->flowToSent->flow->messages;
-        // dd($messages);
         if (empty($messages)) return;
         foreach ($messages as $message) {
             $instance = $this->flowToSent->instance;
