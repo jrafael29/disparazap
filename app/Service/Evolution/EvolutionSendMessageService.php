@@ -4,6 +4,7 @@ namespace App\Service\Evolution;
 
 use App\Models\EvolutionInstance;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class EvolutionSendMessageService
 {
@@ -38,6 +39,8 @@ class EvolutionSendMessageService
                 ->post($url, $body);
 
             $data = $response->body();
+            Log::info("request send text completed");
+            Log::info($data);
         } catch (\Exception $e) {
             dd($e);
             report($e);
