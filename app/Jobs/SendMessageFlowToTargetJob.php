@@ -38,8 +38,8 @@ class SendMessageFlowToTargetJob implements ShouldQueue
         Log::alert($messages);
         if (empty($messages)) return;
         try {
+            $instance = $this->flowToSent->instance;
             foreach ($messages as $message) {
-                $instance = $this->flowToSent->instance;
                 $delayInMs = ($message->delay * 1000);
                 switch ($message->type->name) {
                     case 'image':
