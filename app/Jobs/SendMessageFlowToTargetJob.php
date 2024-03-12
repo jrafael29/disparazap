@@ -35,12 +35,14 @@ class SendMessageFlowToTargetJob implements ShouldQueue
     {
         $messages = $this->flowToSent->flow->messages;
         Log::alert('starting send message');
-        Log::alert($messages);
         if (empty($messages)) return;
         try {
             $instance = $this->flowToSent->instance;
             foreach ($messages as $message) {
+                Log::alert($message);
+
                 $delayInMs = ($message->delay * 1000);
+                Log::alert($message->type->name);
                 switch ($message->type->name) {
                     case 'image':
                         $image = public_path('storage/' . $message->filepath);
@@ -66,6 +68,7 @@ class SendMessageFlowToTargetJob implements ShouldQueue
                         break;
 
                     case 'text':
+                        Log::alert('init send text');
                         $this->messageService->sendText(
                             instanceName: $instance->name,
                             text: $message->text,
