@@ -5,6 +5,7 @@ namespace App\Livewire\Flow\Sent;
 use App\Models\FlowToSent;
 use App\Models\Instance;
 use App\Models\MessageFlow;
+use App\Service\Evolution\EvolutionChatService;
 use App\Service\Evolution\EvolutionGroupService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -50,6 +51,7 @@ class Steps extends Component
     public $seconds = '';
 
     private EvolutionGroupService $evolutionGroupService;
+    private EvolutionChatService $evolutionChatService;
 
     public function selectSendOption($option)
     {
@@ -126,8 +128,20 @@ class Steps extends Component
     {
         switch ($this->sendOption) {
             case 'raw-text':
-                $this->rawPhonenumbers = explode("\n", $this->rawText);
-                $this->phonenumbers = array_values($this->rawPhonenumbers);
+                $phonenumbers = $this->getPhonenumbersFromRawText();
+                $uniqPhonenumbers = array_values(array_unique($phonenumbers));
+
+                $firstInstanceName = Instance::find($this->instances_multi_ids[0])?->name;
+
+                $numbersExistence = $this->evolutionChatService->checkNumbersExistence(
+                    numbers: $uniqPhonenumbers,
+                    instanceName: $firstInstanceName
+                );
+
+                $this->phonenumbers = $numbersExistence;
+                // verificar se os numeros são validos
+
+                // $this->phonenumbers = $uniqPhonenumbers
                 return true;
                 break;
             case 'group-contacts':
@@ -186,7 +200,9 @@ class Steps extends Component
     public function getPhonenumbersFromRawText()
     {
         $numbers = explode("\n", $this->rawText);
-        dd('bora', $numbers);
+        $this->rawPhonenumbers = explode("\n", $this->rawText);
+        $phonenumbers = array_values($this->rawPhonenumbers);
+        return $phonenumbers;
     }
     public function getPhonenumbersFromGroupsParticipants()
     {
@@ -256,13 +272,16 @@ class Steps extends Component
         // dd($this->groupsParticipantsPhonenumber);
     }
 
-    public function scheduleSent($numbers = [], $sendDate, $delayBetweenChats,)
-    {
-    }
+    // public function scheduleSent($numbers = [], $sendDate, $delayBetweenChats,)
+    // {
+    // }
 
-    public function boot(EvolutionGroupService $evolutionGroupService)
-    {
+    public function boot(
+        EvolutionGroupService $evolutionGroupService,
+        EvolutionChatService $evolutionChatService
+    ) {
         $this->evolutionGroupService = $evolutionGroupService;
+        $this->evolutionChatService = $evolutionChatService;
     }
 
     public function mount(MessageFlow $flow)

@@ -1,6 +1,6 @@
 <div>
     <!-- HEADER -->
-    <x-header title="Instancias" separator progress-indicator></x-header>
+    <x-header title="Instancias" subtitle="Crie e gerencie suas instancias." separator progress-indicator></x-header>
     {{-- Success is as dangerous as failure. --}}
     <livewire:instance.form />
 

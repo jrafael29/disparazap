@@ -145,10 +145,19 @@
                     @break
                     @case('raw-text')
                     <div class="flex flex-wrap gap-5">
-                        @forelse($phonenumbers as $key => $phonenumber)
+                        @forelse($phonenumbers as $phonenumber => $exist)
+
+                        @if(!empty($exist))
                         <div class="bg-green-800 p-5 rounded">
                             {{$phonenumber}}
                         </div>
+                        @else
+                        <div class="bg-red-800 p-5 rounded">
+                            <p class="text-red-500 text-1xl">Numero inexistente</p>
+                            <p class="line-through">{{$phonenumber}}</p>
+                        </div>
+                        @endif
+
                         @empty
                         <h1 class="text-1xl">Nenhum participante no grupo...</h1>
                         @endforelse
