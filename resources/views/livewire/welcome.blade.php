@@ -1,4 +1,4 @@
-<div class="flex justify-center">
+<div class="flex justify-center items-center h-screen">
     <div class="text-center">
         @if(Auth::check())
         <div class="mb-3">
@@ -9,15 +9,19 @@
         </div>
 
         @else
-        <div class="mb-3">
-            <h1>Bem vindo. Faça login para continuar.</h1>
+        <div class="mb-5">
+            <h1>Bem vindo! <br> Faça login para continuar.</h1>
         </div>
         <div class="flex gap-5 justify-center">
             <div class="mb-5">
-                <a class="text-blue-800" href="{{route('register')}}">Registro</a>
+                <a class="text-blue-800" href="{{route('register')}}">
+                    <x-button class="btn-outline">Registro</x-button>
+                </a>
             </div>
             <div class="mb-5">
-                <a class="text-blue-800" href="{{route('login')}}">Login</a>
+                <a class="text-blue-800" href="{{route('login')}}">
+                    <x-button class="btn-primary">Login</x-button>
+                </a>
             </div>
         </div>
         @endif
