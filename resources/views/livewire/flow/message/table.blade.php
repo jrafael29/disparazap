@@ -1,11 +1,13 @@
 <div>
     <div class="mb-4">
+        @if(count($messages))
         <h1 class="text-2xl">No icone você pode arrastar as mensagens para alterar a ordem de
             envio.
         </h1>
-        <small>Da esquerda pra direita. </small>
+        <small>Será enviado em ordem da esquerda para a direita. </small>
+        @endif
     </div>
-    <div class="flex gap-10 flex-wrap text-white " x-init="Sortablejs.create($el, {
+    <div class="flex justify-center sm:justify-start gap-10 flex-wrap " x-init="Sortablejs.create($el, {
     animation: 150,
     handle: '.cursor-pointer',
     onSort({to}){
@@ -60,9 +62,8 @@
         </div>
 
         @empty
-        <p class="text-2xl text-black ">
-            Ops... Parece que você ainda não adicionou nenhuma mensagem a este
-            fluxo.
+        <p class="text-3xl text-black ">
+            Ops... Nenhuma mensagem encontrada.
         </p>
 
         @endforelse

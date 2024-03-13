@@ -19,7 +19,7 @@ return new class extends Migration
                 ->onDelete('cascade');
             $table->string('name')->unique();
             $table->string('description');
-            $table->string('phonenumber');
+            $table->string('phonenumber')->unique();
             $table->boolean('online')->default(false);
             $table->string('token')->nullable();
             $table->boolean('active')->default(true);

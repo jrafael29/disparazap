@@ -14,9 +14,6 @@
 
     {{-- NAVBAR mobile only --}}
     <x-nav sticky class="lg:hidden">
-        <x-slot:brand>
-            <x-app-brand />
-        </x-slot:brand>
         <x-slot:actions>
             <label for="main-drawer" class="lg:hidden mr-3">
                 <x-icon name="o-bars-3" class="cursor-pointer" />
@@ -40,15 +37,21 @@
                 <x-list-item :item="$user" value="name" sub-value="email" no-separator no-hover
                     class="mb-5 -mx-2 rounded">
                     <x-slot:actions>
-                        <x-button icon="o-power" class="btn-circle btn-ghost btn-xs" tooltip-left="logoff"
-                            no-wire-navigate link="/logout" />
+                        <div class="flex gap-3 items-center justify-center">
+                            <x-button icon="o-power" class="btn btn-circle btn-ghost btn-xs" tooltip-left="logoff"
+                                no-wire-navigate link="/logout" />
+                            <x-theme-toggle class="btn btn-circle" />
+                        </div>
+
                     </x-slot:actions>
                 </x-list-item>
 
-                <x-menu-item title="Inicio" icon="o-sparkles" link="{{route('home')}}" />
-                <x-menu-item title="Instancias" icon="o-sparkles" link="{{route('instance')}}" />
-                <x-menu-item title="Fluxo de Mensagens" icon="o-sparkles" link="{{route('flow')}}" />
+                <x-menu-item title="Inicio" icon="o-home" link="{{route('home')}}" />
 
+                <x-menu-item title="Instâncias do WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />
+                <x-menu-item title="Fluxo de Mensagens" icon="o-chat-bubble-oval-left-ellipsis"
+                    link="{{route('flow')}}" />
+                <x-menu-item title="Bonus" icon="o-sparkles" />
                 @endif
             </x-menu>
         </x-slot:sidebar>

@@ -8,7 +8,7 @@
     </div>
 
     <x-header title="Gerenciamento de mensagens"
-        subtitle="Aqui você pode criar um fluxo de mensagens (texto, imagem, video). Organize a ordem deu seu jeito."
+        subtitle="Aqui você pode gerenciar as mensagens do seu fluxo (texto, imagem, video). Organize a ordem do seu jeito."
         separator progress-indicator>
     </x-header>
     <div class="mb-3">

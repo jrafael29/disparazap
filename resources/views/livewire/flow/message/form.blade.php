@@ -20,7 +20,7 @@
     </div>
 
 
-    <x-form class="text-white" wire:submit='handleSubmit'>
+    <x-form class="" wire:submit='handleSubmit'>
 
         @switch($messageTypeSelected)
 

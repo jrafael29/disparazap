@@ -20,7 +20,7 @@ class Form extends Component
     use Toast;
     #[Validate('required')]
     public $description;
-    #[Validate('required|min:12|max:13')]
+    #[Validate('required|min:12|max:13|unique:instances')]
     public $phonenumber;
 
     private InstanceService $instanceService;
@@ -31,8 +31,9 @@ class Form extends Component
             'description.required' => "A descrição é obrigatória.",
 
             'phonenumber.required' => "O número é obrigatório.",
-            'phonenumber.min' => "O número precisa ter no minimo 12 caracteres",
-            'phonenumber.max' => "O número precisa ter no maximo 13 caracteres",
+            'phonenumber.min' => "O número precisa ter no minimo 12 caracteres.",
+            'phonenumber.max' => "O número precisa ter no maximo 13 caracteres.",
+            'unique' => "O número já está em uso por outra instancia."
         ];
     }
 

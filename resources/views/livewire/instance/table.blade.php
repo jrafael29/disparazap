@@ -1,10 +1,14 @@
 <div class="flex gap-5 flex-wrap">
 
 
-    @foreach($instances as $instance)
+    @forelse($instances as $instance)
 
     <livewire:instance.card wire:key='{{$instance->id}}' :instance="$instance" />
-    @endforeach
+    @empty
+    <div>
+        <p class="text-3xl">Nenhuma instância encontrada.</p>
+    </div>
+    @endforelse
 
 
 </div>

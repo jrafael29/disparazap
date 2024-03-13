@@ -1,4 +1,4 @@
-<div>
+<div class="my-3">
     <x-steps wire:model="step" class="border my-5 p-5">
         <x-step step="1" text="Instancias">
 
@@ -58,8 +58,7 @@
                                             $id = $group['id'] . ":$instance->id";
                                             $index = $this->groupsSelected->search($id);
                                             @endphp
-                                            <div
-                                                class="p-5 rounded {{$index === false ? 'bg-gray-800' : 'bg-blue-900'}}">
+                                            <div class="border p-5 rounded {{$index === false ? '' : 'bg-gray-300'}}">
                                                 <h1 class="text-center">{{$group['subject']}}</h1>
                                                 <div class="flex justify-center mt-5">
                                                     <x-button wire:click="selectGroup('{{$id}}')">
@@ -145,10 +144,19 @@
                     @break
                     @case('raw-text')
                     <div class="flex flex-wrap gap-5">
-                        @forelse($phonenumbers as $key => $phonenumber)
+                        @forelse($phonenumbers as $phonenumber => $exist)
+
+                        @if(!empty($exist))
                         <div class="bg-green-800 p-5 rounded">
                             {{$phonenumber}}
                         </div>
+                        @else
+                        <div class="bg-red-800 p-5 rounded">
+                            <p class="text-red-500 text-1xl">Numero inexistente</p>
+                            <p class="line-through">{{$phonenumber}}</p>
+                        </div>
+                        @endif
+
                         @empty
                         <h1 class="text-1xl">Nenhum participante no grupo...</h1>
                         @endforelse
@@ -165,14 +173,14 @@
                 <div>
 
                     <div class="mb-5">
-                        <x-datetime class="text-white" required label="Data e horario do envio" wire:model="toSendDate"
+                        <x-datetime class="" required label="Data e horario do envio" wire:model="toSendDate"
                             icon="o-calendar" type="datetime-local" />
                     </div>
 
                     <div class="mb-5">
                         <x-range wire:model.live.debounce="delay"
                             label="Arraste para alterar o tempo entre as conversas"
-                            hint="É o tempo entre um chat e outro, menor tempo maior risco de bloqueio no whatsapp"
+                            hint="É o tempo entre um chat e outro, menor tempo maior risco de bloqueio no WhatsApp"
                             min="15" max="35" />
                         <span class="text-2xl">
                             {{$delay}}
@@ -215,12 +223,12 @@
         </x-step>
     </x-steps>
 
-    @if($step !== 5)
+    @if($step !== $steps)
     @if($step === 1)
     @else
     <x-button class="btn-outline" label="Voltar" wire:click="prev" />
     @endif
-    @if($step === $steps)
+    @if($step === $steps - 1)
     @else
     <x-button spinner class="btn-primary" label="Avançar" wire:click="next" />
     @endif
