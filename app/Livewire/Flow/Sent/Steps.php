@@ -232,7 +232,7 @@ class Steps extends Component
     {
         $this->validate();
 
-        $numbers = $this->phonenumbers;
+        $numbers = array_keys($this->phonenumbers);
         $instances = $this->instances_multi_ids;
 
         $numbersPerInstance = count($this->phonenumbers) / count($this->instances_multi_ids);
