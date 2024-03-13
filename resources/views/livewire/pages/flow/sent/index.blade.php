@@ -14,8 +14,19 @@
     @if($onlineInstances > 0)
     <livewire:flow.sent.steps :flow="$flow" />
     @else
-    <div>
-        <p class="text-3xl mb-5">Você não tem nenhuma instancia conectada</p>
+    <div class="mb-20">
+        <span>
+            <p>
+                <span class="text-3xl">
+                    Nenhuma instância
+                    <span class="text-green-500">conectada</span> no WhatsApp
+                    foi encontrada.
+                </span>
+
+                <span class="text-blue-600"> <a href="{{route('instance')}}">Conectar uma instancia</a> </span>
+            </p>
+        </span>
+
     </div>
     @endif
     <livewire:flow.sent.table :flow="$flow" />

@@ -1,7 +1,7 @@
 <div class="flex gap-5 flex-wrap">
 
 
-    @foreach($flows as $flow)
+    @forelse($flows as $flow)
 
     <div>
         <x-card class="text-wrap" title="{!!$flow->description!!}" subtitle="Gerencie o seu fluxo de mensagens">
@@ -33,7 +33,11 @@
             </div>
         </x-card>
     </div>
-    @endforeach
+    @empty
+    <div>
+        <p class="text-3xl">Nenhum fluxo de mensagens encontrado.</p>
+    </div>
+    @endforelse
 
 
 </div>

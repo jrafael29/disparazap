@@ -32,7 +32,7 @@
         </div>
         <div class="flex justify-center gap-3">
             <x-button wire:click='deleteInstanceClick' spinner icon="o-trash"
-                label="{{$instance->online ? 'Remover' : 'Deslogar'}} Instancia" class="btn-error" />
+                label="{{!$instance->online ? 'Remover' : 'Deslogar'}} Instancia" class="btn-error" />
             @if(!$instance->online)
             {{--
             <x-button icon="o-home" label="Buscar QRCode" class="btn-outline" /> --}}

@@ -6,7 +6,7 @@
     <livewire:instance.card wire:key='{{$instance->id}}' :instance="$instance" />
     @empty
     <div>
-        <p class="text-3xl">Você não tem nenhuma instancia.</p>
+        <p class="text-3xl">Nenhuma instância encontrada.</p>
     </div>
     @endforelse
 

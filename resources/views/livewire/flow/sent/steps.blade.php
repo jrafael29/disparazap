@@ -180,7 +180,7 @@
                     <div class="mb-5">
                         <x-range wire:model.live.debounce="delay"
                             label="Arraste para alterar o tempo entre as conversas"
-                            hint="É o tempo entre um chat e outro, menor tempo maior risco de bloqueio no whatsapp"
+                            hint="É o tempo entre um chat e outro, menor tempo maior risco de bloqueio no WhatsApp"
                             min="15" max="35" />
                         <span class="text-2xl">
                             {{$delay}}

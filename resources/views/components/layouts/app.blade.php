@@ -48,7 +48,7 @@
 
                 <x-menu-item title="Inicio" icon="o-home" link="{{route('home')}}" />
 
-                <x-menu-item title="Instancias do Whatsapp" icon="o-inbox-stack" link="{{route('instance')}}" />
+                <x-menu-item title="Instâncias do WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />
                 <x-menu-item title="Fluxo de Mensagens" icon="o-chat-bubble-oval-left-ellipsis"
                     link="{{route('flow')}}" />
                 <x-menu-item title="Bonus" icon="o-sparkles" />

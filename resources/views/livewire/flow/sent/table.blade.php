@@ -1,6 +1,6 @@
 <div class="my-3">
     {{-- The best athlete wants his opponent at his best. --}}
-    <h1>Envios....</h1>
+
     <div class="flex flex-wrap gap-5 justify-center">
         @forelse($flowToSents as $flowToSent)
 
@@ -25,7 +25,7 @@
         </x-card>
         @empty
         <div>
-            <div class="text-2xl">Nenhum envio encontrado</div>
+            <div class="text-3xl">Nenhum envio encontrado.</div>
         </div>
         @endforelse
     </div>
