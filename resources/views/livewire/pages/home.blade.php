@@ -4,6 +4,6 @@
     </x-header>
 
     <!-- TABLE  -->
-    <x-card title="Use com moderação" subtitle="Cuidado com o bloqueio.">
+    <x-card title="Use com moderação" subtitle="Evite bloqueio e penalizações no WhatsApp">
     </x-card>
 </div>
