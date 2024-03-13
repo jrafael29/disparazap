@@ -58,8 +58,7 @@
                                             $id = $group['id'] . ":$instance->id";
                                             $index = $this->groupsSelected->search($id);
                                             @endphp
-                                            <div
-                                                class="p-5 rounded {{$index === false ? 'bg-gray-800' : 'bg-blue-900'}}">
+                                            <div class="border p-5 rounded {{$index === false ? '' : 'bg-gray-300'}}">
                                                 <h1 class="text-center">{{$group['subject']}}</h1>
                                                 <div class="flex justify-center mt-5">
                                                     <x-button wire:click="selectGroup('{{$id}}')">
@@ -174,7 +173,7 @@
                 <div>
 
                     <div class="mb-5">
-                        <x-datetime class="text-white" required label="Data e horario do envio" wire:model="toSendDate"
+                        <x-datetime class="" required label="Data e horario do envio" wire:model="toSendDate"
                             icon="o-calendar" type="datetime-local" />
                     </div>
 
@@ -224,12 +223,12 @@
         </x-step>
     </x-steps>
 
-    @if($step !== 5)
+    @if($step !== $steps)
     @if($step === 1)
     @else
     <x-button class="btn-outline" label="Voltar" wire:click="prev" />
     @endif
-    @if($step === $steps)
+    @if($step === $steps - 1)
     @else
     <x-button spinner class="btn-primary" label="Avançar" wire:click="next" />
     @endif

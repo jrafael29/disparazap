@@ -1,9 +1,14 @@
 <div>
     <!-- HEADER -->
-    <x-header title="Instancias" subtitle="Crie e gerencie suas instancias." separator progress-indicator></x-header>
+    <x-header title="Instancias do Whatsapp" subtitle="Crie e gerencie suas instancias." separator progress-indicator>
+    </x-header>
     {{-- Success is as dangerous as failure. --}}
-    <livewire:instance.form />
+    <div class="mb-5">
+        <livewire:instance.form />
+    </div>
+    <div>
+        <livewire:instance.table />
+    </div>
 
-    <livewire:instance.table />
 
 </div>

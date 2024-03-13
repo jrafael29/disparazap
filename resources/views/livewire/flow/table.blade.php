@@ -17,7 +17,11 @@
                             <x-button icon="m-bars-arrow-up" Label="Gerenciar Envios" />
                         </a>
                         @else
-                        <h1 class="text-yellow-500">Adicione mensagens para envia-las</h1>
+                        <div>
+                            <x-alert class="alert-warning" title="Adicione mensagens para envia-las"
+                                icon="o-exclamation-triangle" shadow />
+
+                        </div>
                         @endif
                     </div>
                     <div>
