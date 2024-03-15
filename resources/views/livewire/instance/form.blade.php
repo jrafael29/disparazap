@@ -1,6 +1,6 @@
 <div class="">
     {{-- The whole world belongs to you. --}}
-    @if(count(Auth::user()->instances) === 0)
+    {{-- @if(count(Auth::user()->instances) === 0) --}}
     <x-form wire:submit="handleSubmit">
         <x-input label="Descrição" type="description" wire:model="description" placeholder="Minha instancia vivo" />
         <x-input label="Número" maxlength="13" hint="Número do telefone que se conectará" wire:model="phonenumber"
@@ -11,5 +11,5 @@
             <x-button label="Salvar Instancia" class="btn-primary" type="submit" spinner="handleSubmit" />
         </x-slot:actions>
     </x-form>
-    @endif
+    {{-- @endif --}}
 </div>
