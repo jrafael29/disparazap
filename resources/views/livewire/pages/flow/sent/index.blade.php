@@ -17,13 +17,16 @@
     <div class="mb-20">
         <span>
             <p>
-                <span class="text-3xl">
-                    Nenhuma instância
-                    <span class="text-green-500">conectada</span> no WhatsApp
-                    foi encontrada.
-                </span>
+                <x-alert title="Conecte uma instancia ao WhatsApp para agendar um disparo" icon="o-exclamation-triangle"
+                    class="alert-warning" shadow>
 
-                <span class="text-blue-600"> <a href="{{route('instance')}}">Conectar uma instancia</a> </span>
+                    <x-slot:actions>
+                        <a wire:navigate href="{{route('instance')}}">
+                            <x-button label="Conectar uma instancia" />
+                        </a>
+                    </x-slot:actions>
+                </x-alert>
+
             </p>
         </span>
 

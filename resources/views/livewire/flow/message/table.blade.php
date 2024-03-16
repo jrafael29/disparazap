@@ -1,10 +1,12 @@
 <div>
     <div class="mb-4">
         @if(count($messages))
-        <h1 class="text-2xl">No icone você pode arrastar as mensagens para alterar a ordem de
-            envio.
-        </h1>
-        <small>Será enviado em ordem da esquerda para a direita. </small>
+        <div>
+            <x-alert title="Neste icone você pode arrastar as mensagens para alterar a ordem de
+            envio." description="Será enviado em ordem da esquerda para a direita. " icon="m-cursor-arrow-rays" shadow>
+            </x-alert>
+        </div>
+
         @endif
     </div>
     <div class="flex justify-center sm:justify-start gap-10 flex-wrap " x-init="Sortablejs.create($el, {

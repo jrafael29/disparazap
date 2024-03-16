@@ -5,15 +5,20 @@ namespace App\Http\Controllers;
 use App\Service\Evolution\EvolutionInstanceService;
 use Illuminate\Http\Request;
 use App\Helpers\Base64ToFile;
+use App\Jobs\InstanceOpenHandleJob;
 use App\Models\Instance;
+use App\Service\InstanceService;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 
 class Webhook extends Controller
 {
-    function __construct(private EvolutionInstanceService $evolutionInstanceService)
-    {
+    function __construct(
+        private InstanceService $instanceService
+    ) {
     }
 
 
@@ -65,13 +70,31 @@ class Webhook extends Controller
     private function connectionUpdateHandle($data)
     {
         try {
+            Log::info("iniciou", $data);
             $state = $data['data']['state'];
             $instanceName = $data['instance'];
             $instanceModel = Instance::query()->where('name', $instanceName)->first();
 
+            if (!$instanceModel) return false;
+
             if ($state === 'open') {
-                $instanceModel->online = true;
-                $instanceModel->save();
+                Log::info('abriu', $data);
+                // get profile url
+                // $instanceData = $this->instanceService->getInstance($instanceName);
+                // if ($instanceData) {
+                //     $profilePictureUrlCacheKey = "$instanceModel->id-instance:profilePictureUrl";
+                //     $profileNameCacheKey = "$instanceModel->id-instance:profileName";
+                //     $profileStatusCacheKey = "$instanceModel->id-instance:profileStatus";
+                //     Cache::add($profilePictureUrlCacheKey, $instanceData['profilePictureUrl']);
+                //     Cache::add($profileNameCacheKey, $instanceData['profileName']);
+                //     Cache::add($profileStatusCacheKey, $instanceData['profileStatus']);
+                // }
+                // get status e others;
+                InstanceOpenHandleJob::dispatch($instanceModel);
+
+
+                // $instanceModel->online = true;
+                // $instanceModel->save();
 
                 // if (!$instanceData) return false;
                 // report($instanceData);

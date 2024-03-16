@@ -1,4 +1,4 @@
-<div class="flex gap-5 flex-wrap">
+<div class="flex gap-5 flex-wrap justify-center lg:justify-start">
 
 
     @forelse($flows as $flow)
