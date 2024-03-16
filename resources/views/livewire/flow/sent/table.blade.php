@@ -1,7 +1,15 @@
 <div class="my-3">
     {{-- The best athlete wants his opponent at his best. --}}
+    <div class="mb-4">
+        @if(count($flowToSents))
+        <div>
+            <x-alert title="Abaixo está todos os envios" description="Envios agendados" icon="o-envelope" shadow>
+            </x-alert>
+        </div>
 
-    <div class="flex flex-wrap gap-5 justify-center">
+        @endif
+    </div>
+    <div class="flex flex-wrap gap-5 justify-center lg:justify-start">
         @forelse($flowToSents as $flowToSent)
 
         <x-card title="{{$flowToSent->flow->description}}" class="">

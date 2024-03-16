@@ -4,15 +4,15 @@
             <p>Escolha um tipo de mensagem</p>
         </span>
     </div>
-    <div class="mb-5">
+    <div class="mb-3">
         @foreach($types as $type)
         @if($messageTypeSelected === $type['name'])
-        <x-button class="btn-primary" type="button" label="{{ ucfirst($type['description']) }}"
+        <x-button class="btn-primary mb-3" type="button" label="{{ ucfirst($type['description']) }}"
             wire:click="changeTypeSelected('{{ $type['name'] }}')" />
 
 
         @else
-        <x-button class="btn-outline" type="button" label="{{ ucfirst($type['description']) }}"
+        <x-button class="btn-outline mb-3" type="button" label="{{ ucfirst($type['description']) }}"
             wire:click="changeTypeSelected('{{ $type['name'] }}')" />
 
         @endif

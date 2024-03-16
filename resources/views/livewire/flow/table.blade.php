@@ -34,8 +34,11 @@
         </x-card>
     </div>
     @empty
-    <div>
-        <p class="text-3xl">Nenhum fluxo de mensagens encontrado.</p>
+    <div class="w-full">
+        <x-alert shadow title="Ops... Nenhum fluxo de mensagens encontrado."
+            description="Crie um fluxo para adicionar mensagens e envia-las" icon="o-exclamation-triangle"
+            class="alert-warning">
+        </x-alert>
     </div>
     @endforelse
 

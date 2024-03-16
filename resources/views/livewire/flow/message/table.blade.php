@@ -64,6 +64,12 @@
         </div>
 
         @empty
+        <div class="w-full">
+            <x-alert title="Ops... Nenhuma mensagem encontrada."
+                description="Crie uma ou mais mensagens para depois envia-la para seus contatos."
+                icon="o-exclamation-triangle" class="alert-warning">
+            </x-alert>
+        </div>
         <p class="text-3xl text-black ">
             Ops... Nenhuma mensagem encontrada.
         </p>

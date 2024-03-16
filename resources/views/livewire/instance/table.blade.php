@@ -6,8 +6,9 @@
     <livewire:instance.card wire:key='{{$instance->id}}' :instance="$instance" />
     @empty
     <div class="w-full">
-        <x-alert title="Nenhuma instância encontrada." description="Crie uma instância do whatsapp para continuar"
-            icon="o-exclamation-triangle" class="alert-warning">
+        <x-alert title="Ops... Nenhuma instância encontrada."
+            description="Crie uma instância do whatsapp para continuar" icon="o-exclamation-triangle"
+            class="alert-warning">
         </x-alert>
     </div>
     @endforelse

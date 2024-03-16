@@ -16,13 +16,13 @@ use Mary\Traits\Toast;
 class Steps extends Component
 {
     use Toast;
-    private int $max_groups_selected_allowed = 15;
+    private int $max_groups_selected_allowed = 3;
     // if want update the value, must be updated both values
     // for security because this props is visible in frontend;
-    public int $public_max_groups_selected_allowed = 15;
+    public int $public_max_groups_selected_allowed = 3;
 
-    public array $instances_groups = []; // grupos de todas as instancias selecionadas.
-    public array $instances_multi_ids = []; // todas as instancias selecionadas.
+    public array $selectedInstancesGroups = []; // grupos de todas as instancias selecionadas.
+    public array $selectedInstances = []; // todas as instancias selecionadas.
     public $sendOptions = [
         'group-contacts' => 'Contatos de um grupo',
         'raw-text' => "Colar texto",
@@ -31,6 +31,8 @@ class Steps extends Component
     public $steps = 5; // quantidade de passos no
     public $step = 1; // step atual
     public $delay = 21; // delay entre um chat e outro (step de agendamento)
+    public $minDelay = 10;
+    public $maxDelay = 30;
     public string $sendOption = ''; // opção de envio (step de alvos)
 
     #[Validate('required')]
@@ -63,7 +65,7 @@ class Steps extends Component
 
     public function customValidate()
     {
-        if (count($this->instances_multi_ids) === 0) {
+        if (count($this->selectedInstances) === 0) {
             return false;
         }
         return true;
@@ -128,10 +130,10 @@ class Steps extends Component
     {
         switch ($this->sendOption) {
             case 'raw-text':
-                $phonenumbers = $this->getPhonenumbersFromRawText();
+                $phonenumbers = $this->getPhonenumbersFromRawText($this->rawText);
                 $uniqPhonenumbers = array_values(array_unique($phonenumbers));
 
-                $firstInstanceName = Instance::find($this->instances_multi_ids[0])?->name;
+                $firstInstanceName = Instance::find($this->selectedInstances[0])?->name;
 
                 $numbersExistence = $this->evolutionChatService->checkNumbersExistence(
                     numbers: $uniqPhonenumbers,
@@ -145,9 +147,12 @@ class Steps extends Component
                 return true;
                 break;
             case 'group-contacts':
-                $groupsPhonenumber = $this->getGroupsParticipantsPhonenumber($this->groupsSelected, 55);
+                $groupsPhonenumber = $this->getGroupsParticipantsPhonenumber(
+                    groups: $this->groupsSelected,
+                    ddi: 55
+                );
                 $this->groupsParticipantsPhonenumber = array_values($groupsPhonenumber);
-                $this->phonenumbers = $this->getPhonenumbersFromGroupsParticipants();
+                $this->phonenumbers = $this->getPhonenumbersFromGroupsParticipants($this->groupsParticipantsPhonenumber);
                 return true;
                 break;
             default:
@@ -190,25 +195,24 @@ class Steps extends Component
     public function getSelectedInstancesGroups()
     {
         $fullData = [];
-        foreach ($this->instances_multi_ids as $key => $id) {
+        foreach ($this->selectedInstances as $key => $id) {
             $instanceModel = Instance::query()->findOrFail($id);
             $fullData[$id] = $this->evolutionGroupService->getGroups($instanceModel->name);
         }
-        $this->instances_groups = $fullData;
+        $this->selectedInstancesGroups = $fullData;
     }
 
-    public function getPhonenumbersFromRawText()
+    public function getPhonenumbersFromRawText($rawText)
     {
-        $numbers = explode("\n", $this->rawText);
-        $this->rawPhonenumbers = explode("\n", $this->rawText);
-        $phonenumbers = array_values($this->rawPhonenumbers);
+        $numbers = explode("\n", $rawText);
+        $phonenumbers = array_values($numbers);
         return $phonenumbers;
     }
-    public function getPhonenumbersFromGroupsParticipants()
+    public function getPhonenumbersFromGroupsParticipants($groupsParticipantsPhonenumber)
     {
         $numbers = [];
         // dd($this->groupsParticipantsPhonenumber);
-        foreach ($this->groupsParticipantsPhonenumber as $groups) {
+        foreach ($groupsParticipantsPhonenumber as $groups) {
             foreach ($groups as $groupJid => $participants) {
                 foreach ($participants as $participantNumber)
                     array_push($numbers, $participantNumber);
@@ -219,8 +223,8 @@ class Steps extends Component
 
     function getTotalDuration()
     {
-        if (count($this->instances_multi_ids) > 0 && count($this->phonenumbers) > 0) {
-            $total_minutes = ((30 + $this->delay) * count($this->phonenumbers) / count($this->instances_multi_ids)) / 60;
+        if (count($this->selectedInstances) > 0 && count($this->phonenumbers) > 0) {
+            $total_minutes = ((30 + $this->delay) * count($this->phonenumbers) / count($this->selectedInstances)) / 60;
             $total_seconds = $total_minutes * 60;
             $this->hours = floor($total_seconds / 3600);
             $this->minutes = floor(($total_seconds % 3600) / 60);
@@ -233,9 +237,9 @@ class Steps extends Component
         $this->validate();
 
         $numbers = array_keys($this->phonenumbers);
-        $instances = $this->instances_multi_ids;
+        $instances = $this->selectedInstances;
 
-        $numbersPerInstance = count($this->phonenumbers) / count($this->instances_multi_ids);
+        $numbersPerInstance = count($this->phonenumbers) / count($this->selectedInstances);
         $allInstancesPhonenumbers = [];
         $offset = 0;
         foreach ($instances as $index => $instance) {
@@ -264,17 +268,7 @@ class Steps extends Component
         $this->success("Agendamento feito com sucesso");
         $this->getTotalDuration();
         $this->next();
-
-        // dd();
-
-        // dividir numeros entre as instancias;
-
-        // dd($this->groupsParticipantsPhonenumber);
     }
-
-    // public function scheduleSent($numbers = [], $sendDate, $delayBetweenChats,)
-    // {
-    // }
 
     public function boot(
         EvolutionGroupService $evolutionGroupService,

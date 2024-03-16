@@ -8,7 +8,7 @@
                 </div>
 
                 <x-form action="">
-                    <x-choices label="Instancias" wire:model="instances_multi_ids" :options="$instances" />
+                    <x-choices label="Instancias" wire:model="selectedInstances" :options="$instances" />
                 </x-form>
 
             </div>
@@ -34,10 +34,7 @@
                     @endif
                     @endforeach
                     <div class="">
-
-
                         @switch($sendOption)
-
                         @case('group-contacts')
                         <div>
                             <div class="mb-3">
@@ -45,7 +42,7 @@
                                 <p>Selecione até {{$public_max_groups_selected_allowed}} grupos.</p>
                             </div>
                             <div class="max-h-80 font-mono overflow-auto">
-                                @forelse($instances_groups as $instanceId => $groups)
+                                @forelse($selectedInstancesGroups as $instanceId => $groups)
                                 <div class="mb-3">
                                     @php
                                     $instance = \App\Models\Instance::query()->find($instanceId);
@@ -181,43 +178,75 @@
                         <x-range wire:model.live.debounce="delay"
                             label="Arraste para alterar o tempo entre as conversas"
                             hint="É o tempo entre um chat e outro, menor tempo maior risco de bloqueio no WhatsApp"
-                            min="15" max="35" />
+                            min="{{$minDelay}}" max="{{$maxDelay}}" />
                         <span class="text-2xl">
                             {{$delay}}
                             segundos
                         </span>
                     </div>
 
-                    <div>
-                        <x-button spinner wire:click='handleFinalizeClick' class="btn-primary" type="submit">Agendar
+                    <div class="w-full flex justify-end">
+                        <x-button spinner wire:click='handleFinalizeClick' class="btn-primary w-full" type="submit">
+                            Agendar disparo
                         </x-button>
                     </div>
 
                 </div>
             </div>
         </x-step>
-        <x-step step="5" text="Detalhes" class="">
+        <x-step step="5" data-content="✓" step-classes="!step-success" text="Feito" class="">
             <div>
-                <h1> Selecione uma data/horario para iniciar o envio.</h1>
-
+                <div class="mb-3">
+                    <x-alert icon="o-exclamation-triangle" class="alert-success">
+                        <strong> Disparo agendado com sucesso.</strong>
+                    </x-alert>
+                </div>
                 <div>
-                    <h1 class="text-3xl">Estimativa da duração do disparo:</h1>
-                    <span class="text-3xl">
-                        @if(count($instances_multi_ids) > 0 && count($phonenumbers) > 0)
+                    <p class="mb-3">
+                        <span class="text-2xl">Estimativa da duração do disparo:</span>
+                        <span class="text-2xl">
+                            @if(count($selectedInstances) > 0 && count($phonenumbers) > 0)
 
-                        @if ($hours > 0)
-                        {{ $hours }} horas,
-                        @endif
+                            @if ($hours > 0)
+                            {{ $hours }} horas,
+                            @endif
 
-                        @if ($minutes > 0)
-                        {{ $minutes }} minutos e
-                        @endif
+                            @if ($minutes > 0)
+                            {{ $minutes }} minutos e
+                            @endif
 
-                        @if ($seconds > 0)
-                        {{ $seconds }} segundos
-                        @endif
-                        @endif
-                    </span>
+                            @if ($seconds > 0)
+                            {{ $seconds }} segundos
+                            @endif
+                            @endif
+                        </span>
+                    </p>
+                    <p class="mb-3">
+                        <span class="text-2xl">O disparo inicia em:</span>
+                        <span class="text-2xl">
+                            @if($toSendDate)
+                            @php
+                            $dateDiff=\Carbon\Carbon::now()->diff(\Carbon\Carbon::parse($toSendDate))
+                            @endphp
+
+                            @if($dateDiff->days)
+
+                            {{$dateDiff->days}} {{$dateDiff->days != 0 && $dateDiff->days == 1 ? 'dia' : 'dias'}},
+                            @endif
+
+                            @if($dateDiff->h)
+                            {{$dateDiff->h}} {{$dateDiff->h != 0 && $dateDiff->h == 1 ? 'hora' : 'horas'}} e
+
+                            @endif
+
+                            @if($dateDiff->i)
+                            {{$dateDiff->i}} {{$dateDiff->i != 0 && $dateDiff->i == 1 ? 'minuto' : 'minutos'}}
+
+                            @endif
+
+                            @endif
+                        </span>
+                    </p>
                 </div>
             </div>
         </x-step>
