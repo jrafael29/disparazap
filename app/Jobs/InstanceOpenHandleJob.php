@@ -42,9 +42,10 @@ class InstanceOpenHandleJob implements ShouldQueue
             $profilePictureUrlCacheKey = $this->instance->id . "-instance:profilePictureUrl";
             $profileNameCacheKey = $this->instance->id . "-instance:profileName";
             $profileStatusCacheKey = $this->instance->id . "-instance:profileStatus";
-            Cache::add($profilePictureUrlCacheKey, $instanceData['profilePictureUrl'], 900);
-            Cache::add($profileNameCacheKey, $instanceData['profileName'], 900);
-            Cache::add($profileStatusCacheKey, $instanceData['profileStatus'], 900);
+            $ttl = env('CACHE_DEFAULT_LIFETIME');
+            Cache::add($profilePictureUrlCacheKey, $instanceData['profilePictureUrl'], $ttl);
+            Cache::add($profileNameCacheKey, $instanceData['profileName'], $ttl);
+            Cache::add($profileStatusCacheKey, $instanceData['profileStatus'], $ttl);
         }
 
 

@@ -9,6 +9,7 @@ use App\Service\Evolution\EvolutionChatService;
 use App\Service\Evolution\EvolutionGroupService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -251,20 +252,33 @@ class Steps extends Component
             $offset = $offset + $numbersPerInstance;
         }
 
-        foreach ($allInstancesPhonenumbers as $instanceId => $phonenumbers) {
-            foreach ($phonenumbers as $phonenumber) {
 
-                FlowToSent::query()->create([
-                    'user_id' => Auth::user()->id,
-                    'flow_id' => $this->flow->id,
-                    'instance_id' => $instanceId,
-                    "to" => $phonenumber,
-                    "to_sent_at" => $this->toSendDate,
-                    'delay_in_seconds' => $this->delay,
-                ]);
-            }
-            // dd($numbers);
-        }
+
+        $struct = [
+            "instancesPhonenumbers" => $allInstancesPhonenumbers,
+            "schedule" => [
+                "sentAt" => $this->toSendDate,
+                "delayInSeconds" => $this->delay
+            ]
+        ];
+
+        Redis::command('LPUSH', ['name', json_encode($struct)]);
+
+        dd($struct);
+        // foreach ($allInstancesPhonenumbers as $instanceId => $phonenumbers) {
+        //     foreach ($phonenumbers as $phonenumber) {
+
+        //         FlowToSent::query()->create([
+        //             'user_id' => Auth::user()->id,
+        //             'flow_id' => $this->flow->id,
+        //             'instance_id' => $instanceId,
+        //             "to" => $phonenumber,
+        //             "to_sent_at" => $this->toSendDate,
+        //             'delay_in_seconds' => $this->delay,
+        //         ]);
+        //     }
+        //     // dd($numbers);
+        // }
         $this->success("Agendamento feito com sucesso");
         $this->getTotalDuration();
         $this->next();

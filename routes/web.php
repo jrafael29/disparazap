@@ -2,6 +2,7 @@
 
 use App\Helpers\Base64ToFile;
 use App\Http\Controllers\Webhook;
+use App\Jobs\GetReadyFlowsToSentJob;
 use App\Livewire\Pages\Auth\Register;
 use App\Livewire\Pages\Auth\Login;
 use App\Livewire\Pages\Flow\Index as FlowIndex;
@@ -51,6 +52,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/message-flow', FlowIndex::class)->name('flow');
     Route::get('/message-flow/{flow}/message', MessageIndex::class)->name('flow.message');
     Route::get('/message-flow/{flow}/sent', SentIndex::class)->name('flow.sent');
+});
+
+Route::get('/testando', function () {
+    GetReadyFlowsToSentJob::dispatch()->onQueue('myqueue');
+    return "testando";
 });
 
 

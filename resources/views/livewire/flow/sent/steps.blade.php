@@ -225,23 +225,21 @@
                         <span class="text-2xl">O disparo inicia em:</span>
                         <span class="text-2xl">
                             @if($toSendDate)
+
                             @php
                             $dateDiff=\Carbon\Carbon::now()->diff(\Carbon\Carbon::parse($toSendDate))
                             @endphp
 
                             @if($dateDiff->days)
-
                             {{$dateDiff->days}} {{$dateDiff->days != 0 && $dateDiff->days == 1 ? 'dia' : 'dias'}},
                             @endif
 
                             @if($dateDiff->h)
                             {{$dateDiff->h}} {{$dateDiff->h != 0 && $dateDiff->h == 1 ? 'hora' : 'horas'}} e
-
                             @endif
 
                             @if($dateDiff->i)
                             {{$dateDiff->i}} {{$dateDiff->i != 0 && $dateDiff->i == 1 ? 'minuto' : 'minutos'}}
-
                             @endif
 
                             @endif
