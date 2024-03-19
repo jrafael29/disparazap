@@ -3,8 +3,10 @@
 namespace App\Jobs;
 
 use App\Models\FlowToSent;
+use App\Models\Instance;
 use App\Models\MessageFlow;
 use App\Service\Evolution\EvolutionSendMessageService;
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -77,10 +79,24 @@ class SendMessageFlowToTargetJob implements ShouldQueue
                         );
                         break;
                 }
-                sleep(1); // 1 segundo entre uma mensagem e outra.
+                if (count($messages) > 1) {
+                    sleep(1); // 1 segundo entre uma mensagem e outra.
+                }
             }
-            $delayBetweenChats = $this->flowToSent->delay_in_seconds ?? 15; // 15 segundos entre um chat e outro.
-            sleep((int)$delayBetweenChats);
+            $delayInSeconds = $this->flowToSent->delay_in_seconds ?? 15; // 15 segundos entre um chat e outro.
+
+            // inves de travar o worker
+            // sleep((int)$delayBetweenChats);
+
+            $availableAt = Carbon::now()->addSeconds($delayInSeconds);
+
+            $instance = Instance::find($this->flowToSent->instance_id);
+            $instance->available_at = $availableAt;
+            $instance->save();
+            // $this->flowToSent->instance->available_at = $availableAt;
+            // $this->flowToSent->instance->save();
+
+
             $this->flowToSent->sent = 1;
             $this->flowToSent->save();
         } catch (\Exception $e) {

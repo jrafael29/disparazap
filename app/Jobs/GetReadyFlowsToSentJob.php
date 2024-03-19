@@ -28,7 +28,11 @@ class GetReadyFlowsToSentJob implements ShouldQueue
      */
     public function handle(): void
     {
-        FlowToSent::where('to_sent_at', '<', now()->subSecond())
+        FlowToSent::with(['instance'])
+            ->whereHas('instance', function ($query) {
+                $query->where('available_at', '>', now()->subSecond());
+            })
+            ->where('to_sent_at', '<', now()->subSecond())
             ->where('busy', 0)
             ->get()
             ->unique('instance_id')
