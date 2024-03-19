@@ -16,7 +16,8 @@ class Instance extends Model
         'online',
         'token',
         'active',
-        'qrcode_path'
+        'qrcode_path',
+        'available_at'
     ];
 
     public function user()
