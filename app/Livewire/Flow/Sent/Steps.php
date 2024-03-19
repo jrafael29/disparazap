@@ -53,6 +53,9 @@ class Steps extends Component
     public $minutes = '';
     public $seconds = '';
 
+    // for dev
+    public $allowRepeatTarget = true;
+
     private EvolutionGroupService $evolutionGroupService;
     private EvolutionChatService $evolutionChatService;
 
@@ -127,25 +130,35 @@ class Steps extends Component
         return $groupsParticipantsNumber;
     }
 
+    function filterPhonenumbers($numbers)
+    {
+        return array_filter($numbers, function ($value) {
+            // dd($value);
+            // Filtra strings que tenham 12 ou 13 de tamanho, que não sejam vazias e que não sejam números
+            return (strlen($value) >= 12 && strlen($value) <= 13 && !empty($value));
+        });
+    }
+
     public function validateTarget()
     {
         switch ($this->sendOption) {
             case 'raw-text':
-                $phonenumbers = $this->getPhonenumbersFromRawText($this->rawText);
-                $uniqPhonenumbers = array_values(array_unique($phonenumbers));
-
-                $firstInstanceName = Instance::find($this->selectedInstances[0])?->name;
-
-                $numbersExistence = $this->evolutionChatService->checkNumbersExistence(
-                    numbers: $uniqPhonenumbers,
-                    instanceName: $firstInstanceName
-                );
-
-                $this->phonenumbers = $numbersExistence;
-                // verificar se os numeros são validos
-
-                // $this->phonenumbers = $uniqPhonenumbers
-                return true;
+                $rawPhonenumbers = $this->getPhonenumbersFromRawText($this->rawText);
+                $phonenumbers = $this->filterPhonenumbers($rawPhonenumbers);
+                if ($this->allowRepeatTarget == false) {
+                    $uniqPhonenumbers = array_values(array_unique($phonenumbers));
+                    $firstInstanceName = Instance::find($this->selectedInstances[0])?->name;
+                    $numbersExistence = $this->evolutionChatService->checkNumbersExistence(
+                        numbers: $uniqPhonenumbers,
+                        instanceName: $firstInstanceName
+                    );
+                    // dd($numbersExistence);
+                    $this->phonenumbers = $numbersExistence;
+                    return true;
+                } else {
+                    $this->phonenumbers = $phonenumbers;
+                    return true;
+                }
                 break;
             case 'group-contacts':
                 $groupsPhonenumber = $this->getGroupsParticipantsPhonenumber(
@@ -237,9 +250,17 @@ class Steps extends Component
     {
         $this->validate();
 
-        $numbers = array_keys($this->phonenumbers);
+        $numbers = [];
+        if ($this->allowRepeatTarget === true) {
+            $numbers = $this->phonenumbers;
+        } else {
+            $numbers = array_keys(array_filter($this->phonenumbers, function ($value) {
+                return $value === true;
+            }));
+        }
         $instances = $this->selectedInstances;
 
+        // divide os numeros entre as instancias
         $numbersPerInstance = count($this->phonenumbers) / count($this->selectedInstances);
         $allInstancesPhonenumbers = [];
         $offset = 0;
@@ -251,34 +272,22 @@ class Steps extends Component
 
             $offset = $offset + $numbersPerInstance;
         }
+        //
 
+        foreach ($allInstancesPhonenumbers as $instanceId => $phonenumbers) {
+            foreach ($phonenumbers as $phonenumber) {
 
-
-        $struct = [
-            "instancesPhonenumbers" => $allInstancesPhonenumbers,
-            "schedule" => [
-                "sentAt" => $this->toSendDate,
-                "delayInSeconds" => $this->delay
-            ]
-        ];
-
-        Redis::command('LPUSH', ['name', json_encode($struct)]);
-
-        dd($struct);
-        // foreach ($allInstancesPhonenumbers as $instanceId => $phonenumbers) {
-        //     foreach ($phonenumbers as $phonenumber) {
-
-        //         FlowToSent::query()->create([
-        //             'user_id' => Auth::user()->id,
-        //             'flow_id' => $this->flow->id,
-        //             'instance_id' => $instanceId,
-        //             "to" => $phonenumber,
-        //             "to_sent_at" => $this->toSendDate,
-        //             'delay_in_seconds' => $this->delay,
-        //         ]);
-        //     }
-        //     // dd($numbers);
-        // }
+                FlowToSent::query()->create([
+                    'user_id' => Auth::user()->id,
+                    'flow_id' => $this->flow->id,
+                    'instance_id' => $instanceId,
+                    "to" => $phonenumber,
+                    "to_sent_at" => $this->toSendDate,
+                    'delay_in_seconds' => $this->delay,
+                ]);
+            }
+            // dd($numbers);
+        }
         $this->success("Agendamento feito com sucesso");
         $this->getTotalDuration();
         $this->next();
@@ -313,6 +322,8 @@ class Steps extends Component
                 'name' => $item->description
             ];
         });
+
+        $this->allowRepeatTarget = env("ALLOW_REPEAT_TARGET_FOR_DEV") ?? false;
 
         return view('livewire.flow.sent.steps', [
             'instances' => $instances

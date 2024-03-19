@@ -36,15 +36,15 @@ class SendMessageFlowToTargetJob implements ShouldQueue
     public function handle(): void
     {
         $messages = $this->flowToSent->flow->messages;
-        Log::alert('starting send message');
+        // Log::alert('starting send message');
         if (empty($messages)) return;
         try {
             $instance = $this->flowToSent->instance;
             foreach ($messages as $message) {
-                Log::alert($message);
+                // Log::alert($message);
 
                 $delayInMs = ($message->delay * 1000);
-                Log::alert($message->type->name);
+                // Log::alert($message->type->name);
                 switch ($message->type->name) {
                     case 'image':
                         $image = public_path('storage/' . $message->filepath);
@@ -100,7 +100,7 @@ class SendMessageFlowToTargetJob implements ShouldQueue
             $this->flowToSent->sent = 1;
             $this->flowToSent->save();
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
+            Log::error("erro job:sendmessage= ", $e->getMessage());
         }
     }
 }

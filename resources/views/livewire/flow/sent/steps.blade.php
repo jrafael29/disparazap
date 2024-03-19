@@ -141,10 +141,10 @@
                     @break
                     @case('raw-text')
                     <div class="flex flex-wrap gap-5">
+                        @if($this->allowRepeatTarget == false)
                         @forelse($phonenumbers as $phonenumber => $exist)
-
                         @if(!empty($exist))
-                        <div class="bg-green-800 p-5 rounded">
+                        <div class="bg-green-500 p-5 rounded">
                             {{$phonenumber}}
                         </div>
                         @else
@@ -157,6 +157,17 @@
                         @empty
                         <h1 class="text-1xl">Nenhum participante no grupo...</h1>
                         @endforelse
+                        @else
+                        @forelse($phonenumbers as $key => $phonenumber)
+
+                        <div class="bg-green-800 p-5 rounded">
+                            {{$phonenumber}}
+                        </div>
+
+                        @empty
+                        <h1 class="text-1xl">Nenhum participante no grupo...</h1>
+                        @endforelse
+                        @endif
                     </div>
                     @break
                     @endswitch

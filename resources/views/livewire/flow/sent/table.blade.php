@@ -21,14 +21,29 @@
             <p>Destinario: +{{ $flowToSent->to}}</p>
 
             @if($flowToSent->busy === 0 && $flowToSent->sent === 0)
-            <p>Será enviado em: <span class="text-blue-300">
-                    {{\Carbon\Carbon::parse($flowToSent->to_sent_at)->format('H:i d/m/Y')}}<span> </p>
+            <div>
+                <x-alert icon="o-clock" class="alert-info">
+                    <p>Será enviado em: <span class="font-bold">
+                            {{\Carbon\Carbon::parse($flowToSent->to_sent_at)->format('H:i d/m/Y')}}<span> </p>
+                </x-alert>
+            </div>
+
             @elseif($flowToSent->busy === 1 && $flowToSent->sent === 1)
-            <p>Enviado as: <span class="text-green-500"> {{\Carbon\Carbon::parse($flowToSent->updated_at)->format('H:i
-                    d/m/Y')}}</span></p>
+            <div>
+                <x-alert icon="o-check" class="alert-success">
+                    <p>Enviado as: <span class="font-bold">
+                            {{\Carbon\Carbon::parse($flowToSent->updated_at)->format('H:i
+                            d/m/Y')}}</span></p>
+                </x-alert>
+
+            </div>
 
             @elseif($flowToSent->busy === 1 && $flowToSent->sent === 0)
-            <p class="text-yellow-500">Em envio...</p>
+            <div>
+                <x-alert icon="o-exclamation-triangle" class="alert-wawrning">
+                    <p class="font-bold">Em envio...</p>
+                </x-alert>
+            </div>
             @endif
         </x-card>
         @empty
