@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('token')->nullable();
             $table->boolean('active')->default(true);
             $table->text('qrcode_path')->nullable();
+            $table->dateTime("available_at")->default(now());
             $table->timestamps();
         });
     }
