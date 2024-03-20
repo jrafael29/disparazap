@@ -83,22 +83,17 @@ class SendMessageFlowToTargetJob implements ShouldQueue
                     sleep(1); // 1 segundo entre uma mensagem e outra.
                 }
             }
-            $delayInSeconds = $this->flowToSent->delay_in_seconds ?? 15; // 15 segundos entre um chat e outro.
+            $this->flowToSent->sent = 1;
+            $this->flowToSent->save();
 
-            // inves de travar o worker
-            // sleep((int)$delayBetweenChats);
+
+            $delayInSeconds = $this->flowToSent->delay_in_seconds ?? 15; // 15 segundos entre um chat e outro.
 
             $availableAt = Carbon::now()->addSeconds($delayInSeconds);
 
             $instance = Instance::find($this->flowToSent->instance_id);
             $instance->available_at = $availableAt;
             $instance->save();
-            // $this->flowToSent->instance->available_at = $availableAt;
-            // $this->flowToSent->instance->save();
-
-
-            $this->flowToSent->sent = 1;
-            $this->flowToSent->save();
         } catch (\Exception $e) {
             Log::error("erro job:sendmessage= ", $e->getMessage());
         }

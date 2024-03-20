@@ -26,16 +26,16 @@ class VerifyFlowToSentJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $sameOwnerAlreadyHasBusyFlow = FlowToSent::where('instance_id', $this->flowToSent->instance_id)
-            ->where('busy', 1)
-            ->where('sent', 0)
-            ->first();
+        // $sameOwnerAlreadyHasBusyFlow = FlowToSent::where('instance_id', $this->flowToSent->instance_id)
+        //     ->where('busy', 1)
+        //     ->where('sent', 0)
+        //     ->first();
         // se ja existir algum 'flow_to_sent' sendo enviado por essa instancia, retorna falso;
         // a instancia deve enviar 1 fluxo por vez.
-        if (!$sameOwnerAlreadyHasBusyFlow) {
-            SendMessageFlowToTargetJob::dispatch($this->flowToSent);
-            $this->flowToSent->busy = 1;
-            $this->flowToSent->save();
-        }
+        // if (!$sameOwnerAlreadyHasBusyFlow) {
+        SendMessageFlowToTargetJob::dispatch($this->flowToSent);
+        // $this->flowToSent->busy = 1;
+        // $this->flowToSent->save();
+        // }
     }
 }
