@@ -3,6 +3,7 @@
 namespace App\Service\Evolution;
 
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class EvolutionInstanceService
 {
@@ -51,56 +52,64 @@ class EvolutionInstanceService
             ];
             return $instanceData;
         } catch (\Exception $e) {
-            dd($e);
-            report($e);
+            Log::error('create instance:', $e->getMessage());
         }
     }
     function getStateInstance($instanceName)
     {
-
-        $createInstanceRoute = '/instance/connectionState/' . $instanceName;
-        $url = $this->apiUrl . $createInstanceRoute;
-        $headers = [
-            'apiKey' => $this->apiKey
-        ];
-        $response = Http::withHeaders($headers)->get($url . '?instanceName=' . $instanceName);
-        if ($response->json('instance')) {
-            return $response->json('instance')['state'];
-        }
-
-        if ($response->json('status')) {
-            switch ($response->json('status')) {
-                case (404):
-                    return false;
-                    break;
+        try {
+            $createInstanceRoute = '/instance/connectionState/' . $instanceName;
+            $url = $this->apiUrl . $createInstanceRoute;
+            $headers = [
+                'apiKey' => $this->apiKey
+            ];
+            $response = Http::withHeaders($headers)->get($url . '?instanceName=' . $instanceName);
+            if ($response->json('instance')) {
+                return $response->json('instance')['state'];
             }
+
+            if ($response->json('status')) {
+                switch ($response->json('status')) {
+                    case (404):
+                        return false;
+                        break;
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('get state instance:', $e->getMessage());
+            return false;
         }
     }
 
     function getInstance($instanceName)
     {
-        $createInstanceRoute = '/instance/fetchInstances';
-        $url = $this->apiUrl . $createInstanceRoute;
-        $headers = [
-            'apiKey' => $this->apiKey
-        ];
-        $response = Http::withHeaders($headers)->get($url);
+        try {
+            $createInstanceRoute = '/instance/fetchInstances';
+            $url = $this->apiUrl . $createInstanceRoute;
+            $headers = [
+                'apiKey' => $this->apiKey
+            ];
+            $response = Http::withHeaders($headers)->get($url);
 
-        if ($response->body()) {
-            $instanceData = [];
-            foreach ($response->json() as $item) {
-                $instance = $item['instance'];
-                if ($instance['status'] == 'open') {
-                    if ($instance['instanceName'] == $instanceName) {
-                        $instanceData = $instance;
+            if ($response->body()) {
+                $instanceData = [];
+                foreach ($response->json() as $item) {
+                    $instance = $item['instance'];
+                    if ($instance['status'] == 'open') {
+                        if ($instance['instanceName'] == $instanceName) {
+                            $instanceData = $instance;
+                        }
                     }
                 }
-            }
 
-            if (!$instanceData) {
-                return false;
+                if (!$instanceData) {
+                    return false;
+                }
+                return $instanceData;
             }
-            return $instanceData;
+        } catch (\Exception $e) {
+            Log::error('get instance:', $e->getMessage());
+            return false;
         }
     }
 
@@ -129,7 +138,7 @@ class EvolutionInstanceService
 
             return false;
         } catch (\Exception $e) {
-            dd($e);
+            Log::error('connect instance:', $e->getMessage());
             return false;
         }
         // dd($response->body());
@@ -164,7 +173,8 @@ class EvolutionInstanceService
             // dd($data);
             // $this->dispatch("update-qr", $instanceData);
         } catch (\Exception $e) {
-            dd($e);
+            Log::error('set webhook:', $e->getMessage());
+            return false;
         }
     }
 
@@ -189,7 +199,8 @@ class EvolutionInstanceService
             return false;
             // $this->dispatch("update-qr", $instanceData);
         } catch (\Exception $e) {
-            dd($e);
+            Log::error('remove instance:', $e->getMessage());
+            return false;
         }
     }
 
@@ -212,7 +223,8 @@ class EvolutionInstanceService
             return false;
             // $this->dispatch("update-qr", $instanceData);
         } catch (\Exception $e) {
-            dd($e);
+            Log::error('logout instance:', $e->getMessage());
+            return false;
         }
     }
 }

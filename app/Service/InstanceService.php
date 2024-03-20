@@ -7,6 +7,7 @@ use App\Models\Instance;
 use App\Repository\InstanceRepository;
 use App\Service\Evolution\EvolutionInstanceService;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class InstanceService
@@ -21,60 +22,69 @@ class InstanceService
     function getInstance($instanceName)
     {
 
+        try {
+            $cacheKey = 'instanceData:' . $instanceName;
+            $cachedPayback = Cache::get($cacheKey);
 
-        $cacheKey = 'instanceData:' . $instanceName;
-        $cachedPayback = Cache::get($cacheKey);
-
-        if (!$cachedPayback) {
-            $instanceData = $this->evolutionInstanceService->getInstance($instanceName);
-            if (!$instanceData) {
+            if (!$cachedPayback) {
+                $instanceData = $this->evolutionInstanceService->getInstance($instanceName);
+                if (!$instanceData) {
+                    $payback = [
+                        'error' => true,
+                        'message' => "Instancia não encontrada"
+                    ];
+                    return $payback;
+                }
                 $payback = [
-                    'error' => true,
-                    'message' => "Instancia não encontrada"
+                    'error' => false,
+                    'data' => [
+                        'profilePictureUrl' => $instanceData['profilePictureUrl'],
+                        'profileName' => $instanceData['profileName'],
+                        'profileStatus' => $instanceData['profileStatus'],
+                    ]
                 ];
+                Cache::add($cacheKey, $payback, (int) env('CACHE_DEFAULT_LIFETIME'));
                 return $payback;
             }
-            $payback = [
-                'error' => false,
-                'data' => [
-                    'profilePictureUrl' => $instanceData['profilePictureUrl'],
-                    'profileName' => $instanceData['profileName'],
-                    'profileStatus' => $instanceData['profileStatus'],
-                ]
-            ];
-            Cache::add($cacheKey, $payback, (int) env('CACHE_DEFAULT_LIFETIME'));
-            return $payback;
+            return $cachedPayback;
+        } catch (\Exception $e) {
+            Log::error('get instance service:', $e->getMessage());
+            return false;
         }
-        return $cachedPayback;
     }
 
     function createInstance($userId, $description, $phonenumber)
     {
-        $instanceModel = $this->instanceRepository->createInstance(
-            userId: $userId,
-            description: $description,
-            phonenumber: $phonenumber
-        );
+        try {
+            $instanceModel = $this->instanceRepository->createInstance(
+                userId: $userId,
+                description: $description,
+                phonenumber: $phonenumber
+            );
 
-        $evolutionInstanceData = $this->evolutionInstanceService->createInstance(
-            instanceName: $instanceModel->name,
-            phonenumber: $instanceModel->phonenumber
-        );
-        $this->evolutionInstanceService->setWebhooks(
-            instanceName: $instanceModel->name,
-            // endPoint: '/updated-connection/webhook'
-        );
-        if (!empty($evolutionInstanceData['base64'])) {
-            $result = $this->updateQrInstance($instanceModel->name);
-            if ($result['error'] === false) {
-                $filename = $result['data']['filename'];
-                $instanceModel->qrcode_path = $filename;
-                $instanceModel->save();
+            $evolutionInstanceData = $this->evolutionInstanceService->createInstance(
+                instanceName: $instanceModel->name,
+                phonenumber: $instanceModel->phonenumber
+            );
+            $this->evolutionInstanceService->setWebhooks(
+                instanceName: $instanceModel->name,
+                // endPoint: '/updated-connection/webhook'
+            );
+            if (!empty($evolutionInstanceData['base64'])) {
+                $result = $this->updateQrInstance($instanceModel->name);
+                if ($result['error'] === false) {
+                    $filename = $result['data']['filename'];
+                    $instanceModel->qrcode_path = $filename;
+                    $instanceModel->save();
 
-                return true;
+                    return true;
+                }
             }
+            return false;
+        } catch (\Exception $e) {
+            Log::error('create instance service:', $e->getMessage());
+            return false;
         }
-        return false;
     }
 
 
@@ -103,6 +113,7 @@ class InstanceService
                 ]
             ];
         } catch (\Exception $e) {
+            Log::error('delete instance service:', $e->getMessage());
             return [
                 'error' => true,
                 'message' => $e->getMessage()
@@ -152,7 +163,7 @@ class InstanceService
             return ['error' => false, 'data' => ['filename' => $storedFilename]];
             // return $filename;
         } catch (\Exception $e) {
-            dd($e);
+            Log::error('update qr service:', $e->getMessage());
             return [
                 'error' => false,
                 'message' => $e->getMessage()
