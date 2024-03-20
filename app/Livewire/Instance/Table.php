@@ -80,9 +80,9 @@ class Table extends Component
         $this->instanceService = $instanceService;
     }
 
-
     #[On("instance::created")]
     #[On("qrcode::updated")]
+    #[On('instance::updated')]
     public function render()
     {
         return view('livewire.instance.table',  [

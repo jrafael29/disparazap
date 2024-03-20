@@ -1,6 +1,7 @@
 <div wire:poll>
     <x-card class="text-wrap" title="{!!$instance->description!!}"
         subtitle='{{$instance->online ? "Conectado": "Desconectado" }}'>
+
         <div class="mb-3">
             @if($instance->online && !empty($profilePictureUrl))
             <x-slot:figure>
@@ -20,8 +21,8 @@
         <div class="mb-3">
             {{-- Success is as dangerous as failure. --}}
             @if(!$instance->online)
-            @if($instance->qrcode_path)
-            <img src="{{ asset('storage/'.$instance->qrcode_path) }}" alt="QR Code">
+            @if($test)
+            <img src="{{ asset('storage/'.$test) }}" alt="QR Code">
             @endif
             @else
             <div class="text-center">
@@ -31,11 +32,11 @@
             @endif
         </div>
         <div class="flex justify-center gap-3">
-            <x-button wire:click='deleteInstanceClick' spinner icon="o-trash"
+            <x-button spinner wire:click='deleteInstanceClick' spinner icon="o-trash"
                 label="{{!$instance->online ? 'Remover' : 'Deslogar'}} Instancia" class="btn-error" />
             @if(!$instance->online)
-            {{--
-            <x-button icon="o-home" label="Buscar QRCode" class="btn-outline" /> --}}
+
+            <x-button spinner wire:click='getQrCodeClick' icon="o-qr-code" label="Buscar QRCode" class="btn-outline" />
             @endif
         </div>
     </x-card>

@@ -156,7 +156,7 @@ class InstanceService
             }
 
             if ($instanceState === 'close') {
-                return ['error' => true, 'message' => "Instance already opened."];
+                // return ['error' => true, 'message' => "Instance closed."];
             }
 
             $instanceData = $this->evolutionInstanceService->connectInstance($instanceName);
@@ -174,9 +174,9 @@ class InstanceService
             // $filename = 'qrcodes/qr_' . uniqid() . '.png';
             // $storedFilename = Base64ToFile::storeImageFromBase64($instanceData['base64'], $filename);
 
-            // $this->instanceRepository->updateInstance($instanceName, [
-            //     'qrcode_path' => $storedFilename
-            // ]);
+            $this->instanceRepository->updateInstance($instanceName, [
+                'qrcode_path' => $filename
+            ]);
 
             return ['error' => false, 'data' => ['filename' => $filename]];
             // return $filename;

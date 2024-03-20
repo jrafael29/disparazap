@@ -6,6 +6,7 @@ use App\Models\Instance;
 use App\Service\Evolution\EvolutionInstanceService;
 use App\Service\InstanceService;
 use Illuminate\Support\Facades\Cache;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -20,11 +21,20 @@ class Card extends Component
     public ?string $profileName = '';
     public ?string $profileStatus = '';
 
+    public $test = '';
+
     function deleteInstanceClick(Instance $instance)
     {
+        $this->test = '';
         $this->instanceService->deleteInstance($this->instance->name);
         $this->dispatch('instance::deleted');
         $this->redirectRoute('instance');
+    }
+
+    function getQrCodeClick()
+    {
+        $result = $this->instanceService->updateQrInstance($this->instance->name);
+        $this->redirect('/instance');
     }
 
     function mount(Instance $instance)
@@ -39,6 +49,10 @@ class Card extends Component
                 $this->profileStatus = $result['data']['profileStatus'];
             }
         }
+
+        if (!$this->instance->online) {
+            $this->test = $this->instance->qrcode_path;
+        }
     }
 
 
@@ -51,6 +65,7 @@ class Card extends Component
     }
 
 
+    #[On('instance::updated')]
     public function render()
     {
         $profilePictureUrlCacheKey = $this->instance->id . "-instance:profilePictureUrl";

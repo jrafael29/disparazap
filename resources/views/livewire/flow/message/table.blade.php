@@ -70,10 +70,6 @@
                 icon="o-exclamation-triangle" class="alert-warning">
             </x-alert>
         </div>
-        <p class="text-3xl text-black ">
-            Ops... Nenhuma mensagem encontrada.
-        </p>
-
         @endforelse
     </div>
 </div>
