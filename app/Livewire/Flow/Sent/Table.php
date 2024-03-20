@@ -4,6 +4,7 @@ namespace App\Livewire\Flow\Sent;
 
 use App\Models\FlowToSent;
 use App\Models\MessageFlow;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Table extends Component
@@ -26,7 +27,7 @@ class Table extends Component
 
     public function render()
     {
-        $flowToSents = FlowToSent::where('flow_id', $this->flow->id)->get();
+        $flowToSents = FlowToSent::where("user_id", Auth::user()->id)->where('flow_id', $this->flow->id)->get();
         return view('livewire.flow.sent.table', [
             'flowToSents' => $flowToSents
         ]);

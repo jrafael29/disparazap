@@ -3,6 +3,7 @@
 namespace App\Livewire\Flow;
 
 use App\Models\MessageFlow;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -18,7 +19,7 @@ class Table extends Component
 
     public function messageFlows()
     {
-        $flows = MessageFlow::query()->get();
+        $flows = MessageFlow::query()->where('user_id', Auth::user()->id)->get();
         return $flows;
     }
 
