@@ -38,7 +38,7 @@ class EvolutionInstanceService
                 ->post($url, $body);
 
             $data = $response->body();
-            // dd($data);
+
             $instance = $response->json('instance');
             if (!$instance) {
                 return false;
@@ -47,12 +47,12 @@ class EvolutionInstanceService
             $qr = $response->json('qrcode');
             $instanceData = [
                 'apikey' => $instanceApiKey,
-                'instance' => $instance,
+                'instance' => $instance['instanceName'],
                 'base64' => $qr['base64']
             ];
             return $instanceData;
         } catch (\Exception $e) {
-            Log::error('create instance:', $e->getMessage());
+            Log::info($e->getMessage());
         }
     }
     function getStateInstance($instanceName)
@@ -76,7 +76,7 @@ class EvolutionInstanceService
                 }
             }
         } catch (\Exception $e) {
-            Log::error('get state instance:', $e->getMessage());
+            Log::info($e->getMessage());
             return false;
         }
     }
@@ -108,7 +108,7 @@ class EvolutionInstanceService
                 return $instanceData;
             }
         } catch (\Exception $e) {
-            Log::error('get instance:', $e->getMessage());
+            Log::info($e->getMessage());
             return false;
         }
     }
@@ -135,10 +135,9 @@ class EvolutionInstanceService
             if ($instance['state'] == 'open') {
                 return $instance;
             }
-
             return false;
         } catch (\Exception $e) {
-            Log::error('connect instance:', $e->getMessage());
+            Log::info($e->getMessage());
             return false;
         }
         // dd($response->body());
@@ -173,7 +172,7 @@ class EvolutionInstanceService
             // dd($data);
             // $this->dispatch("update-qr", $instanceData);
         } catch (\Exception $e) {
-            Log::error('set webhook:', $e->getMessage());
+            Log::info($e->getMessage());
             return false;
         }
     }
@@ -199,7 +198,7 @@ class EvolutionInstanceService
             return false;
             // $this->dispatch("update-qr", $instanceData);
         } catch (\Exception $e) {
-            Log::error('remove instance:', $e->getMessage());
+            Log::info($e->getMessage());
             return false;
         }
     }
@@ -223,7 +222,7 @@ class EvolutionInstanceService
             return false;
             // $this->dispatch("update-qr", $instanceData);
         } catch (\Exception $e) {
-            Log::error('logout instance:', $e->getMessage());
+            Log::info($e->getMessage());
             return false;
         }
     }

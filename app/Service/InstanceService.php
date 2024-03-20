@@ -48,7 +48,8 @@ class InstanceService
             }
             return $cachedPayback;
         } catch (\Exception $e) {
-            Log::error('get instance service:', $e->getMessage());
+            Log::info($e->getMessage());
+
             return false;
         }
     }
@@ -71,18 +72,18 @@ class InstanceService
                 // endPoint: '/updated-connection/webhook'
             );
             if (!empty($evolutionInstanceData['base64'])) {
-                $result = $this->updateQrInstance($instanceModel->name);
-                if ($result['error'] === false) {
-                    $filename = $result['data']['filename'];
+                // $result = $this->updateQrInstance($instanceModel->name);
+                $filename = $this->updateQrInstanceHelper(base64: $evolutionInstanceData['base64'], instanceName: $instanceModel->name);
+
+                if ($filename) {
                     $instanceModel->qrcode_path = $filename;
                     $instanceModel->save();
-
                     return true;
                 }
             }
             return false;
         } catch (\Exception $e) {
-            Log::error('create instance service:', $e->getMessage());
+            Log::info($e->getMessage());
             return false;
         }
     }
@@ -113,7 +114,9 @@ class InstanceService
                 ]
             ];
         } catch (\Exception $e) {
-            Log::error('delete instance service:', $e->getMessage());
+            Log::info($e->getMessage());
+
+
             return [
                 'error' => true,
                 'message' => $e->getMessage()
@@ -121,6 +124,18 @@ class InstanceService
         }
     }
 
+
+    function updateQrInstanceHelper($base64, $instanceName)
+    {
+        $filename = 'qrcodes/qr_' . uniqid() . '.png';
+        $storedFilename = Base64ToFile::storeImageFromBase64($base64, $filename);
+
+        $this->instanceRepository->updateInstance($instanceName, [
+            'qrcode_path' => $storedFilename
+        ]);
+
+        return $storedFilename;
+    }
 
     function updateQrInstance($instanceName)
     {
@@ -145,7 +160,8 @@ class InstanceService
             }
 
             $instanceData = $this->evolutionInstanceService->connectInstance($instanceName);
-            if (empty($instanceData['base64'])) return false;
+
+            if (empty($instanceData['base64'])) return ['error' => true, 'message' => "Internal server Error."];
 
             $this->evolutionInstanceService->setWebhooks(
                 instanceName: $instanceModel->name,
@@ -153,19 +169,21 @@ class InstanceService
                 // webhooks: ["QRCODE_UPDATED"]
             );
 
-            $filename = 'qrcodes/qr_' . uniqid() . '.png';
-            $storedFilename = Base64ToFile::storeImageFromBase64($instanceData['base64'], $filename);
 
-            $this->instanceRepository->updateInstance($instanceName, [
-                'qrcode_path' => $storedFilename
-            ]);
+            $filename = $this->updateQrInstanceHelper(base64: $instanceData['base64'], instanceName: $instanceModel->name);
+            // $filename = 'qrcodes/qr_' . uniqid() . '.png';
+            // $storedFilename = Base64ToFile::storeImageFromBase64($instanceData['base64'], $filename);
 
-            return ['error' => false, 'data' => ['filename' => $storedFilename]];
+            // $this->instanceRepository->updateInstance($instanceName, [
+            //     'qrcode_path' => $storedFilename
+            // ]);
+
+            return ['error' => false, 'data' => ['filename' => $filename]];
             // return $filename;
         } catch (\Exception $e) {
-            Log::error('update qr service:', $e->getMessage());
+            Log::info($e->getMessage());
             return [
-                'error' => false,
+                'error' => true,
                 'message' => $e->getMessage()
             ];
         }

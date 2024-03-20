@@ -34,7 +34,7 @@ class GetReadyFlowsToSentJob implements ShouldQueue
                     ->where('online', '1');
             })
             ->where('to_sent_at', '<', now()->subSecond())
-            ->where('busy', 0)
+            ->where('sent', 0)
             ->get()
             ->unique('instance_id')
             ->each(function (FlowToSent $flowToSent) {
