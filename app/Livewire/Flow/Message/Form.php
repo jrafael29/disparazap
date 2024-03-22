@@ -18,6 +18,7 @@ class Form extends Component
     public string $messageTypeSelected = 'text';
     public string $text = '';
     public int $delay = 2;
+    public $show = false;
 
     public MessageFlow $flow;
 
@@ -27,6 +28,11 @@ class Form extends Component
     #[Validate('file|mimetypes:video/mp4')] // 5MB Max
     public $video;
 
+
+    public function toggleCollapseForm()
+    {
+        $this->show = !$this->show;
+    }
 
     function createMediaMessage($flowId, $text, $typeId, $delay)
     {

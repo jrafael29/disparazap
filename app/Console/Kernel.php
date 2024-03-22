@@ -16,6 +16,8 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('run:get-ready-flows')->withoutOverlapping()->everyFiveSeconds();
+
+        // $schedule->command('run:check-instances')->withoutOverlapping()->everyFiveSeconds();
     }
 
     /**

@@ -108,6 +108,9 @@
             <div>
                 <div class="mb-3">
                     <h1> Revise os numeros a serem enviados.</h1>
+
+                    <p>Foram encontrados {{$countAllPhonenumbers}}, sendo {{$countExistentPhonenumbers}} existentes, e
+                        {{$countInexistentPhonenumbers}} inexistentes</p>
                 </div>
 
                 <div class="max-h-80 font-mono overflow-auto">

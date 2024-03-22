@@ -65,19 +65,33 @@ class EvolutionInstanceService
             ];
             $response = Http::withHeaders($headers)->get($url . '?instanceName=' . $instanceName);
             if ($response->json('instance')) {
-                return $response->json('instance')['state'];
+                return [
+                    "error" => false,
+                    "data" => [
+                        "state" => $response->json('instance')['state']
+                    ]
+                ];
             }
-
             if ($response->json('status')) {
                 switch ($response->json('status')) {
                     case (404):
-                        return false;
+                        return [
+                            "error" => true,
+                            "message" => "not found"
+                        ];
                         break;
                 }
             }
+            return [
+                "error" => true,
+                "message" => "internal server error"
+            ];
         } catch (\Exception $e) {
             Log::info($e->getMessage());
-            return false;
+            return [
+                "error" => true,
+                "message" => $e->getMessage()
+            ];
         }
     }
 

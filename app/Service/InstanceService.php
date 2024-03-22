@@ -54,6 +54,19 @@ class InstanceService
         }
     }
 
+    function createEvolutionInstance($instanceName, $phonenumber)
+    {
+        $evolutionInstanceData = $this->evolutionInstanceService->createInstance(
+            instanceName: $instanceName,
+            phonenumber: $phonenumber
+        );
+        $this->evolutionInstanceService->setWebhooks(
+            instanceName: $instanceName,
+            // endPoint: '/updated-connection/webhook'
+        );
+        return $evolutionInstanceData;
+    }
+
     function createInstance($userId, $description, $phonenumber)
     {
         try {
@@ -63,14 +76,19 @@ class InstanceService
                 phonenumber: $phonenumber
             );
 
-            $evolutionInstanceData = $this->evolutionInstanceService->createInstance(
-                instanceName: $instanceModel->name,
-                phonenumber: $instanceModel->phonenumber
+            $evolutionInstanceData = $this->createEvolutionInstance(
+                phonenumber: $instanceModel->phonenumber,
+                instanceName: $instanceModel->name
             );
-            $this->evolutionInstanceService->setWebhooks(
-                instanceName: $instanceModel->name,
-                // endPoint: '/updated-connection/webhook'
-            );
+
+            // $evolutionInstanceData = $this->evolutionInstanceService->createInstance(
+            //     instanceName: $instanceModel->name,
+            //     phonenumber: $instanceModel->phonenumber
+            // );
+            // $this->evolutionInstanceService->setWebhooks(
+            //     instanceName: $instanceModel->name,
+            //     // endPoint: '/updated-connection/webhook'
+            // );
             if (!empty($evolutionInstanceData['base64'])) {
                 // $result = $this->updateQrInstance($instanceModel->name);
                 $filename = $this->updateQrInstanceHelper(base64: $evolutionInstanceData['base64'], instanceName: $instanceModel->name);
@@ -141,6 +159,12 @@ class InstanceService
     {
         try {
             $instanceModel = Instance::query()->where('name', $instanceName)->first();
+
+            // se nao existir, cria
+            $result = $this->evolutionInstanceService->getInstance($instanceName);
+            if ($result === false) {
+                $this->evolutionInstanceService->createInstance($instanceName, $instanceModel->phonenumber);
+            }
             if (!$instanceModel) return false;
             if (!empty($instanceModel->qrcode_path)) {
                 // remove existente qrcode;
@@ -187,5 +211,21 @@ class InstanceService
                 'message' => $e->getMessage()
             ];
         }
+    }
+
+    function getInstanceState($instanceName)
+    {
+        if (empty($instanceName)) return [
+            "error" => true,
+            "message" => "Invalid parameter"
+        ];
+
+        $result = $this->evolutionInstanceService->getStateInstance($instanceName);
+
+        if ($result["error"] == true) {
+            return false;
+        }
+
+        return $result["data"]["state"];
     }
 }
