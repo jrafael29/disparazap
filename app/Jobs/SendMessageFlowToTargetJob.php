@@ -95,7 +95,7 @@ class SendMessageFlowToTargetJob implements ShouldQueue
             $instance->available_at = $availableAt;
             $instance->save();
         } catch (\Exception $e) {
-            Log::error("erro job:sendmessage= ", $e->getMessage());
+            Log::error("erro job:sendmessage= {$e->getMessage()}",);
         }
     }
 }
