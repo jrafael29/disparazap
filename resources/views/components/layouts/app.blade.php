@@ -53,6 +53,12 @@
                 <x-menu-item title="Fluxo de Mensagens" icon="o-chat-bubble-oval-left-ellipsis"
                     link="{{route('flow')}}" />
                 <x-menu-item title="Bonus" icon="o-sparkles" />
+
+                @if(Auth::user()->isAdmin)
+                <x-menu-item title="Gerenciar usuários" link="{{route('admin.user')}}" icon="o-user" />
+
+                @endif
+
                 @endif
             </x-menu>
         </x-slot:sidebar>

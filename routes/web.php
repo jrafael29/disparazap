@@ -9,8 +9,9 @@ use App\Livewire\Pages\Flow\Index as FlowIndex;
 use App\Livewire\Pages\Flow\Message\Index as MessageIndex;
 use App\Livewire\Pages\Flow\Sent\Index as SentIndex;
 use App\Livewire\Pages\Extractor\Index as ExtractorIndex;
-
 use App\Livewire\Pages\Instance\Index as InstanceIndex;
+
+use App\Livewire\Pages\Admin\User\Index as AdminUserPage;
 
 
 
@@ -42,20 +43,26 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/login', Login::class)->name('login');
 });
 
+// user routes
 Route::middleware(['auth'])->group(function () {
     Route::get('/logout', function () {
         Auth::logout();
         return redirect()->to('/');
     });
     Route::get('/home', Home::class)->name('home');
-
     Route::get('/instance', InstanceIndex::class)->name('instance');
     Route::get('/message-flow', FlowIndex::class)->name('flow');
     Route::get('/message-flow/{flow}/message', MessageIndex::class)->name('flow.message');
     Route::get('/message-flow/{flow}/sent', SentIndex::class)->name('flow.sent');
-
     Route::get('/extractor', ExtractorIndex::class)->name('extractor');
 });
+
+// admin routes
+Route::middleware(['auth', 'isAdmin'])->group(function () {
+    Route::get('/admin/users', AdminUserPage::class)->name('admin.user');
+});
+
+
 
 Route::get('/testando', function () {
     GetReadyFlowsToSentJob::dispatch()->onQueue('myqueue');
