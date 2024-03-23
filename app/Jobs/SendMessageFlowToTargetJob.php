@@ -21,18 +21,12 @@ class SendMessageFlowToTargetJob implements ShouldQueue
     private EvolutionSendMessageService $messageService;
     private FlowToSent $flowToSent;
 
-    /**
-     * Create a new job instance.
-     */
     public function __construct(FlowToSent $flowToSent)
     {
         $this->messageService = App::make(EvolutionSendMessageService::class);
         $this->flowToSent = $flowToSent;
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
         $messages = $this->flowToSent->flow->messages;

@@ -47,6 +47,7 @@
                 </x-list-item>
 
                 <x-menu-item title="Inicio" icon="o-home" link="{{route('home')}}" />
+                <x-menu-item title="Extrair número de texto" icon="o-home" link="{{route('extractor')}}" />
 
                 <x-menu-item title="Instâncias do WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />
                 <x-menu-item title="Fluxo de Mensagens" icon="o-chat-bubble-oval-left-ellipsis"
