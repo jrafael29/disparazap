@@ -22,7 +22,7 @@
 
         {{-- Special `actions` slot --}}
         @scope('actions', $user)
-        <x-button icon="o-trash" wire:click="delete({{ $user->id }})" spinner class="btn-sm" />
+
         <x-modal id="modal-{{$user->id}}" title="#{{$user->id}} - {{$user->name}}" subtitle="{{$user->email}}">
             <div>Usuario ID {{$user->id}}</div>
             <div class="bg-red-500">
@@ -46,7 +46,7 @@
         </x-modal>
 
         {{-- Button to open modal --}}
-        <x-button label="Open modal" class="btn-primary"
+        <x-button icon="o-envelope" label="" class="btn-primary btn-sm"
             onclick="document.getElementById('modal-{{$user->id}}').showModal()" />
         @endscope
 

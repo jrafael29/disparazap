@@ -53,4 +53,16 @@ class User extends Authenticatable
     {
         return $this->hasMany(Instance::class, 'user_id', 'id');
     }
+
+    public function contacts()
+    {
+        return $this->hasManyThrough(
+            related: Contact::class,
+            through: UserContact::class,
+            firstKey: 'user_id',
+            secondKey: 'id',
+            localKey: 'id',
+            secondLocalKey: 'contact_id'
+        );
+    }
 }

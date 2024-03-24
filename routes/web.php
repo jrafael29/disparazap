@@ -10,6 +10,7 @@ use App\Livewire\Pages\Flow\Message\Index as MessageIndex;
 use App\Livewire\Pages\Flow\Sent\Index as SentIndex;
 use App\Livewire\Pages\Extractor\Index as ExtractorIndex;
 use App\Livewire\Pages\Instance\Index as InstanceIndex;
+use App\Livewire\Pages\Contact\Index as ContactIndex;
 
 use App\Livewire\Pages\Admin\User\Index as AdminUserPage;
 
@@ -55,6 +56,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/message-flow/{flow}/message', MessageIndex::class)->name('flow.message');
     Route::get('/message-flow/{flow}/sent', SentIndex::class)->name('flow.sent');
     Route::get('/extractor', ExtractorIndex::class)->name('extractor');
+
+    Route::get('/contacts', ContactIndex::class)->name('contact');
 });
 
 // admin routes

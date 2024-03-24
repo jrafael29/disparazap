@@ -17,12 +17,13 @@ class DatabaseSeeder extends Seeder
             MessageTypeSeeder::class
         ]);
         // \App\Models\User::factory(10)->create();
-
         \App\Models\User::factory()->create([
             'name' => 'Josef Admin',
             'email' => 'admin@hotmail.com',
             'password' => Hash::make('123456'),
             'isAdmin' => true
         ]);
+        \App\Models\Contact::factory(10)->create();
+        \App\Models\UserContact::factory(1)->create();
     }
 }
