@@ -15,10 +15,10 @@
             </x-form>
 
         </div>
-        <div>
+        {{-- <div>
             <p class="text-1xl">Não tem uma conta? <a class="text-blue-900"
                     href="{{route('register')}}">Registre-se</a>.</p>
-        </div>
+        </div> --}}
         {{-- If your happiness depends on money, you will never be happy with yourself. --}}
     </div>
 </div>

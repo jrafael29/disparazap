@@ -18,12 +18,12 @@ class DatabaseSeeder extends Seeder
         ]);
         // \App\Models\User::factory(10)->create();
         \App\Models\User::factory()->create([
-            'name' => 'Josef Admin',
-            'email' => 'admin@hotmail.com',
-            'password' => Hash::make('123456'),
+            'name' => 'El Admin',
+            'email' => 'admin@admin.com',
+            'password' => Hash::make('everyBodyHatesAdmin'),
             'isAdmin' => true
         ]);
-        \App\Models\Contact::factory(10)->create();
-        \App\Models\UserContact::factory(1)->create();
+        // \App\Models\Contact::factory(10)->create();
+        // \App\Models\UserContact::factory(1)->create();
     }
 }

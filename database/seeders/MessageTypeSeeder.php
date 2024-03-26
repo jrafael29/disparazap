@@ -48,7 +48,8 @@ class MessageTypeSeeder extends Seeder
         MessageType::query()->create([
             'name' => 'sticky',
             'description' => 'Figurinha',
-            'media_type' => "image"
+            'media_type' => "image",
+            'active' => 0
         ]);
     }
 }

@@ -10,7 +10,7 @@ use Livewire\Component;
 class Index extends Component
 {
     public $headers = [
-        ['key' => 'contact.id', 'label' => '#'],
+        ['key' => 'id', 'label' => '#'],
         ['key' => 'contact.phonenumber', 'label' => 'Telefone'],
         ['key' => 'contact.description', 'label' => 'Descrição'] # <---- nested attributes
     ];
@@ -18,16 +18,40 @@ class Index extends Component
         ['id' => 0, 'name' => "Todos"]
     ];
     public $contacts = [];
+    public $dddSelected;
+    public $selectedContacts = [];
 
-    public function teste($id)
+    public function orderContacts()
     {
-        if ($id === 0) {
-            // $this->contacts = Contact::query()
-            //     ->where('phonenumber', 'like', "55{}")
-            //     ->where('user_i')
+        if ($this->dddSelected == 0) {
+            $this->contacts = UserContact::query()->with(['contact'])
+                ->where('user_id', Auth::user()->id)
+                ->whereHas('contact', function ($q) {
+                    $q->where('active', 1);
+                })
+                ->get();
+        } else {
+            $this->contacts = UserContact::query()->with(['contact'])
+                ->where('user_id', Auth::user()->id)
+                ->whereHas('contact', function ($q) {
+                    $q->where('phonenumber', 'like', "55{$this->dddSelected}%")
+                        ->where('active', 1);
+                })
+                ->get();
         }
-        // $this->contacts = Contact::query()->where('phonenumber', 'like', "55{}")
-        // dd("!teste");
+        $this->render();
+    }
+
+    public function deleteSelectedContacts()
+    {
+        foreach ($this->selectedContacts as $userContactId) {
+            UserContact::query()->findOrFail($userContactId)?->delete();
+        }
+    }
+
+    public function delete(UserContact $uc)
+    {
+        $uc->delete();
     }
 
     public function mount()
@@ -40,11 +64,12 @@ class Index extends Component
     public function render()
     {
         $this->contacts = UserContact::with(['contact'])
+            ->where('user_id', Auth::user()->id)
             ->whereHas('contact', function ($q) {
                 $q->where('active', 1);
             })
-            ->where('user_id', Auth::user()->id)
             ->get();
+        // dd($this->contacts);
         return view('livewire.pages.contact.index');
     }
 }

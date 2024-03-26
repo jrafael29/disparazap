@@ -40,7 +40,11 @@ use Illuminate\Support\Facades\Storage;
 Route::get('/', Welcome::class);
 
 Route::middleware(['guest'])->group(function () {
-    Route::get('/register', Register::class)->name('register');
+    // Route::get('/register', Register::class)->name('register');
+    Route::get('/register', function () {
+        return redirect()->to('/login');
+    })->name('register');
+
     Route::get('/login', Login::class)->name('login');
 });
 

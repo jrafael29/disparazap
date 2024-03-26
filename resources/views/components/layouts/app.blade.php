@@ -47,15 +47,15 @@
                 </x-list-item>
 
                 <x-menu-item title="Inicio" icon="o-home" link="{{route('home')}}" />
-                <x-menu-item title="Utilitário" icon="o-code-bracket-square" link="{{route('extractor')}}" />
-                <x-menu-item title="Gerenciar Contatos" icon="o-user-group" link="{{route('contact')}}" />
-                <x-menu-item title="Instâncias do WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />
+                <x-menu-item title="Conectar WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />
                 <x-menu-item title="Fluxo de Mensagens" icon="o-chat-bubble-oval-left-ellipsis"
                     link="{{route('flow')}}" />
+                <x-menu-item title="Contatos" icon="o-user-group" link="{{route('contact')}}" />
+                <x-menu-item title="Utilitário" icon="o-code-bracket-square" link="{{route('extractor')}}" />
                 <x-menu-item title="Bonus" icon="o-gift" />
 
                 @if(Auth::user()->isAdmin)
-                <x-menu-item title="Gerenciar usuários" link="{{route('admin.user')}}" icon="o-user" />
+                <x-menu-item title="Usuários" link="{{route('admin.user')}}" icon="o-user" />
 
                 @endif
 

@@ -2,11 +2,16 @@
 
 namespace App\Livewire\Flow\Sent;
 
+use App\Helpers\Phonenumber as PhonenumberHelper;
+use App\Models\Contact;
 use App\Models\FlowToSent;
 use App\Models\Instance;
 use App\Models\MessageFlow;
+use App\Models\UserContact;
 use App\Service\Evolution\EvolutionChatService;
 use App\Service\Evolution\EvolutionGroupService;
+use App\Service\FlowToSentService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Redis;
@@ -48,6 +53,7 @@ class Steps extends Component
     public $groupsParticipantsPhonenumber = []; // numero dos participantes dos grupos selecionados
 
     public $phonenumbers = [];
+    public $phonenumbersExistence = [];
 
     public $hours = '';
     public $minutes = '';
@@ -62,6 +68,7 @@ class Steps extends Component
 
     private EvolutionGroupService $evolutionGroupService;
     private EvolutionChatService $evolutionChatService;
+    private FlowToSentService $flowToSentService;
 
     public function selectSendOption($option)
     {
@@ -79,34 +86,6 @@ class Steps extends Component
         return true;
     }
 
-    public function getPhonenumberFromParticipant($participant = [], $ddi = 0)
-    {
-        // Se $ddi for 0, retornar todos os números
-        if ($ddi == 0) {
-            if (!empty($participant['id'])) {
-                // Extrair o número de telefone do ID
-                $number = explode('@', $participant['id'])[0];
-                return $number;
-            }
-            return false;
-        }
-
-        // Se $ddi for 55, filtrar apenas os números brasileiros
-        if ($ddi == 55) {
-            if (!empty($participant['id'])) {
-                // Extrair o número de telefone do ID
-                $number = explode('@', $participant['id'])[0];
-                // Verificar se o número começa com 55
-                if (preg_match('/^55\d{0,11}$/', $number)) {
-                    return $number;
-                }
-            }
-            return false;
-        }
-
-        // Caso $ddi seja diferente de 0 e 55, retornar falso
-        return false;
-    }
 
     public function getGroupsParticipantsPhonenumber($groups = [], $ddi = 0)
     {
@@ -123,7 +102,7 @@ class Steps extends Component
             foreach ($groupParticipants['data'] as $groupId => $participants) {
                 $numbers = [];
                 foreach ($participants as $participant) {
-                    $phonenumber = $this->getPhonenumberFromParticipant($participant, $ddi);
+                    $phonenumber = PhonenumberHelper::getPhonenumberFromParticipant($participant, $ddi);
                     if ($phonenumber)
                         $numbers[] = $phonenumber;
                 }
@@ -134,44 +113,34 @@ class Steps extends Component
         return $groupsParticipantsNumber;
     }
 
-    function filterPhonenumbers($numbers)
-    {
-        return array_filter($numbers, function ($value) {
-            // dd($value);
-            // Filtra strings que tenham 12 ou 13 de tamanho, que não sejam vazias e que não sejam números
-            return (strlen($value) >= 12 && strlen($value) <= 13 && !empty($value));
-        });
-    }
 
     public function validateTarget()
     {
         switch ($this->sendOption) {
             case 'raw-text':
-                $rawPhonenumbers = $this->getPhonenumbersFromRawText($this->rawText);
-                $phonenumbers = $this->filterPhonenumbers($rawPhonenumbers);
-                if ($this->allowRepeatTarget == false) {
-                    $uniqPhonenumbers = array_values(array_unique($phonenumbers));
-                    $firstInstanceName = Instance::find($this->selectedInstances[0])?->name;
-                    $numbersExistence = $this->evolutionChatService->checkNumbersExistence(
-                        numbers: $uniqPhonenumbers,
-                        instanceName: $firstInstanceName
-                    );
-                    // dd($numbersExistence);
-                    // $result = array_count_values($numbersExistence);
-                    // $this->countAllPhonenumbers = $result;
-                    // $this->countExistentPhonenumbers = isset($result[true]) ? $result[true] : 0;
-                    // $this->countInexistentPhonenumbers = isset($result[false]) ? $result[false] : 0;
-                    foreach ($numbersExistence as $key => $value) {
-                        $this->countAllPhonenumbers++;
-                        $value ? $this->countExistentPhonenumbers++ : $this->countInexistentPhonenumbers++;
-                    }
+                $phonenumbers = PhonenumberHelper::getPhonenumbersFromText(
+                    text: $this->rawText,
+                    allowRepeated: $this->allowRepeatTarget
+                );
 
-                    $this->phonenumbers = $numbersExistence;
-                    return true;
-                } else {
+                if ($this->allowRepeatTarget) {
                     $this->phonenumbers = $phonenumbers;
                     return true;
                 }
+                $firstInstanceName = Instance::find($this->selectedInstances[0])?->name;
+                $numbersExistence = $this->evolutionChatService->checkNumbersExistence(
+                    numbers: $phonenumbers,
+                    instanceName: $firstInstanceName
+                );
+                foreach ($numbersExistence as $key => $value) {
+                    $this->countAllPhonenumbers++;
+                    $value ? $this->countExistentPhonenumbers++ : $this->countInexistentPhonenumbers++;
+                }
+                // dd($numbersExistence);
+                $this->phonenumbersExistence = $numbersExistence;
+                $this->phonenumbers = array_keys($numbersExistence);
+                return true;
+
                 break;
             case 'group-contacts':
                 $groupsPhonenumber = $this->getGroupsParticipantsPhonenumber(
@@ -179,7 +148,8 @@ class Steps extends Component
                     ddi: 55
                 );
                 $this->groupsParticipantsPhonenumber = array_values($groupsPhonenumber);
-                $this->phonenumbers = $this->getPhonenumbersFromGroupsParticipants($this->groupsParticipantsPhonenumber);
+                $result = PhonenumberHelper::getPhonenumbersFromGroupsParticipants($this->groupsParticipantsPhonenumber);
+                $this->phonenumbers = $result;
                 return true;
                 break;
             default:
@@ -229,25 +199,6 @@ class Steps extends Component
         $this->selectedInstancesGroups = $fullData;
     }
 
-    public function getPhonenumbersFromRawText($rawText)
-    {
-        $numbers = explode("\n", $rawText);
-        $phonenumbers = array_values($numbers);
-        return $phonenumbers;
-    }
-    public function getPhonenumbersFromGroupsParticipants($groupsParticipantsPhonenumber)
-    {
-        $numbers = [];
-        // dd($this->groupsParticipantsPhonenumber);
-        foreach ($groupsParticipantsPhonenumber as $groups) {
-            foreach ($groups as $groupJid => $participants) {
-                foreach ($participants as $participantNumber)
-                    array_push($numbers, $participantNumber);
-            }
-        }
-        return $numbers;
-    }
-
     function getTotalDuration()
     {
         if (count($this->selectedInstances) > 0 && count($this->phonenumbers) > 0) {
@@ -263,43 +214,27 @@ class Steps extends Component
     {
         $this->validate();
 
-        $numbers = [];
-        if ($this->allowRepeatTarget === true) {
-            $numbers = $this->phonenumbers;
-        } else {
-            $numbers = array_keys(array_filter($this->phonenumbers, function ($value) {
-                return $value === true;
-            }));
-        }
+        $numbers = $this->phonenumbers;
+        // dd($numbers);
         $instances = $this->selectedInstances;
-
-        // divide os numeros entre as instancias
-        $numbersPerInstance = count($this->phonenumbers) / count($this->selectedInstances);
-        $allInstancesPhonenumbers = [];
-        $offset = 0;
-        foreach ($instances as $index => $instance) {
-            if ($index + 1 === count($instances))
-                $allInstancesPhonenumbers[$instance] = array_slice($numbers, $offset, $numbersPerInstance + 1);
-            else
-                $allInstancesPhonenumbers[$instance] = array_slice($numbers, $offset, $numbersPerInstance);
-
-            $offset = $offset + $numbersPerInstance;
-        }
-        //
+        $allInstancesPhonenumbers = PhonenumberHelper::dividePhonenumbersByInstances(
+            instances: $instances,
+            phonenumbers: $numbers,
+        );
 
         foreach ($allInstancesPhonenumbers as $instanceId => $phonenumbers) {
-            foreach ($phonenumbers as $phonenumber) {
-
-                FlowToSent::query()->create([
-                    'user_id' => Auth::user()->id,
-                    'flow_id' => $this->flow->id,
-                    'instance_id' => $instanceId,
-                    "to" => $phonenumber,
-                    "to_sent_at" => $this->toSendDate,
-                    'delay_in_seconds' => $this->delay,
-                ]);
+            foreach ($phonenumbers as $index => $phonenumber) {
+                $toSentDate = Carbon::parse($this->toSendDate)->addSeconds(($this->delay * $index) + 5);
+                // dd($sendDate);
+                $this->flowToSentService->createFlowToSent(
+                    userId: Auth::user()->id,
+                    flowId: $this->flow->id,
+                    phonenumber: $phonenumber,
+                    instanceId: $instanceId,
+                    sendAt: $toSentDate,
+                    delayInSeconds: $this->delay
+                );
             }
-            // dd($numbers);
         }
         $this->success("Agendamento feito com sucesso");
         $this->getTotalDuration();
@@ -308,10 +243,12 @@ class Steps extends Component
 
     public function boot(
         EvolutionGroupService $evolutionGroupService,
-        EvolutionChatService $evolutionChatService
+        EvolutionChatService $evolutionChatService,
+        FlowToSentService $flowToSentService
     ) {
         $this->evolutionGroupService = $evolutionGroupService;
         $this->evolutionChatService = $evolutionChatService;
+        $this->flowToSentService = $flowToSentService;
     }
 
     public function mount(MessageFlow $flow)

@@ -13,14 +13,14 @@
             <h1>Bem vindo! <br> Faça login para continuar.</h1>
         </div>
         <div class="flex gap-5 justify-center">
-            <div class="mb-5">
+            {{-- <div class="mb-5">
                 <a class="text-blue-800" href="{{route('register')}}">
                     <x-button class="btn-outline">Registro</x-button>
                 </a>
-            </div>
+            </div> --}}
             <div class="mb-5">
                 <a class="text-blue-800" href="{{route('login')}}">
-                    <x-button class="btn-primary">Login</x-button>
+                    <x-button class="btn-outline">Login</x-button>
                 </a>
             </div>
         </div>

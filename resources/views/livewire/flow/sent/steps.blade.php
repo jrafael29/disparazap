@@ -87,10 +87,11 @@
                             </div>
 
                             <x-form>
-                                <x-textarea label="Numeros" wire:model="rawText" placeholder="Digite um numero abaixo do outro. ex:
-                                    5581991827364
-                                    5581991827366
-                                    5581991827368" rows="5" inline />
+                                <x-textarea label="Numeros"
+                                    hint="Cole qualquer texto com os números de telefone que iremos extrair para você."
+                                    wire:model="rawText"
+                                    placeholder="Digite qualquer texto que será extraido apenas os números de telefone"
+                                    rows="5" inline />
                             </x-form>
                         </div>
                         @break
@@ -145,7 +146,7 @@
                     @case('raw-text')
                     <div class="flex flex-wrap gap-5">
                         @if($this->allowRepeatTarget == false)
-                        @forelse($phonenumbers as $phonenumber => $exist)
+                        @forelse($phonenumbersExistence as $phonenumber => $exist)
                         @if(!empty($exist))
                         <div class="bg-green-500 p-5 rounded">
                             {{$phonenumber}}

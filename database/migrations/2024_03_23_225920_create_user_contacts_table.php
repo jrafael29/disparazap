@@ -19,6 +19,7 @@ return new class extends Migration
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->foreignId('contact_id')
+                ->unique()
                 ->references('id')
                 ->on('contacts')
                 ->cascadeOnDelete()
