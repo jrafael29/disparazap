@@ -21,6 +21,7 @@ use App\Livewire\Welcome;
 use App\Models\Instance;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
@@ -70,6 +71,10 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
 });
 
 
+Route::get('/linkstorage', function () {
+    Artisan::call('storage:link');
+    return redirect()->to('/');
+});
 
 Route::get('/testando', function () {
     GetReadyFlowsToSentJob::dispatch()->onQueue('myqueue');
