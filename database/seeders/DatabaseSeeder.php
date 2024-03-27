@@ -20,8 +20,14 @@ class DatabaseSeeder extends Seeder
         \App\Models\User::factory()->create([
             'name' => 'El Admin',
             'email' => 'admin@admin.com',
-            'password' => Hash::make('everyBodyHatesAdmin'),
+            'password' => Hash::make('adminadmin'),
             'isAdmin' => true
+        ]);
+        \App\Models\User::factory()->create([
+            'name' => 'El User',
+            'email' => 'user@user.com',
+            'password' => Hash::make('useruser'),
+            'isAdmin' => false
         ]);
         // \App\Models\Contact::factory(10)->create();
         // \App\Models\UserContact::factory(1)->create();
