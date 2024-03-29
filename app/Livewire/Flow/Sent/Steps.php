@@ -63,6 +63,9 @@ class Steps extends Component
     public $countExistentPhonenumbers = 0;
     public $countInexistentPhonenumbers = 0;
 
+    public $existentPhonenumbers = [];
+    public $inexistentPhonenumbers = [];
+
     // for dev
     public $allowRepeatTarget = true;
 
@@ -133,10 +136,17 @@ class Steps extends Component
                     instanceName: $firstInstanceName
                 );
                 foreach ($numbersExistence as $key => $value) {
+                    // like be: '5581991931921' => true
                     $this->countAllPhonenumbers++;
-                    $value ? $this->countExistentPhonenumbers++ : $this->countInexistentPhonenumbers++;
+                    if ($value) {
+                        array_push($this->existentPhonenumbers, $key);
+                        // $this->countExistentPhonenumbers++;
+                    } else {
+                        array_push($this->inexistentPhonenumbers, $key);
+                        // $this->countInexistentPhonenumbers++;
+                    }
+                    // $value ? $this->countExistentPhonenumbers++ : $this->countInexistentPhonenumbers++;
                 }
-                // dd($numbersExistence);
                 $this->phonenumbersExistence = $numbersExistence;
                 $this->phonenumbers = array_keys($numbersExistence);
                 return true;

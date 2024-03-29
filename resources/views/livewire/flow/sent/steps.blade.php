@@ -110,8 +110,8 @@
                 <div class="mb-3">
                     <h1> Revise os numeros a serem enviados.</h1>
 
-                    <p>Foram encontrados {{$countAllPhonenumbers}}, sendo {{$countExistentPhonenumbers}} existentes, e
-                        {{$countInexistentPhonenumbers}} inexistentes</p>
+                    <p>Foram encontrados {{$countAllPhonenumbers}}, sendo {{count($existentPhonenumbers)}} existentes, e
+                        {{count($inexistentPhonenumbers)}} inexistentes</p>
                 </div>
 
                 <div class="max-h-80 font-mono overflow-auto">
@@ -144,23 +144,24 @@
                     @endforelse
                     @break
                     @case('raw-text')
-                    <div class="flex flex-wrap gap-5">
+                    <div class="flex">
                         @if($this->allowRepeatTarget == false)
-                        @forelse($phonenumbersExistence as $phonenumber => $exist)
-                        @if(!empty($exist))
-                        <div class="bg-green-500 p-5 rounded">
-                            {{$phonenumber}}
+                        <div class="w-1/2 ">
+                            <p class="text-2xl">Numeros existentes</p>
+                            @forelse($existentPhonenumbers as $phonenumber)
+                            {{$phonenumber}} <br />
+                            @empty
+                            <p class="text-1xl">Nenhum contato existente</p>
+                            @endforelse
                         </div>
-                        @else
-                        <div class="bg-red-800 p-5 rounded">
-                            <p class="text-red-500 text-1xl">Numero inexistente</p>
-                            <p class="line-through">{{$phonenumber}}</p>
+                        <div class="w-1/2 bg-red-200">
+                            <p class="text-2xl">Numeros inexistentes</p>
+                            @forelse($inexistentPhonenumbers as $phonenumber)
+                            {{$phonenumber}} <br />
+                            @empty
+                            <p class="text-1xl">Nenhum contato inexistente</p>
+                            @endforelse
                         </div>
-                        @endif
-
-                        @empty
-                        <h1 class="text-1xl">Nenhum participante no grupo...</h1>
-                        @endforelse
                         @else
                         @forelse($phonenumbers as $key => $phonenumber)
 
