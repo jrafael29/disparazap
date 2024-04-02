@@ -4,6 +4,7 @@ namespace App\Livewire\Pages\Auth;
 
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use App\Service\AuthService;
 use App\Service\UserService;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Rule;
@@ -20,7 +21,7 @@ class Register extends Component
     public ?string $password = '';
     public ?string $password_confirmation = '';
 
-    private UserService $userService;
+    private AuthService $authService;
 
 
     public function messages()
@@ -39,16 +40,19 @@ class Register extends Component
         ];
     }
 
-    function boot(UserService $userService)
+    function boot(AuthService $authService)
     {
-        $this->userService = $userService;
+        $this->authService = $authService;
     }
 
     function createUser($name, $email, $password)
     {
-        $user = $this->userService->newUser($name, $email, $password);
-        Auth::login($user);
-        $this->redirect(RouteServiceProvider::HOME);
+        $result = $this->authService->register($name, $email, $password);
+        if ($result['success'] === true) {
+            $this->redirect(RouteServiceProvider::HOME);
+            return true;
+        }
+        return false;
     }
 
     function handleSubmit()

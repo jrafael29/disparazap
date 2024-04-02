@@ -6,11 +6,12 @@ use App\Models\Contact;
 use App\Models\FlowToSent;
 use App\Models\User;
 use App\Models\UserContact;
+use App\Traits\ServiceResponseTrait;
 use Illuminate\Support\Facades\Log;
 
 class FlowToSentService
 {
-
+    use ServiceResponseTrait;
     public function createFlowToSent($userId, $flowId, $phonenumber, $instanceId, $sendAt, $delayInSeconds)
     {
         try {
@@ -32,18 +33,18 @@ class FlowToSentService
                 "to_sent_at" => $sendAt,
                 'delay_in_seconds' => $delayInSeconds,
             ]);
-            return [
-                'error' => false,
-                'data' => [
-                    'flowToSent' => $flowToSent
-                ]
-            ];
+
+            return $this->successResponse(data: [
+                'flowToSent' => $flowToSent
+            ], statusCode: 201);
         } catch (\Exception $e) {
-            Log::info("createFlowToSent: {$e->getMessage()}");
-            return [
-                'error' => true,
-                'message' => $e->getMessage()
-            ];
+            report($e);
+            return $this->errorResponse('Erro interno', 500);
+            // Log::info("createFlowToSent: {$e->getMessage()}");
+            // return [
+            //     'error' => true,
+            //     'message' => $e->getMessage()
+            // ];
         }
     }
 }

@@ -18,11 +18,14 @@ use App\Livewire\Pages\Admin\User\Index as AdminUserPage;
 
 use App\Livewire\Pages\Home;
 use App\Livewire\Welcome;
+use App\Mail\User\Welcome as UserWelcome;
 use App\Models\Instance;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
@@ -41,10 +44,10 @@ use Illuminate\Support\Facades\Storage;
 Route::get('/', Welcome::class);
 
 Route::middleware(['guest'])->group(function () {
-    // Route::get('/register', Register::class)->name('register');
-    Route::get('/register', function () {
-        return redirect()->to('/login');
-    })->name('register');
+    Route::get('/register', Register::class)->name('register');
+    // Route::get('/register', function () {
+    //     return redirect()->to('/login');
+    // })->name('register');
 
     Route::get('/login', Login::class)->name('login');
 });
@@ -77,9 +80,12 @@ Route::get('/linkstorage', function () {
 });
 
 Route::get('/testando', function () {
-    GetReadyFlowsToSentJob::dispatch()->onQueue('myqueue');
+    // GetReadyFlowsToSentJob::dispatch()->onQueue('myqueue');
+    $user = User::find(3);
+    Mail::to($user)->send(new UserWelcome(user: $user));
     return "testando";
 });
+
 
 
 Route::post('/webhook', [Webhook::class, 'webhookHandle']);
