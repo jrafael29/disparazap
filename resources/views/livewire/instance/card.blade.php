@@ -23,8 +23,8 @@
         <div class="mb-3">
             {{-- Success is as dangerous as failure. --}}
             @if(!$instance->online)
-            @if($test)
-            <img src="{{ asset('storage/'.$test) }}" alt="QR Code">
+            @if($qrcodePath)
+            <img src="{{ asset('storage/'.$qrcodePath) }}" alt="QR Code">
             @endif
             @else
             <div class="text-center">
@@ -38,9 +38,11 @@
             <x-button spinner wire:click='logoutInstanceClick' spinner icon="o-power" label="Deslogar Instancia"
                 class="btn-error" />
             @else
-            {{--
+            @if(!count($instance->flowToSent))
+
             <x-button spinner wire:click='deleteInstanceClick' spinner icon="o-trash" label="Remover Instancia"
-                class="btn-error" /> --}}
+                class="btn-error" />
+            @endif
 
             <x-button spinner wire:click='getQrCodeClick' icon="o-qr-code"
                 label="{{$instance->qrcode_path ? 'Atualizar' : 'Buscar'}} QRCode" class="btn-outline" />

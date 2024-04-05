@@ -21,7 +21,7 @@ class Card extends Component
     public ?string $profileName = '';
     public ?string $profileStatus = '';
 
-    public $test = '';
+    public $qrcodePath = '';
 
     function logoutInstanceClick()
     {
@@ -33,7 +33,7 @@ class Card extends Component
 
     function deleteInstanceClick()
     {
-        $this->test = '';
+        $this->qrcodePath = '';
         $this->instanceService->deleteInstance($this->instance->name);
         $this->dispatch('instance::deleted');
         $this->redirectRoute('instance');
@@ -59,7 +59,7 @@ class Card extends Component
         }
 
         if (!$this->instance->online) {
-            $this->test = $this->instance->qrcode_path;
+            $this->qrcodePath = $this->instance->qrcode_path;
         }
     }
 

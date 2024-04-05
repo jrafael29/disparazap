@@ -109,7 +109,14 @@ class InstanceService
 
     function logoutInstance($instanceName)
     {
-        return $this->evolutionInstanceService->logoutInstance($instanceName);
+        $this->evolutionInstanceService->logoutInstance($instanceName);
+        $this->instanceRepository->updateInstance($instanceName, [
+            'online' => 0
+        ]);
+
+        return $this->successResponse([
+            'success' => true
+        ]);
     }
 
     function deleteInstance($instanceName)
