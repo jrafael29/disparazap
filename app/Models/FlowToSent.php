@@ -9,10 +9,15 @@ class FlowToSent extends Model
 {
     use HasFactory;
 
+    protected $table = 'flow_to_sents';
+
     protected $fillable = [
         'user_id',
         'flow_id',
         'instance_id',
+        'sent_id',
+        'contact_id',
+        'user_historic_credit_id',
         "to",
         "sent",
         "busy",
@@ -31,5 +36,17 @@ class FlowToSent extends Model
     public function instance()
     {
         return $this->belongsTo(Instance::class);
+    }
+    public function sent()
+    {
+        return $this->belongsTo(Sent::class);
+    }
+    public function contact()
+    {
+        return $this->belongsTo(Contact::class);
+    }
+    public function historic()
+    {
+        return $this->belongsTo(UserBalanceHistory::class);
     }
 }

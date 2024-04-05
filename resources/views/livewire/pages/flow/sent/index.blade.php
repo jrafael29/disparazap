@@ -32,5 +32,4 @@
 
     </div>
     @endif
-    <livewire:flow.sent.table :flow="$flow" />
 </div>

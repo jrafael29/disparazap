@@ -6,13 +6,14 @@ use App\Helpers\Base64ToFile;
 use App\Models\Instance;
 use App\Repository\InstanceRepository;
 use App\Service\Evolution\EvolutionInstanceService;
+use App\Traits\ServiceResponseTrait;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class InstanceService
 {
-
+    use ServiceResponseTrait;
     function __construct(
         private InstanceRepository $instanceRepository,
         private EvolutionInstanceService $evolutionInstanceService
@@ -106,6 +107,10 @@ class InstanceService
         }
     }
 
+    function logoutInstance($instanceName)
+    {
+        return $this->evolutionInstanceService->logoutInstance($instanceName);
+    }
 
     function deleteInstance($instanceName)
     {
@@ -120,25 +125,18 @@ class InstanceService
 
             Storage::delete('public/' . $instanceModel->qrcode_path);
             $this->instanceRepository->deleteInstanceByName($instanceModel->name);
-            $instanceState = $this->evolutionInstanceService->getStateInstance($instanceModel->name);
-            if ($instanceState === 'open') {
-                $this->evolutionInstanceService->logoutInstance($instanceModel->name);
-            }
             $this->evolutionInstanceService->removeInstance($instanceModel->name);
-            return [
-                'error' => false,
-                'data' => [
-                    'success' => true
-                ]
-            ];
+
+            return $this->successResponse(data: [
+                'success' => true
+            ]);
         } catch (\Exception $e) {
             Log::info($e->getMessage());
 
-
-            return [
-                'error' => true,
-                'message' => $e->getMessage()
-            ];
+            return $this->errorResponse(
+                message: $e->getMessage(),
+                statusCode: 500
+            );
         }
     }
 
@@ -215,6 +213,7 @@ class InstanceService
 
     function getInstanceState($instanceName)
     {
+        // can be -> open | close |
         if (empty($instanceName)) return [
             "error" => true,
             "message" => "Invalid parameter"

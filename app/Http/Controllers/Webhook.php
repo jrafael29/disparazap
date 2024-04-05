@@ -21,7 +21,6 @@ class Webhook extends Controller
     ) {
     }
 
-
     function webhookHandle(Request $request)
     {
         try {
@@ -54,7 +53,6 @@ class Webhook extends Controller
         $instanceName = $data['instance'];
         $instanceModel = Instance::query()->where('name', $instanceName)->first();
         if (!empty($instanceModel->qrcode_path)) {
-            // remover imagem existente
             Storage::delete('public/' . $instanceModel->qrcode_path);
         }
         $filename = 'qrcodes/qr_' . uniqid() . '.png';
@@ -79,32 +77,7 @@ class Webhook extends Controller
 
             if ($state === 'open') {
                 Log::info('abriu', $data);
-                // get profile url
-                // $instanceData = $this->instanceService->getInstance($instanceName);
-                // if ($instanceData) {
-                //     $profilePictureUrlCacheKey = "$instanceModel->id-instance:profilePictureUrl";
-                //     $profileNameCacheKey = "$instanceModel->id-instance:profileName";
-                //     $profileStatusCacheKey = "$instanceModel->id-instance:profileStatus";
-                //     Cache::add($profilePictureUrlCacheKey, $instanceData['profilePictureUrl']);
-                //     Cache::add($profileNameCacheKey, $instanceData['profileName']);
-                //     Cache::add($profileStatusCacheKey, $instanceData['profileStatus']);
-                // }
-                // get status e others;
                 InstanceOpenHandleJob::dispatch($instanceModel);
-
-
-                // $instanceModel->online = true;
-                // $instanceModel->save();
-
-                // if (!$instanceData) return false;
-                // report($instanceData);
-                // $instanceData = $this->evolutionInstanceService->getInstance($instanceModel->name);
-                // $this->instanceProfilePictureUrl = $instanceData['profilePictureUrl'];
-                // $this->instanceProfileName = $instanceData['profileName'];
-                // $this->instanceProfileStatus = $instanceData['profileStatus'];
-                // busca informações do perfil
-                // nome 
-                // foto de perfil
             }
 
             if ($state === 'close') {

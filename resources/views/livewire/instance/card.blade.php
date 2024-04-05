@@ -1,20 +1,22 @@
 <div wire:poll>
-    <x-card class="text-wrap" title="{!!$instance->description!!}"
-        subtitle='{{$instance->online ? "Conectado": "Desconectado" }}'>
+    <x-card title="{!!$instance->description!!}" subtitle='{{$instance->online ? "Conectado": "Desconectado" }}'>
 
-        <div class="mb-3">
+        <div class="mb-3 text-wrap">
             @if($instance->online && !empty($profilePictureUrl))
             <x-slot:figure>
                 <img class="rounded-full" width="150" src="{{$profilePictureUrl}}" />
             </x-slot:figure>
             @endif
             <span>
-                @if($instance->online && !empty($profilePictureUrl))
+                @if($instance->online)
+                @if($profileName)
                 <p>Nome: <b>{{$profileName}}</b></p>
-                <p>Status: <b>{{$profileStatus}}</b></p>
+                @endif
+                @if($profileStatus)
+                <p class="w-80">Status: <b>{{$profileStatus}}</b></p>
+                @endif
                 @endif
                 <p>Numero: <b>{{$instance->phonenumber}}</b></p>
-
             </span>
         </div>
 
@@ -32,11 +34,17 @@
             @endif
         </div>
         <div class="flex justify-center gap-3">
-            <x-button spinner wire:click='deleteInstanceClick' spinner icon="o-trash"
-                label="{{!$instance->online ? 'Remover' : 'Deslogar'}} Instancia" class="btn-error" />
-            @if(!$instance->online)
+            @if($instance->online)
+            <x-button spinner wire:click='logoutInstanceClick' spinner icon="o-power" label="Deslogar Instancia"
+                class="btn-error" />
+            @else
+            {{--
+            <x-button spinner wire:click='deleteInstanceClick' spinner icon="o-trash" label="Remover Instancia"
+                class="btn-error" /> --}}
 
-            <x-button spinner wire:click='getQrCodeClick' icon="o-qr-code" label="Buscar QRCode" class="btn-outline" />
+            <x-button spinner wire:click='getQrCodeClick' icon="o-qr-code"
+                label="{{$instance->qrcode_path ? 'Atualizar' : 'Buscar'}} QRCode" class="btn-outline" />
+
             @endif
         </div>
     </x-card>

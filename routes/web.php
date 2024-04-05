@@ -7,10 +7,12 @@ use App\Livewire\Pages\Auth\Register;
 use App\Livewire\Pages\Auth\Login;
 use App\Livewire\Pages\Flow\Index as FlowIndex;
 use App\Livewire\Pages\Flow\Message\Index as MessageIndex;
-use App\Livewire\Pages\Flow\Sent\Index as SentIndex;
+use App\Livewire\Pages\Flow\Sent\Index as FlowToSentIndex;
 use App\Livewire\Pages\Extractor\Index as ExtractorIndex;
 use App\Livewire\Pages\Instance\Index as InstanceIndex;
 use App\Livewire\Pages\Contact\Index as ContactIndex;
+use App\Livewire\Pages\Sent\Index as SentIndex;
+
 
 use App\Livewire\Pages\Admin\User\Index as AdminUserPage;
 
@@ -62,10 +64,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/instance', InstanceIndex::class)->name('instance');
     Route::get('/message-flow', FlowIndex::class)->name('flow');
     Route::get('/message-flow/{flow}/message', MessageIndex::class)->name('flow.message');
-    Route::get('/message-flow/{flow}/sent', SentIndex::class)->name('flow.sent');
+    Route::get('/message-flow/{flow}/sent', FlowToSentIndex::class)->name('flow.sent');
     Route::get('/extractor', ExtractorIndex::class)->name('extractor');
 
     Route::get('/contacts', ContactIndex::class)->name('contact');
+
+    Route::get('/sents', SentIndex::class)->name('sent');
 });
 
 // admin routes

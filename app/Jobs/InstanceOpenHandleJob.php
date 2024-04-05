@@ -34,11 +34,11 @@ class InstanceOpenHandleJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Log::info("iniciou o job");
+        // Log::info("iniciou o job");
         $instanceData = $this->instanceService->getInstance($this->instance->name);
         if ($instanceData) {
             $instanceData = $instanceData['data'];
-            Log::info("instance data", $instanceData);
+            // Log::info("instance data", $instanceData);
             $profilePictureUrlCacheKey = $this->instance->id . "-instance:profilePictureUrl";
             $profileNameCacheKey = $this->instance->id . "-instance:profileName";
             $profileStatusCacheKey = $this->instance->id . "-instance:profileStatus";
@@ -48,7 +48,7 @@ class InstanceOpenHandleJob implements ShouldQueue
             Cache::add($profileStatusCacheKey, $instanceData['profileStatus'], $ttl);
         }
 
-
+        $this->instance->qrcode_path = '';
         $this->instance->online = true;
         $this->instance->save();
     }

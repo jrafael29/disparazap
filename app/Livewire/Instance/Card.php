@@ -23,7 +23,15 @@ class Card extends Component
 
     public $test = '';
 
-    function deleteInstanceClick(Instance $instance)
+    function logoutInstanceClick()
+    {
+        $logoutResult = $this->instanceService->logoutInstance($this->instance->name);
+        if ($logoutResult) {
+            $this->success('Instancia desconectada com sucesso.');
+        }
+    }
+
+    function deleteInstanceClick()
     {
         $this->test = '';
         $this->instanceService->deleteInstance($this->instance->name);
@@ -74,11 +82,29 @@ class Card extends Component
         $cachedPicture = Cache::get($profilePictureUrlCacheKey);
         $cachedName = Cache::get($profileNameCacheKey);
         $cachedStatus = Cache::get($profileStatusCacheKey);
-        if ($cachedPicture && $cachedName && $cachedStatus) {
-            $this->profilePictureUrl = $cachedPicture;
-            $this->profileName = $cachedName;
-            $this->profileStatus = $cachedStatus;
-        }
+
+        $cacheExpireTime = env('CACHE_DEFAULT_LIFETIME');
+
+        if (!$cachedPicture) Cache::set(
+            key: $profilePictureUrlCacheKey,
+            value: $this->profilePictureUrl,
+            ttl: $cacheExpireTime
+        );
+        if (!$cachedName) Cache::set(
+            key: $profileNameCacheKey,
+            value: $this->profileName,
+            ttl: $cacheExpireTime
+        );
+        if (!$cachedStatus) Cache::set(
+            key: $profileStatusCacheKey,
+            value: $this->profileStatus,
+            ttl: $cacheExpireTime
+        );
+
+        $this->profilePictureUrl = $cachedPicture;
+        $this->profileName = $cachedName;
+        $this->profileStatus = $cachedStatus;
+
 
         return view('livewire.instance.card');
     }

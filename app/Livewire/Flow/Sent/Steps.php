@@ -11,6 +11,7 @@ use App\Models\UserContact;
 use App\Service\Evolution\EvolutionChatService;
 use App\Service\Evolution\EvolutionGroupService;
 use App\Service\FlowToSentService;
+use App\Service\SentService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -72,6 +73,7 @@ class Steps extends Component
     private EvolutionGroupService $evolutionGroupService;
     private EvolutionChatService $evolutionChatService;
     private FlowToSentService $flowToSentService;
+    private SentService $sentService;
 
     public function selectSendOption($option)
     {
@@ -225,27 +227,18 @@ class Steps extends Component
         $this->validate();
 
         $numbers = $this->phonenumbers;
-        // dd($numbers);
         $instances = $this->selectedInstances;
-        $allInstancesPhonenumbers = PhonenumberHelper::dividePhonenumbersByInstances(
+
+        $this->sentService->scheduleSent(
+            userId: Auth::user()->id,
+            flowId: $this->flow->id,
             instances: $instances,
             phonenumbers: $numbers,
+            sendDate: $this->toSendDate,
+            delay: $this->delay,
+            description: uniqid("Meu envio ")
         );
 
-        foreach ($allInstancesPhonenumbers as $instanceId => $phonenumbers) {
-            foreach ($phonenumbers as $index => $phonenumber) {
-                $toSentDate = Carbon::parse($this->toSendDate)->addSeconds(($this->delay * $index) + 5);
-                // dd($sendDate);
-                $this->flowToSentService->createFlowToSent(
-                    userId: Auth::user()->id,
-                    flowId: $this->flow->id,
-                    phonenumber: $phonenumber,
-                    instanceId: $instanceId,
-                    sendAt: $toSentDate,
-                    delayInSeconds: $this->delay
-                );
-            }
-        }
         $this->success("Agendamento feito com sucesso");
         $this->getTotalDuration();
         $this->next();
@@ -254,11 +247,11 @@ class Steps extends Component
     public function boot(
         EvolutionGroupService $evolutionGroupService,
         EvolutionChatService $evolutionChatService,
-        FlowToSentService $flowToSentService
+        SentService $sentService
     ) {
         $this->evolutionGroupService = $evolutionGroupService;
         $this->evolutionChatService = $evolutionChatService;
-        $this->flowToSentService = $flowToSentService;
+        $this->sentService = $sentService;
     }
 
     public function mount(MessageFlow $flow)
@@ -272,6 +265,7 @@ class Steps extends Component
     {
         $instancesModel = Instance::query()
             ->where('user_id', Auth::user()->id)
+            ->where('active', 1)
             ->where('online', 1)
             ->get();
 

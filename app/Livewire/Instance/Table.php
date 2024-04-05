@@ -20,8 +20,6 @@ class Table extends Component
 
     public array $sortBy = ['column' => 'name', 'direction' => 'asc'];
 
-    private InstanceService $instanceService;
-
 
     // Table headers
     public function headers(): array
@@ -41,13 +39,6 @@ class Table extends Component
             }
         ];
     }
-
-
-    // function deleteInstanceClick()
-    // {
-    //     $this->instanceService->deleteInstance($this->instance->name);
-    //     $this->dispatch('instance::deleted');
-    // }
 
     function getQrClick(Instance $instance)
     {
@@ -72,13 +63,6 @@ class Table extends Component
         return $sortedInstances;
     }
 
-
-    function boot(
-        InstanceService $instanceService
-    ) {
-
-        $this->instanceService = $instanceService;
-    }
 
     #[On("instance::created")]
     #[On("qrcode::updated")]

@@ -28,6 +28,22 @@ return new class extends Migration
                 ->on('instances')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->foreignId('sent_id')
+                ->references('id')
+                ->on('sents')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('contact_id')
+                ->references('id')
+                ->on('contacts')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
+            $table->foreignId('user_historic_credit_id')
+                ->nullable()
+                ->references('id')
+                ->on('contacts')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->string("to");
             $table->boolean('active')->default(true);
             $table->boolean("sent")->default(false);
