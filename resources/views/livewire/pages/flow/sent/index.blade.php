@@ -1,6 +1,6 @@
 <div>
     <div class="mb-3">
-        <a wire:navigate href="{{URL::to('/message-flow')}}">
+        <a wire:navigate href="{{route('flow')}}">
             <x-button class="btn-outline">
                 Voltar
             </x-button>

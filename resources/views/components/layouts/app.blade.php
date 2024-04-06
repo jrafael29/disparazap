@@ -48,11 +48,11 @@
 
                 <x-menu-item title="Inicio" icon="o-home" link="{{route('home')}}" />
                 <x-menu-item title="Conectar WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />
+                <x-menu-item title="Contatos" icon="o-user-group" link="{{route('contact')}}" />
                 <x-menu-item title="Fluxo de Mensagens" icon="o-chat-bubble-oval-left-ellipsis"
                     link="{{route('flow')}}" />
                 <x-menu-item title="Envios" icon="o-paper-airplane" link="{{route('sent')}}" />
-                {{--
-                <x-menu-item title="Contatos" icon="o-user-group" link="{{route('contact')}}" /> --}}
+
                 {{--
                 <x-menu-item title="Utilitário" icon="o-code-bracket-square" link="{{route('extractor')}}" /> --}}
                 @if(Auth::user()->isAdmin)

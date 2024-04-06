@@ -20,6 +20,12 @@ class Index extends Component
     public $contacts = [];
     public $dddSelected;
     public $selectedContacts = [];
+    public $countSelectedContacts = 0;
+
+    public function updateSelectedContacts()
+    {
+        $this->countSelectedContacts = count($this->selectedContacts);
+    }
 
     public function orderContacts()
     {
@@ -47,6 +53,7 @@ class Index extends Component
         foreach ($this->selectedContacts as $userContactId) {
             UserContact::query()->findOrFail($userContactId)?->delete();
         }
+        $this->redirect('/contacts');
     }
 
     public function delete(UserContact $uc)

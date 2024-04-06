@@ -2,6 +2,7 @@
 
 namespace App\Service\Evolution;
 
+use App\Helpers\Phonenumber;
 use Illuminate\Support\Facades\Http;
 
 class EvolutionChatService
@@ -50,48 +51,24 @@ class EvolutionChatService
 
         $numberBatches = $this->divideArrayItems($numbers);
 
-        $formattedNumbers = [];
+
 
         // Faz uma requisição para cada lote de números
         $getNumbersRoute = '/chat/whatsappNumbers/' . $instanceName;
         $url = $this->apiUrl . $getNumbersRoute;
-        $body = [
-            'numbers' => $numbers,
-        ];
 
         $headers = [
             'apiKey' => $this->apiKey
         ];
+
+        $formattedNumbers = [];
         foreach ($numberBatches as $batch) {
             $body = ['numbers' => $batch];
-
             $response = Http::withHeaders($headers)->post($url, $body);
             $data = $response->json();
-            $formatedPhonenumbers = $this->formatNumbers($data);
-            // dd($phonenumbersFormated);
-            // Formata os números retornados
             $formattedNumbers += $this->formatNumbers($data);
-            // $formattedNumbers = array_merge($formattedNumbers, $formatedPhonenumbers);
         }
-        // dd($formattedNumbers);
-
         return $formattedNumbers;
-
-
-        // $getNumbersRoute = '/chat/whatsappNumbers/' . $instanceName;
-        // $url = $this->apiUrl . $getNumbersRoute;
-        // $body = [
-        //     'numbers' => $numbers,
-        // ];
-
-        // $headers = [
-        //     'apiKey' => $this->apiKey
-        // ];
-
-        // $response = Http::withHeaders($headers)
-        //     ->post($url, $body);
-        // $data = $response->json();
-        // return $this->formatNumbers($data);
     }
 
     private function formatNumbers($numbersInfo = [])

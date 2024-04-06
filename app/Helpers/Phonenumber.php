@@ -9,7 +9,7 @@ class Phonenumber
     static public function getPhonenumbersFromText($text, $allowRepeated = false): array
     {
         try {
-            $regex = '/(?:55)?(\d{2})(\d{4,5})(\d{4})\b/';
+            $regex = '/(?:55)?(\d{2})?(\d{4,5})(\d{4})\b/';
             $phonenumbers = [];
 
             // Executar a expressão regular na string
@@ -20,7 +20,7 @@ class Phonenumber
                 $phonenumbers[] = $match;
             }
             if (!$allowRepeated) {
-                return self::filterUniquePhonenumbers($phonenumbers);
+                return self::filterUniquePhonenumbers(array_values($phonenumbers));
             }
             return $phonenumbers;
         } catch (\Exception $e) {
@@ -33,20 +33,30 @@ class Phonenumber
     {
         if (empty($phonenumbers)) return false;
         return array_map(function ($phone) use ($ddi) {
+            if (strlen($phone) < 10 || strlen($phone) > 11) return $phone;
             // Verifica se o número começa com o DDI 55 e se não tem o prefixo '55'
-            if (strpos($phone, $ddi) !== 0) {
-                // Adiciona o prefixo '55' ao número de telefone
-                return "55" . $phone;
-            }
-            return $phone;
+            return $ddi . $phone;
         }, $phonenumbers);
     }
 
-    static public function filterUniquePhonenumbers($phonenumbers = []): array
+    static public function filterUniquePhonenumbers($phonenumbers = [])
     {
-        if (empty($phonenumbers)) return false;
-        $uniqPhonenumbers = array_values(array_unique($phonenumbers));
-        return $uniqPhonenumbers;
+        if (empty($phonenumbers)) return [];
+
+        // dd("uniq", $phonenumbers);
+        $correctlyPhonenumbers = [];
+        foreach ($phonenumbers as $phonenumber) {
+            // pega os ultimos 8 digitos do telefone.
+            $PhonenumberWithoutDDs = substr($phonenumber, -8);
+            if (!empty($correctlyPhonenumbers)) {
+                $result = $correctlyPhonenumbers[$PhonenumberWithoutDDs] ?? false;
+                if ($result) continue;
+                $correctlyPhonenumbers[$PhonenumberWithoutDDs] = $phonenumber;
+            } else {
+                $correctlyPhonenumbers[$PhonenumberWithoutDDs] = $phonenumber;
+            }
+        }
+        return array_values($correctlyPhonenumbers);
     }
 
     static public function getPhonenumberFromParticipant($participant = [], $ddi = 0)
@@ -107,5 +117,37 @@ class Phonenumber
             $offset = $offset + $numbersPerInstance;
         }
         return $allInstancesPhonenumbers;
+    }
+
+    static public function addDddToPhonenumbers($phonenumbers = [], $ddd)
+    {
+        if (empty($phonenumbers) || empty($ddd)) return false;
+        return array_map(function ($phone) use ($ddd) {
+            // 1. O numero deve ter 8 ou 9 de tamanho.
+            if (strlen($phone) < 8 || strlen($phone) > 9) return $phone;
+
+            return $ddd . $phone;
+        }, $phonenumbers);
+    }
+
+    static public function divideNumberExistence($phonenumbersWithExistence = [])
+    {
+        if (empty($phonenumbersWithExistence)) return false;
+
+        $existentPhonenumbers = [];
+        $inexistentPhonenumbers = [];
+        foreach ($phonenumbersWithExistence as $phonenumber => $exist) {
+            // like be: '5581991931921' => true
+            if ($exist) {
+                array_push($existentPhonenumbers, $phonenumber);
+            } else {
+                array_push($inexistentPhonenumbers, $phonenumber);
+            }
+        }
+
+        return [
+            'existents' => $existentPhonenumbers,
+            'inexistents' => $inexistentPhonenumbers
+        ];
     }
 }

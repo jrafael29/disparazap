@@ -11,6 +11,10 @@ use App\Livewire\Pages\Flow\Sent\Index as FlowToSentIndex;
 use App\Livewire\Pages\Extractor\Index as ExtractorIndex;
 use App\Livewire\Pages\Instance\Index as InstanceIndex;
 use App\Livewire\Pages\Contact\Index as ContactIndex;
+use App\Livewire\Pages\Contact\Create as ContactCreate;
+use App\Livewire\Pages\Contact\Import as ContactImport;
+
+
 use App\Livewire\Pages\Sent\Index as SentIndex;
 
 
@@ -46,7 +50,7 @@ use Illuminate\Support\Facades\Storage;
 Route::get('/', Welcome::class);
 
 Route::middleware(['guest'])->group(function () {
-    Route::get('/register', Register::class)->name('register');
+    // Route::get('/register', Register::class)->name('register');
     // Route::get('/register', function () {
     //     return redirect()->to('/login');
     // })->name('register');
@@ -68,6 +72,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/extractor', ExtractorIndex::class)->name('extractor');
 
     Route::get('/contacts', ContactIndex::class)->name('contact');
+    Route::get('/contacts/create', ContactCreate::class)->name('contact.create');
+    Route::get('/contacts/import', ContactImport::class)->name('contact.import');
+
 
     Route::get('/sents', SentIndex::class)->name('sent');
 });
