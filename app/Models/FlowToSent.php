@@ -25,6 +25,11 @@ class FlowToSent extends Model
         'delay_in_seconds',
     ];
 
+    protected $casts = [
+        'to_sent_at' => 'datetime',
+    ];
+
+
     public function user()
     {
         return $this->belongsTo(User::class);

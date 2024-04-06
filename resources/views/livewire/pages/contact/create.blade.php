@@ -1,6 +1,4 @@
 <div>
-    <x-header title="Novo contato" subtitle="Crie um novo contato personalizado." separator progress-indicator>
-    </x-header>
     <div class="mb-3">
         <a wire:navigate href="{{route('contact')}}">
             <x-button class="btn-outline">
@@ -8,6 +6,9 @@
             </x-button>
         </a>
     </div>
+    <x-header title="Novo contato" subtitle="Crie um novo contato personalizado." separator progress-indicator>
+    </x-header>
+
     {{-- Close your eyes. Count to one. That is how long forever feels. --}}
     <x-form wire:submit="save">
         {{-- Custom CSS class. Remeber to configure Tailwind safelist --}}

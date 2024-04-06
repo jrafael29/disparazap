@@ -2,6 +2,8 @@
     @if(count($sents))
     <x-table :headers="$headers" :rows="$sents" wire:model="expanded" expandable>
 
+
+
         @scope("cell_start_at", $sent)
         {{$sent->start_at->diffForHumans()}}
         @endscope
@@ -18,9 +20,20 @@
         ->where('sent_id', $sent->id)
         ->groupBy('instance_id')->get();
 
+        $endsAt = 0;
+        $sentHasEnd = $flowToSentCount == $doneFlowToSentCount;
+
+        $lastFlow = $sent->flows->last();
+        if($lastFlow->sent){
+        $endsAt = $lastFlow->updated_at;
+        }else{
+        $endsAt = $lastFlow->to_sent_at;
+        }
+
         @endphp
         <div class="bg-base-200 p-8 ">
             <p> <span class="font-bold">Inicio:</span> {{$sent->created_at->format('d/m/Y H:i')}}</p>
+            <p> <span class="font-bold">Termino:</span> {{$endsAt->format('d/m/Y H:i')}}</p>
             <br />
             @if(count($sent->flows))
             <p> <span class="font-bold">Nome do fluxo enviado:</span> {{$sent->flows[0]->flow->description}}</p>

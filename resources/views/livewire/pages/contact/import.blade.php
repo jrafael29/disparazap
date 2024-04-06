@@ -1,6 +1,4 @@
 <div>
-    <x-header title="Importar contato" subtitle="Importe contatos personalizado." separator progress-indicator>
-    </x-header>
     <div class="mb-3">
         <a wire:navigate href="{{route('contact')}}">
             <x-button class="btn-outline">
@@ -8,6 +6,8 @@
             </x-button>
         </a>
     </div>
+    <x-header title="Importar contato" subtitle="Importe contatos personalizado." separator progress-indicator>
+    </x-header>
 
     <div class="">
         <p class="mb-2">De onde você quer importar os contatos?</p>

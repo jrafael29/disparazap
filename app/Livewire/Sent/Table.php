@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Sent;
 
+use App\Models\FlowToSent;
 use App\Models\Sent;
 use App\Service\SentService;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,7 @@ class Table extends Component
         }
         $this->success("Envio pausado com sucesso.");
     }
+
 
     public function playSent(Sent $sent)
     {

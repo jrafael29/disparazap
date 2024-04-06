@@ -11,9 +11,11 @@
                         <div>
                             <div class="my-2">
                                 <x-button class="btn-outline" label="{{$includeDdd ? ' Não Incluir' : 'Incluir' }} DDD"
-                                    wire:click='toggleIncludeDdd' />
+                                    tooltip-right="Incluir DDD a número que não tiver" wire:click='toggleIncludeDdd' />
+
                             </div>
                             @if($includeDdd)
+
                             <x-input wire:model.live='ddd' type="number" label="Insira o DDD a ser incluido nos numeros"
                                 inline />
                             @endif
@@ -21,7 +23,8 @@
                         <div>
                             <div class="my-2">
                                 <x-button class="btn-outline" label="{{$includeDdi ? ' Não Incluir' : 'Incluir' }} DDD"
-                                    label="Incluir DDI Do País" wire:click='toggleIncludeDdi' />
+                                    tooltip-right="Incluir DDI a número que não tiver" label="Incluir DDI Do País"
+                                    wire:click='toggleIncludeDdi' />
                             </div>
                             @if($includeDdi)
                             <x-input wire:model.live='ddi' type="number" label="Insira o DDD a ser incluido nos numeros"
