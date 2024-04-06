@@ -20,7 +20,8 @@ class SentService
     {
         $sent = Sent::query()->create([
             'user_id' => $userId,
-            'description' => $description
+            'description' => $description,
+            'start_at' => $sendDate
         ]);
 
         $allInstancesPhonenumbers = PhonenumberHelper::dividePhonenumbersByInstances(

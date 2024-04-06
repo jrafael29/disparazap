@@ -14,7 +14,10 @@ class Table extends Component
     public $expanded = [];
     public $headers = [
         ['key' => 'id', 'label' => '#', 'class' => 'hidden'],
-        ['key' => 'description', 'label' => 'Description'],
+        ['key' => 'description', 'label' => '#'],
+        ['key' => 'start_at', 'label' => 'Inicio'],
+        ['key' => 'created_at', 'label' => 'Criado'],
+
     ];
 
     private SentService $sentService;

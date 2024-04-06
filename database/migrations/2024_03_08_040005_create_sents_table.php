@@ -20,6 +20,7 @@ return new class extends Migration
                 ->cascadeOnUpdate();
             $table->string("description");
             $table->boolean("paused")->default(false);
+            $table->dateTime("start_at");
             $table->timestamps();
         });
     }

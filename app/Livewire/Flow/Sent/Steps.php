@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Redis;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Mary\Traits\Toast;
+use Illuminate\Support\Str;
 
 class Steps extends Component
 {
@@ -39,7 +40,7 @@ class Steps extends Component
     public $step = 1; // step atual
     public $delay = 21; // delay entre um chat e outro (step de agendamento)
     public $minDelay = 10;
-    public $maxDelay = 30;
+    public $maxDelay = 90;
     public string $sendOption = ''; // opção de envio (step de alvos)
 
     #[Validate('required')]
@@ -236,7 +237,7 @@ class Steps extends Component
             phonenumbers: $numbers,
             sendDate: $this->toSendDate,
             delay: $this->delay,
-            description: uniqid("Meu envio ")
+            description: Str::uuid()->toString()
         );
 
         $this->success("Agendamento feito com sucesso");

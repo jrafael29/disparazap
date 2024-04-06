@@ -2,18 +2,21 @@
     <x-card title="{!!$instance->description!!}" subtitle='{{$instance->online ? "Conectado": "Desconectado" }}'>
 
         <div class="mb-3 text-wrap">
-            @if($instance->online && !empty($profilePictureUrl))
+            @if($instance->online)
+            @if(!empty($profilePictureUrl))
             <x-slot:figure>
                 <img class="rounded-full" width="150" src="{{$profilePictureUrl}}" />
             </x-slot:figure>
+            @else
+            <x-slot:figure>
+                <img class="rounded-full" width="150" src="{{asset('storage/default-user.jpg')}}" />
+            </x-slot:figure>
+            @endif
             @endif
             <span>
                 @if($instance->online)
                 @if($profileName)
                 <p>Nome: <b>{{$profileName}}</b></p>
-                @endif
-                @if($profileStatus)
-                <p class="w-80">Status: <b>{{$profileStatus}}</b></p>
                 @endif
                 @endif
                 <p>Numero: <b>{{$instance->phonenumber}}</b></p>

@@ -2,6 +2,13 @@
     @if(count($sents))
     <x-table :headers="$headers" :rows="$sents" wire:model="expanded" expandable>
 
+        @scope("cell_start_at", $sent)
+        {{$sent->start_at->diffForHumans()}}
+        @endscope
+        @scope("cell_created_at", $sent)
+        {{$sent->created_at->diffForHumans()}}
+        @endscope
+
         @scope('expansion', $sent)
         @php
         $flowToSentCount = \App\Models\FlowToSent::where('sent_id', $sent->id)->count();
@@ -13,7 +20,7 @@
 
         @endphp
         <div class="bg-base-200 p-8 ">
-            <p> <span class="font-bold">Inicio:</span> {{$sent->created_at->diffForHumans()}}</p>
+            <p> <span class="font-bold">Inicio:</span> {{$sent->created_at->format('d/m/Y H:i')}}</p>
             <br />
             @if(count($sent->flows))
             <p> <span class="font-bold">Nome do fluxo enviado:</span> {{$sent->flows[0]->flow->description}}</p>
@@ -24,15 +31,19 @@
                 class=" {{$doneFlowToSentCount === $flowToSentCount ? 'progress-success' : 'progress-info'}}  h-2" />
 
             <div class="flex gap-5 flwx-wrap my-2">
-                <x-stat value="{{$doneFlowToSentCount}}" description="Fluxos enviados" color="text-green-500"
-                    icon="o-check" tooltip="Fluxos enviados" />
-                <x-stat value="{{($flowToSentCount - $doneFlowToSentCount)}}" description="Fluxos em espera"
-                    color="text-gray-500" icon="o-clock" tooltip="Fluxos em espera" />
+                <x-stat value="{{$flowToSentCount}}" title="Total"
+                    description="Quantidade total de fluxos a serem enviados" color="text-blue-500"
+                    icon="o-paper-airplane" tooltip="Quantidade total de fluxos" />
+                <x-stat value="{{$doneFlowToSentCount}}" title="Enviado" description="Fluxo de mensagens enviados"
+                    color="text-green-500" icon="o-check" tooltip="Quantidade de fluxos enviados" />
+                <x-stat value="{{($flowToSentCount - $doneFlowToSentCount)}}" title="Na fila"
+                    description="Fluxo de mensagens em espera" color="text-gray-500" icon="o-clock"
+                    tooltip="Quantidade de fluxos em espera" />
             </div>
 
             <br />
 
-            <div>
+            <div class="flex justify-end">
 
                 @if($sent->paused)
                 <x-button spinner wire:click='playSent({{$sent->id}})' spinner icon="o-play-circle"
