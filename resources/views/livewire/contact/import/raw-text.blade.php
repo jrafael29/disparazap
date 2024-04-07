@@ -46,6 +46,7 @@
 
                 <x-slot:actions>
                     <x-button label="Limpar" type="reset" />
+
                     <x-button label="Extrair" class="btn-primary" type="submit" spinner="handleSubmit" />
                 </x-slot:actions>
             </x-form>
@@ -137,6 +138,50 @@
                 @endif
             </div>
         </x-step>
+        <x-step step="4" text="Adicionar a grupo">
+            <div>
+                Deseja adicionar os contatos a algum grupo?
+
+                <br />
+
+                <div>
+                    <livewire:contact.group.form-modal />
+                </div>
+
+
+                Criar grupo
+                <br />
+
+                <h1>Seus grupos:</h1>
+
+                <div class="flex">
+                    @forelse($groups as $group)
+                    <div class="border p-5 rounded {{$group->id !== $groupSelectedId ? '' : 'bg-gray-300'}}">
+                        <h1 class="text-center">{{$group->name}}</h1>
+                        <p>Esse grupo já possui {{count($group->userContacts) > 0 ? $group->userContacts->count() : 0}}
+                            contatos</p>
+                        <div class="flex justify-center mt-5">
+                            <x-button wire:click="selectGroup({{$group->id}})">
+                                @if($group->id === $groupSelectedId)
+                                Grupo Selecionado
+                                @else
+                                Selecionar Grupo
+                                @endif
+                            </x-button>
+                        </div>
+                    </div>
+                    @empty
+                    <h1>alguma coisa</h1>
+                    @endforelse
+                </div>
+
+                @if($groupSelectedId)
+                <x-button class="btn-primary" wire:click='addContactsToGroup' spinner
+                    label="Adicionar contatos a um grupo existente" />
+                @endif
+            </div>
+        </x-step>
+
     </x-steps>
 
     {{-- Create some methods to increase/decrease the model to match the step number --}}

@@ -4,11 +4,18 @@ namespace App\Livewire\Pages\Contact;
 
 use App\Models\Contact;
 use App\Models\UserContact;
+use App\Service\Evolution\EvolutionChatService;
+use App\Service\UserContactService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
+use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Mary\Traits\Toast;
+
 
 class Index extends Component
 {
+    use Toast;
     public $headers = [
         ['key' => 'id', 'label' => '#'],
         ['key' => 'contact.phonenumber', 'label' => 'Telefone'],
@@ -21,6 +28,53 @@ class Index extends Component
     public $dddSelected;
     public $selectedContacts = [];
     public $countSelectedContacts = 0;
+    public bool $openModal = false;
+    public $description;
+    #[Validate('required')]
+    public $phonenumber;
+    public bool $isValidPhonenumber = false;
+
+    private EvolutionChatService $evolutionChatService;
+    private UserContactService $userContactService;
+
+    public function boot(
+        EvolutionChatService $evolutionChatService,
+        UserContactService $userContactService
+    ) {
+        $this->evolutionChatService = $evolutionChatService;
+        $this->userContactService = $userContactService;
+    }
+
+    public function handleSubmit()
+    {
+        $this->validate();
+        $this->userContactService->createUserContact(
+            userId: Auth::user()->id,
+            description: trim($this->description),
+            phonenumber: trim($this->phonenumber)
+        );
+        $this->success("Contato criado com sucesso.");
+        $this->reset(['description', 'phonenumber', 'isValidPhonenumber']);
+    }
+
+    public function validatePhonenumber()
+    {
+        $this->validate();
+        // pega alguma instancia do usuario;
+        $result = $this->evolutionChatService->checkNumbersExistence(
+            instanceName: '2-instance-1',
+            numbers: [$this->phonenumber]
+        );
+        if (reset($result)) {
+            $this->isValidPhonenumber = true;
+        } else {
+            $this->isValidPhonenumber = false;
+            $this->warning(
+                title: "Telefone não existe no whatsapp, portanto não será salvo.",
+                timeout: 10000
+            );
+        }
+    }
 
     public function updateSelectedContacts()
     {
@@ -67,6 +121,7 @@ class Index extends Component
             array_push($this->ddds, ['id' => $i, 'name' => $i,]);
         }
     }
+
 
     public function render()
     {

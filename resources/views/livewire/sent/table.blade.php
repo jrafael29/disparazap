@@ -2,8 +2,6 @@
     @if(count($sents))
     <x-table :headers="$headers" :rows="$sents" wire:model="expanded" expandable>
 
-
-
         @scope("cell_start_at", $sent)
         {{$sent->start_at->diffForHumans()}}
         @endscope
@@ -67,16 +65,6 @@
                 @endif
 
             </div>
-
-            {{-- <p><span class="font-bold">Instancias utilizadas:</span></p>
-            <div>
-                <ul>
-                    @foreach($instancesById as $instanceId)
-                    <li>{{$instanceId->instance->description}}</li>
-                    @endforeach
-                </ul>
-            </div> --}}
-
         </div>
         @endscope
 

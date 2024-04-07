@@ -4,9 +4,12 @@ namespace App\Livewire\Contact\Import;
 
 use App\Helpers\Phonenumber;
 use App\Models\Instance;
+use App\Models\UserGroup;
 use App\Service\Evolution\EvolutionChatService;
 use App\Service\UserContactService;
+use App\Service\UserGroupService;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -35,13 +38,25 @@ class RawText extends Component
 
     public $show = false;
 
+    public $openModal = false;
+
+
     public $userOnlineInstancesCount = 0;
 
-    public $steps = 3; // quantidade de passos no
+    public $steps = 4; // quantidade de passos no
     public $step = 1; // step atual
+
+    public $groups = [];
+    public $groupSelectedId = 0;
 
     private EvolutionChatService $evolutionChatService;
     private UserContactService $userContactService;
+    private UserGroupService $userGroupService;
+
+    public function selectGroup($id)
+    {
+        $this->groupSelectedId = $id;
+    }
 
     public function toggleCollapseForm()
     {
@@ -70,9 +85,22 @@ class RawText extends Component
             phonenumbers: $this->existentPhonenumbers
         );
 
-        $this->reset('rawText', 'existentPhonenumbers', 'inexistentPhonenumbers');
-        $this->step = 1;
+        $this->next();
         $this->success("Contatos salvos com sucesso");
+    }
+
+    public function addContactsToGroup()
+    {
+
+        $this->userGroupService->addContactsToGroup(
+            userId: Auth::user()->id,
+            groupId: $this->groupSelectedId,
+            contacts: $this->existentPhonenumbers
+        );
+
+        $this->reset('rawText', 'existentPhonenumbers', 'inexistentPhonenumbers');
+
+        $this->redirect('/contacts/groups');
     }
 
     public function checkExistence()
@@ -143,14 +171,18 @@ class RawText extends Component
 
     public function boot(
         EvolutionChatService $evolutionChatService,
-        UserContactService $userContactService
+        UserContactService $userContactService,
+        UserGroupService $userGroupService
     ) {
         $this->evolutionChatService = $evolutionChatService;
         $this->userContactService = $userContactService;
+        $this->userGroupService = $userGroupService;
     }
 
+    #[On('userGroup::created')]
     public function render()
     {
+        $this->groups = UserGroup::query()->where('user_id', Auth::user()->id)->get();
         return view('livewire.contact.import.raw-text');
     }
 }

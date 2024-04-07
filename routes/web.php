@@ -13,6 +13,7 @@ use App\Livewire\Pages\Instance\Index as InstanceIndex;
 use App\Livewire\Pages\Contact\Index as ContactIndex;
 use App\Livewire\Pages\Contact\Create as ContactCreate;
 use App\Livewire\Pages\Contact\Import as ContactImport;
+use App\Livewire\Pages\Contact\Group\Index as ContactGroupIndex;
 
 
 use App\Livewire\Pages\Sent\Index as SentIndex;
@@ -75,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/contacts/create', ContactCreate::class)->name('contact.create');
     Route::get('/contacts/import', ContactImport::class)->name('contact.import');
 
+    Route::get('/contacts/groups', ContactGroupIndex::class)->name('contact.groups');
 
     Route::get('/sents', SentIndex::class)->name('sent');
 });

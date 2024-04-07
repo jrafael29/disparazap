@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('contacts', function (Blueprint $table) {
             $table->id();
             $table->string("phonenumber")->unique();
-            $table->string("description", 256);
+            $table->string("description", 256)->nullable();
             $table->boolean("active")->default(true);
             $table->timestamps();
         });

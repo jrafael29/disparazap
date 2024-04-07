@@ -9,7 +9,7 @@ use App\Traits\ServiceResponseTrait;
 class UserContactService
 {
     use ServiceResponseTrait;
-    public function createUserContact($userId, $description, $phonenumber)
+    public function createUserContact($userId, $description = null, $phonenumber)
     {
         try {
             $contact = Contact::query()->firstOrCreate([
