@@ -29,11 +29,15 @@
                 #
                 @endscope
 
+                @scope('cell_contactsCount', $group)
+                {{$group->userContacts->count()}}
+                @endscope
+
                 @scope('expansion', $group)
-                <div class="bg-base-200 p-8 ">
+                <div class="bg-base-200 dark:bg-zinc-800 p-8 ">
 
 
-                    <div class="flex flex-col sm:flex-row justify-between items-center my-2">
+                    <div class="flex flex-col sm:flex-row justify-between items-center my-2 ">
                         <h1 class="text-2xl">Contatos do grupo: {{$group->name}}</h1>
                         <div class="flex gap-2">
                             <x-button icon="o-trash" tooltip-top="Excluir Grupo"
@@ -46,15 +50,18 @@
 
                     </div>
                     <br />
-                    <div class="flex flex-col flex-wrap gap-2">
-                        @forelse($group->userContacts->take(50) as $contacts)
-                        <span class="w-1/2">
-                            {{$contacts->contact->phonenumber}}
-                        </span>
-                        @empty
-                        <p class="text-2xl">Nenhum contato neste grupo.</p>
-                        @endforelse
+                    <div class="max-h-36 font-mono overflow-auto bg-base-300 dark:bg-zinc-900 p-3">
+                        <div class="flex flex-col flex-wrap gap-2">
 
+                            @forelse($group->userContacts->take(50) as $contacts)
+                            <span class="w-1/2">
+                                {{$contacts->contact->phonenumber}}
+                            </span>
+                            @empty
+                            <p class="text-2xl">Nenhum contato neste grupo.</p>
+                            @endforelse
+
+                        </div>
                     </div>
 
 

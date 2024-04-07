@@ -22,6 +22,7 @@ class Index extends Component
         ['key' => 'id', 'label' => '#', 'class' => 'hidden'],
         ['key' => 'identifier', 'label' => '#'],
         ['key' => 'name', 'label' => 'Grupo'],
+        ['key' => 'contactsCount', 'label' => 'Contatos'],
         ['key' => 'description', 'label' => 'Descrição']
     ];
 
@@ -49,7 +50,9 @@ class Index extends Component
     {
         $groups = UserGroup::query()
             ->with(['userContacts'])
+            ->withCount('userContacts')
             ->where('user_id', Auth::user()->id)
+            ->orderBy('user_contacts_count', 'desc')
             ->get();
 
         $this->groups = $groups;
