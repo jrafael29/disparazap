@@ -33,7 +33,7 @@ class UserContactService
         }
     }
 
-    public function storeManyUserContacts($userId, $phonenumbers = [])
+    public function createManyUserContacts($userId, $phonenumbers = [])
     {
         if (empty($phonenumbers)) return false;
         foreach ($phonenumbers as $phonenumber) {

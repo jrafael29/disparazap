@@ -52,7 +52,7 @@
         </div>
         <div class="h-96 overflow-y-auto">
             <x-table selectable wire:model='selectedContacts' :headers="$headers" :rows="$contacts" striped
-                @row-selection="$wire.updateSelectedContacts" @row-selection="console.log('eae')">
+                @row-selection="$wire.updateSelectedContacts" @row-selection="console.log('eae')" with-pagination>
 
 
                 @scope('actions', $contact)

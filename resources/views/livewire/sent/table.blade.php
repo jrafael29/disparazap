@@ -1,6 +1,6 @@
 <div wire:poll.5s>
     @if(count($sents))
-    <x-table :headers="$headers" :rows="$sents" wire:model="expanded" expandable>
+    <x-table :headers="$headers" :rows="$sents" wire:model="expanded" striped expandable>
 
         @scope("cell_start_at", $sent)
         {{$sent->start_at->diffForHumans()}}
@@ -29,27 +29,37 @@
         }
 
         @endphp
-        <div class="bg-base-200 p-8 ">
+        <div class="bg-base- ">
             <p> <span class="font-bold">Inicio:</span> {{$sent->created_at->format('d/m/Y H:i')}}</p>
             <p> <span class="font-bold">Termino:</span> {{$endsAt->format('d/m/Y H:i')}}</p>
             <br />
             @if(count($sent->flows))
-            <p> <span class="font-bold">Nome do fluxo enviado:</span> {{$sent->flows[0]->flow->description}}</p>
+            <div>
+                <p> <span class="font-bold">Nome do fluxo enviado:</span> {{$sent->flows[0]->flow->description}}</p>
+            </div>
             @endif
             <br />
-            <p> <span class="font-bold">Progresso:</span></p>
-            <x-progress value="{{$doneFlowToSentCount}}" max="{{$flowToSentCount}}"
-                class=" {{$doneFlowToSentCount === $flowToSentCount ? 'progress-success' : 'progress-info'}}  h-2" />
-
-            <div class="flex gap-5 flwx-wrap my-2">
-                <x-stat value="{{$flowToSentCount}}" title="Total"
-                    description="Quantidade total de fluxos a serem enviados" color="text-blue-500"
-                    icon="o-paper-airplane" tooltip="Quantidade total de fluxos" />
-                <x-stat value="{{$doneFlowToSentCount}}" title="Enviado" description="Fluxo de mensagens enviados"
-                    color="text-green-500" icon="o-check" tooltip="Quantidade de fluxos enviados" />
-                <x-stat value="{{($flowToSentCount - $doneFlowToSentCount)}}" title="Na fila"
-                    description="Fluxo de mensagens em espera" color="text-gray-500" icon="o-clock"
-                    tooltip="Quantidade de fluxos em espera" />
+            <div>
+                <p> <span class="font-bold">Progresso:</span></p>
+                <x-progress value="{{$doneFlowToSentCount}}" max="{{$flowToSentCount}}"
+                    class=" {{$doneFlowToSentCount === $flowToSentCount ? 'progress-success' : 'progress-info'}}  h-2" />
+            </div>
+            <div class="lg:flex gap-10 my-2">
+                <div class="text-wrap">
+                    <x-stat value="{{$flowToSentCount}}" title="Total"
+                        description="Quantidade total de fluxos a serem enviados" color="text-blue-500"
+                        icon="o-paper-airplane" tooltip="Quantidade total de fluxos" />
+                </div>
+                <div>
+                    <x-stat value="{{$doneFlowToSentCount}}" title="Enviado"
+                        description="Qtd. de fluxo de mensagens enviados" color="text-green-500" icon="o-check"
+                        tooltip="Quantidade de fluxos enviados" />
+                </div>
+                <div>
+                    <x-stat value="{{($flowToSentCount - $doneFlowToSentCount)}}" title="Na fila"
+                        description="Qtd. de fluxo de mensagens em espera" color="text-gray-500" icon="o-clock"
+                        tooltip="Quantidade de fluxos em espera" />
+                </div>
             </div>
 
             <br />

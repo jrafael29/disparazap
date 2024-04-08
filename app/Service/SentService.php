@@ -18,6 +18,7 @@ class SentService
     }
     public function scheduleSent($userId, $flowId, $instances, $phonenumbers, $sendDate, $delay = 15, $description)
     {
+        if (!$userId || !$flowId || empty($instances) || empty($phonenumbers) || !$sendDate || !$description) return false;
         $sent = Sent::query()->create([
             'user_id' => $userId,
             'description' => $description,
@@ -50,7 +51,7 @@ class SentService
         $userId,
         $flowId
     ) {
-        if (!$sentId || !$instanceId || !count($phonenumbers) || !$sendDate || !$delay || !$userId || !$flowId) return false;
+        if (!$sentId || !$instanceId || empty($phonenumbers) || !$sendDate || !$delay || !$userId || !$flowId) return false;
         foreach ($phonenumbers as $index => $phonenumber) {
             $toSentDate = Carbon::parse($sendDate)->addSeconds(($delay * $index) + 5);
             // dd($sendDate);

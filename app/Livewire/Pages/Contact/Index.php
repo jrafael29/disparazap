@@ -11,10 +11,12 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Mary\Traits\Toast;
+use Livewire\WithPagination;
 
 
 class Index extends Component
 {
+    use WithPagination;
     use Toast;
     public $headers = [
         ['key' => 'id', 'label' => '#'],
@@ -24,7 +26,6 @@ class Index extends Component
     public $ddds = [
         ['id' => 0, 'name' => "Todos"]
     ];
-    public $contacts = [];
     public $dddSelected;
     public $selectedContacts = [];
     public $countSelectedContacts = 0;
@@ -81,26 +82,26 @@ class Index extends Component
         $this->countSelectedContacts = count($this->selectedContacts);
     }
 
-    public function orderContacts()
-    {
-        if ($this->dddSelected == 0) {
-            $this->contacts = UserContact::query()->with(['contact'])
-                ->where('user_id', Auth::user()->id)
-                ->whereHas('contact', function ($q) {
-                    $q->where('active', 1);
-                })
-                ->get();
-        } else {
-            $this->contacts = UserContact::query()->with(['contact'])
-                ->where('user_id', Auth::user()->id)
-                ->whereHas('contact', function ($q) {
-                    $q->where('phonenumber', 'like', "55{$this->dddSelected}%")
-                        ->where('active', 1);
-                })
-                ->get();
-        }
-        $this->render();
-    }
+    // public function orderContacts()
+    // {
+    //     if ($this->dddSelected == 0) {
+    //         $this->contacts = UserContact::query()->with(['contact'])
+    //             ->where('user_id', Auth::user()->id)
+    //             ->whereHas('contact', function ($q) {
+    //                 $q->where('active', 1);
+    //             })
+    //             ->get();
+    //     } else {
+    //         $this->contacts = UserContact::query()->with(['contact'])
+    //             ->where('user_id', Auth::user()->id)
+    //             ->whereHas('contact', function ($q) {
+    //                 $q->where('phonenumber', 'like', "55{$this->dddSelected}%")
+    //                     ->where('active', 1);
+    //             })
+    //             ->get();
+    //     }
+    //     $this->render();
+    // }
 
     public function deleteSelectedContacts()
     {
@@ -125,13 +126,13 @@ class Index extends Component
 
     public function render()
     {
-        $this->contacts = UserContact::with(['contact'])
+        $contacts = UserContact::with(['contact'])
             ->where('user_id', Auth::user()->id)
             ->whereHas('contact', function ($q) {
                 $q->where('active', 1);
             })
-            ->get();
+            ->paginate(200);
         // dd($this->contacts);
-        return view('livewire.pages.contact.index');
+        return view('livewire.pages.contact.index', compact('contacts'));
     }
 }

@@ -53,8 +53,25 @@ class RawText extends Component
     private UserContactService $userContactService;
     private UserGroupService $userGroupService;
 
+
+    public function next()
+    {
+        if ($this->step === $this->steps) return false;
+        $this->step++;
+    }
+    public function prev()
+    {
+        if ($this->step == 1) return false;
+        $this->step--;
+    }
+
+
     public function selectGroup($id)
     {
+        if ($id === $this->groupSelectedId) {
+            $this->reset('groupSelectedId');
+            return;
+        }
         $this->groupSelectedId = $id;
     }
 
@@ -78,16 +95,6 @@ class RawText extends Component
         $this->includeDdi = !$this->includeDdi;
     }
 
-    public function saveExistentPhonenumbers()
-    {
-        $this->userContactService->storeManyUserContacts(
-            userId: Auth::user()->id,
-            phonenumbers: $this->existentPhonenumbers
-        );
-
-        $this->next();
-        $this->success("Contatos salvos com sucesso");
-    }
 
     public function addContactsToGroup()
     {
@@ -124,15 +131,15 @@ class RawText extends Component
         $this->next();
     }
 
-    public function next()
+    public function saveExistentPhonenumbers()
     {
-        if ($this->step === $this->steps) return false;
-        $this->step++;
-    }
-    public function prev()
-    {
-        if ($this->step == 1) return false;
-        $this->step--;
+        $this->userContactService->createManyUserContacts(
+            userId: Auth::user()->id,
+            phonenumbers: $this->existentPhonenumbers
+        );
+
+        $this->next();
+        $this->success("Contatos salvos com sucesso");
     }
 
     public function handleSubmit()

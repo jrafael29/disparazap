@@ -50,7 +50,7 @@
 
                     </div>
                     <br />
-                    <div class="max-h-36 font-mono overflow-auto bg-base-300 dark:bg-zinc-900 p-3">
+                    <div class=" font-mono overflow-auto bg-base-300 dark:bg-zinc-900 p-3">
                         <div class="flex flex-col flex-wrap gap-2">
 
                             @forelse($group->userContacts->take(50) as $contacts)
