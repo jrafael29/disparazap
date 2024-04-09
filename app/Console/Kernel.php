@@ -9,20 +9,22 @@ use DateTimeZone;
 
 class Kernel extends ConsoleKernel
 {
-    /**
-     * Define the application's command schedule.
-     */
+
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('run:get-ready-flows')->everyFiveSeconds();
 
-        // $schedule->command('run:check-instances')->withoutOverlapping()->everyFiveSeconds();
+        // verifica os fluxos a serem enviados
+        // $schedule->command('run:get-ready-flows')->everyFiveSeconds();
+
+        // verifica instancias a cada dois minutos
+        // $schedule->command('run:check-instances')->everyTwoMinutes();
+
+        // verifica os numeros que devam ser verificados a cada 5 segundos.
+        $schedule->command('run:get-ready-phonenumbers-to-verify')->everyFiveSeconds();
     }
 
-    /**
-     * Register the commands for the application.
-     */
+
     protected function commands(): void
     {
         $this->load(__DIR__ . '/Commands');

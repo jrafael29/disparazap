@@ -54,6 +54,11 @@ class User extends Authenticatable
         return $this->hasMany(Instance::class, 'user_id', 'id');
     }
 
+    public function checks()
+    {
+        return $this->hasMany(PhonenumberCheck::class, 'user_id', 'id');
+    }
+
     public function contacts()
     {
         return $this->hasManyThrough(

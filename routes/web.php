@@ -93,10 +93,6 @@ Route::get('/linkstorage', function () {
 });
 
 Route::get('/testando', function () {
-    // GetReadyFlowsToSentJob::dispatch()->onQueue('myqueue');
-    $user = User::find(3);
-    Mail::to($user)->send(new UserWelcome(user: $user));
-    return "testando";
 });
 
 

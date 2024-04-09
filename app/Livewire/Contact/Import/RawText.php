@@ -3,9 +3,12 @@
 namespace App\Livewire\Contact\Import;
 
 use App\Helpers\Phonenumber;
+use App\Jobs\StorePhonenumbersToVerifyJob;
+use App\Jobs\VerifyPhonenumbersExistenceJob;
 use App\Models\Instance;
 use App\Models\UserGroup;
 use App\Service\Evolution\EvolutionChatService;
+use App\Service\PhonenumberService;
 use App\Service\UserContactService;
 use App\Service\UserGroupService;
 use Illuminate\Support\Facades\Auth;
@@ -52,7 +55,7 @@ class RawText extends Component
     private EvolutionChatService $evolutionChatService;
     private UserContactService $userContactService;
     private UserGroupService $userGroupService;
-
+    private PhonenumberService $phonenumberService;
 
     public function next()
     {
@@ -114,19 +117,27 @@ class RawText extends Component
     {
         $firstInstanceName = Instance::query()->where('user_id', Auth::user()->id)->first()?->name;
         if (!$firstInstanceName) return false;
-        $numbersExistence = $this->evolutionChatService->checkNumbersExistence(
-            numbers: $this->phonenumbers,
-            instanceName: $firstInstanceName
+        // $numbersExistence = $this->evolutionChatService->checkNumbersExistence(
+        //     numbers: $this->phonenumbers,
+        //     instanceName: $firstInstanceName
+        // );
+        // $numbersExistence = $this->phonenumberService->verifyPhonenumbersExistence(
+        //     phonenumbers: [...$this->phonenumbers],
+        //     instances: [$firstInstanceName]
+        // );
+        StorePhonenumbersToVerifyJob::dispatch(
+            Auth::user()->id,
+            $this->phonenumbers
         );
+        dd('guardado');
 
-
-        $phonenumbersExistenceSeparated = Phonenumber::divideNumberExistence($numbersExistence);
+        // $phonenumbersExistenceSeparated = Phonenumber::divideNumberExistence($numbersExistence);
         // dd($phonenumbersExistenceSeparated);
         // $this->reset('existentPhonenumbers', 'inexistentPhonenumbers');
         $this->existentPhonenumbers = [];
         $this->inexistentPhonenumbers = [];
-        $this->existentPhonenumbers = $phonenumbersExistenceSeparated['existents'];
-        $this->inexistentPhonenumbers = $phonenumbersExistenceSeparated['inexistents'];
+        // $this->existentPhonenumbers = $phonenumbersExistenceSeparated['existents'];
+        // $this->inexistentPhonenumbers = $phonenumbersExistenceSeparated['inexistents'];
 
         $this->next();
     }
@@ -179,11 +190,13 @@ class RawText extends Component
     public function boot(
         EvolutionChatService $evolutionChatService,
         UserContactService $userContactService,
-        UserGroupService $userGroupService
+        UserGroupService $userGroupService,
+        PhonenumberService $phonenumberService
     ) {
         $this->evolutionChatService = $evolutionChatService;
         $this->userContactService = $userContactService;
         $this->userGroupService = $userGroupService;
+        $this->phonenumberService = $phonenumberService;
     }
 
     #[On('userGroup::created')]

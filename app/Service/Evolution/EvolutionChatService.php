@@ -2,6 +2,7 @@
 
 namespace App\Service\Evolution;
 
+use App\Helpers\ArrayHelper;
 use App\Helpers\Phonenumber;
 use Illuminate\Support\Facades\Http;
 
@@ -18,40 +19,36 @@ class EvolutionChatService
         $this->webhookUrl = env("WEBHOOK_URL");
     }
 
-    public function divideArrayItems($items, $itemsPerBatch = 50)
-    {
-        $subArrays = [];
-        $count = 0;
-        $totalItems = count($items);
-
-        for ($i = 0; $i < $totalItems; $i += $itemsPerBatch) {
-            $subArrays[] = array_slice($items, $i, $itemsPerBatch);
-        }
-
-        // dd($subArrays);
-        return $subArrays;
-    }
+    // public function divideArrayItems($items, $itemsPerBatch = 50)
+    // {
+    //     $subArrays = [];
+    //     $count = 0;
+    //     $totalItems = count($items);
+    //     for ($i = 0; $i < $totalItems; $i += $itemsPerBatch) {
+    //         $subArrays[] = array_slice($items, $i, $itemsPerBatch);
+    //     }
+    //     // dd($subArrays);
+    //     return $subArrays;
+    // }
 
     public function makeManyRequests()
     {
         // se
-
     }
 
     public function checkNumbersExistence($instanceName, $numbers = [])
     {
-        if (!count($numbers)) {
+        if (empty($numbers) || !$instanceName) {
             return false;
         }
 
+        $numberBatches = [];
         $maxPhonenumbersPerRequest = 50;
-        if (count($numbers) >= $maxPhonenumbersPerRequest) {
-            $this->divideArrayItems($numbers, 50);
+        if (count($numbers) > $maxPhonenumbersPerRequest) {
+            $numberBatches = ArrayHelper::divideArrayItems($numbers, $maxPhonenumbersPerRequest);
+        } else {
+            $numberBatches = $numbers;
         }
-
-        $numberBatches = $this->divideArrayItems($numbers);
-
-
 
         // Faz uma requisição para cada lote de números
         $getNumbersRoute = '/chat/whatsappNumbers/' . $instanceName;

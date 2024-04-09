@@ -11,7 +11,6 @@ trait ServiceResponseTrait
         return [
             'success' => true,
             'data' => $data,
-            'statusCode' => $statusCode
         ];
     }
 
@@ -20,7 +19,6 @@ trait ServiceResponseTrait
         return [
             'success' => false,
             'message' => $message,
-            'statusCode' => $statusCode
         ];
     }
 }

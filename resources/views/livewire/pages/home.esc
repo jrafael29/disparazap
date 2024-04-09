@@ -1,0 +1,50 @@
+<div>
+        <div>
+            <p class="text-3xl">Explicações sobre o <span class="font-bold">DisparaZap</span></p>
+            <br>
+            <p class="text-2xl">Com o <span class="font-bold">DisparaZap</span> você pode <span class="bg-base-300">
+                    criar
+                    fluxos de
+                    mensagens e
+                    enviar para quantos
+                    contatos você
+                    quiser</span>
+            </p>
+            <p>Para adicionar um contato, você pode ir na aba <a class="text-blue-700" wire:navigate
+                    href="{{route('contact')}}">Contatos</a> e
+                <a class="text-blue-700" wire:navigate href="{{route('contact.import')}}">Importar</a> ou
+                selecionar de algum
+                grupo do seu
+                whatsapp
+            </p>
+        </div>
+
+        <br>
+        <div>
+            <p class="font-bold text-2xl mb-2">O que é um Contato?</p>
+            <p>O contato, é uma representação do seu contato no DisparaZap.</p>
+            <p><small>Como iremos lidar com os envios de forma avançada e profissional, precisamos dessa informação
+                    salva
+                    no
+                    nosso
+                    banco de dados para que tenhamos um melhor desempenho e você tenha mais autonomia no uso da
+                    plataforma.
+                </small>
+            <p>
+        </div>
+        <br>
+        <div>
+            <p class="font-bold text-2xl mb-2">O que é um Fluxo de mensagens?</p>
+            <p>Um fluxo de mensagem é, basicamente, um grupo de mensagens que será enviado no disparo</p>
+            <p>No grupo de mensagens você pode adicionar vários tipos de mensagens como texto, imagem e video, e
+                organizar a
+                ordem do jeito que você quiser.</p>
+        </div>
+        <br>
+        <div>
+            <p class="font-bold text-2xl mb-2">O que é um Envio?</p>
+            <p>O envio, armazenará todas as informações do disparo</p>
+            <p>Como a data, os numeros alvos, e mais...</p>
+        </div>
+
+    </div>

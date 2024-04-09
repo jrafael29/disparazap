@@ -61,11 +61,8 @@
                         tooltip="Quantidade de fluxos em espera" />
                 </div>
             </div>
-
             <br />
-
             <div class="flex justify-end">
-
                 @if($sent->paused)
                 <x-button spinner wire:click='playSent({{$sent->id}})' spinner icon="o-play-circle"
                     label="Continuar envio" class="btn-success" />
@@ -73,7 +70,6 @@
                 <x-button spinner wire:click='pauseSent({{$sent->id}})' spinner icon="o-pause-circle"
                     label="Pausar envio" class="btn-warning" />
                 @endif
-
             </div>
         </div>
         @endscope
