@@ -1,6 +1,6 @@
 <div>
     <!-- HEADER -->
-    <x-header title="Gerenciar contatos" subtitle="Crie, Gerencie, Importe seus contatos." separator progress-indicator>
+    <x-header title="Gerenciar {{Auth::user()->contacts->count()}} contatos" subtitle="Crie, Gerencie, Importe seus contatos." separator progress-indicator>
         <x-slot:actions>
             <a wire:navigate href="{{route('contact.groups')}}">
                 <x-button tooltip-left="Grupo de contatos" icon="o-user-group" spinner class="btn-outline" />
@@ -31,7 +31,7 @@
                         <x-slot:actions>
                             <x-button label="Cancelar" @click="$wire.openModal = false" />
                             @if($isValidPhonenumber)
-                            <x-button type="submit" label="Confirmar" class="btn-primary" />
+                            <x-button type="submit" label="Salvar contato" class="btn-primary" />
                             @else
                             <x-button wire:click='validatePhonenumber' label="Validar número" class="btn-outline" />
                             @endif
@@ -52,9 +52,11 @@
         </div>
         <div class="h-96 overflow-y-auto">
             <x-table selectable wire:model='selectedContacts' :headers="$headers" :rows="$contacts" striped
-                @row-selection="$wire.updateSelectedContacts" @row-selection="console.log('eae')" with-pagination>
+                @row-selection="$wire.updateSelectedContacts" with-pagination>
 
-
+                @scope("cell_contact.description", $contact)
+                    {{$contact->description ?? "Não definido"}}
+                @endscope
                 @scope('actions', $contact)
                 <x-button spinner icon="o-trash" wire:click="delete({{ $contact->id }})" spinner class="btn-sm" />
                 @endscope

@@ -1,4 +1,4 @@
-<div wire:poll.5s>
+<div wire:poll.10s>
     @if(count($sents))
     <x-table :headers="$headers" :rows="$sents" wire:model="expanded" striped expandable>
 

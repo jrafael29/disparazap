@@ -4,6 +4,8 @@ namespace App\Service\Evolution;
 
 use App\Helpers\ArrayHelper;
 use App\Helpers\Phonenumber;
+use Error;
+use Exception;
 use Illuminate\Support\Facades\Http;
 
 class EvolutionChatService
@@ -36,36 +38,68 @@ class EvolutionChatService
         // se
     }
 
-    public function checkNumbersExistence($instanceName, $numbers = [])
+    public function checkNumbers($instanceName, $numbers)
     {
-        if (empty($numbers) || !$instanceName) {
-            return false;
-        }
-
-        $numberBatches = [];
-        $maxPhonenumbersPerRequest = 50;
-        if (count($numbers) > $maxPhonenumbersPerRequest) {
-            $numberBatches = ArrayHelper::divideArrayItems($numbers, $maxPhonenumbersPerRequest);
-        } else {
-            $numberBatches = $numbers;
-        }
-
-        // Faz uma requisição para cada lote de números
+        if (empty($numbers)) return false;
         $getNumbersRoute = '/chat/whatsappNumbers/' . $instanceName;
         $url = $this->apiUrl . $getNumbersRoute;
 
         $headers = [
             'apiKey' => $this->apiKey
         ];
-
-        $formattedNumbers = [];
-        foreach ($numberBatches as $batch) {
-            $body = ['numbers' => $batch];
-            $response = Http::withHeaders($headers)->post($url, $body);
-            $data = $response->json();
-            $formattedNumbers += $this->formatNumbers($data);
+        $body = ['numbers' => $numbers];
+        $response = Http::withHeaders($headers)->post($url, $body);
+        $data = $response->json();
+        if (!empty($data['error'])) {
+            throw new Exception(json_encode($data['response']), $data['status']);
         }
-        return $formattedNumbers;
+        return $this->formatNumbers($data);
+    }
+
+    public function checkNumbersExistence($instanceName, $numbers = [])
+    {
+        try {
+
+
+            if (empty($numbers) || !$instanceName) {
+                return false;
+            }
+            $numberBatches = [];
+            $maxPhonenumbersPerRequest = 50;
+            if (count($numbers) > $maxPhonenumbersPerRequest) {
+                $numberBatches = ArrayHelper::divideArrayItems($numbers, $maxPhonenumbersPerRequest);
+            } elseif (count($numbers) == 1) {
+                $numberBatches[] = $numbers;
+            } else {
+                $numberBatches = $numbers;
+            }
+
+            // Faz uma requisição para cada lote de números
+
+            $formattedNumbers = [];
+
+            if ($numberBatches > 1) {
+                foreach ($numberBatches as $batch) {
+                    // $response = Http::withHeaders($headers)->post($url, $body);
+                    // $data = $response->json();
+                    // // dd($data);
+                    // if (!empty($data['error'])) {
+                    //     throw new Exception(json_encode($data['response']), $data['status']);
+                    // }
+                    $data = $this->checkNumbers(
+                        instanceName: $instanceName,
+                        numbers: $batch
+                    );
+                    $formattedNumbers += $data;
+                }
+            } else {
+            }
+
+
+            return $formattedNumbers;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     private function formatNumbers($numbersInfo = [])

@@ -107,38 +107,13 @@
         </x-step>
         <x-step step="3" text="Salvar contatos" class="">
             <div>
-                @if(!empty($existentPhonenumbers) || !empty($inexistentPhonenumbers))
-
-                <div class="">
-                    <p>Foram encontrados {{count($existentPhonenumbers)}} telefones (whatsapp) existentes, e
-                        {{count($inexistentPhonenumbers)}} inexistentes</p>
-                </div>
-                <div class="flex my-4">
-                    <div class="w-1/2 ">
-                        <p class="text-2xl">Numeros existentes</p>
-                        @forelse($existentPhonenumbers as $phonenumber)
-                        {{$phonenumber}} <br />
-                        @empty
-                        <p class="text-1xl">Nenhum contato existente</p>
-                        @endforelse
-                    </div>
-                    <div class="w-1/2 bg-red-200">
-                        <p class="text-2xl">Numeros inexistentes</p>
-                        @forelse($inexistentPhonenumbers as $phonenumber)
-                        {{$phonenumber}} <br />
-                        @empty
-                        <p class="text-1xl">Nenhum contato inexistente</p>
-                        @endforelse
-                    </div>
-                </div>
                 <div class="">
                     <h1 class="text-2xl mb-2">Deseja salvar os contatos válidos?</h1>
-                    <x-button label="Salvar Contatos" class="btn-info" wire:click='saveExistentPhonenumbers' spinner />
+                    <x-button label="Confirmar Salvar Contatos" class="btn-info" wire:click='saveExistentPhonenumbers' spinner />
                 </div>
-                @endif
             </div>
         </x-step>
-        <x-step step="4" text="Adicionar a grupo">
+        {{-- <x-step step="4" text="Adicionar a grupo">
             <div>
                 Deseja adicionar os contatos a algum grupo?
 
@@ -180,7 +155,7 @@
                     label="Adicionar contatos a um grupo existente" />
                 @endif
             </div>
-        </x-step>
+        </x-step> --}}
 
     </x-steps>
 

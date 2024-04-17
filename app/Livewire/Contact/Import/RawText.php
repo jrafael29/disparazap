@@ -4,7 +4,6 @@ namespace App\Livewire\Contact\Import;
 
 use App\Helpers\Phonenumber;
 use App\Jobs\StorePhonenumbersToVerifyJob;
-use App\Jobs\VerifyPhonenumbersExistenceJob;
 use App\Models\Instance;
 use App\Models\UserGroup;
 use App\Service\Evolution\EvolutionChatService;
@@ -92,16 +91,15 @@ class RawText extends Component
     }
     public function toggleIncludeDdi()
     {
-        if (!$this->includeDdd) {
-            return $this->error("Para adicionar o DDI, você precisa também adicionar o DDD");
-        }
+        // if (!$this->includeDdd) {
+        //     return $this->error("Para adicionar o DDI, você precisa também adicionar o DDD");
+        // }
         $this->includeDdi = !$this->includeDdi;
     }
 
 
     public function addContactsToGroup()
     {
-
         $this->userGroupService->addContactsToGroup(
             userId: Auth::user()->id,
             groupId: $this->groupSelectedId,
@@ -129,7 +127,6 @@ class RawText extends Component
             Auth::user()->id,
             $this->phonenumbers
         );
-        dd('guardado');
 
         // $phonenumbersExistenceSeparated = Phonenumber::divideNumberExistence($numbersExistence);
         // dd($phonenumbersExistenceSeparated);
@@ -139,18 +136,18 @@ class RawText extends Component
         // $this->existentPhonenumbers = $phonenumbersExistenceSeparated['existents'];
         // $this->inexistentPhonenumbers = $phonenumbersExistenceSeparated['inexistents'];
 
+        $this->info("Os números importados estão sendo verificados em segundo plano.");
+
         $this->next();
     }
 
     public function saveExistentPhonenumbers()
     {
-        $this->userContactService->createManyUserContacts(
-            userId: Auth::user()->id,
-            phonenumbers: $this->existentPhonenumbers
-        );
-
-        $this->next();
-        $this->success("Contatos salvos com sucesso");
+        // $this->userContactService->createManyUserContacts(
+        //     userId: Auth::user()->id,
+        //     phonenumbers: $this->existentPhonenumbers
+        // );
+        $this->success("Os números válidos serão salvos como Contatos");
     }
 
     public function handleSubmit()
@@ -162,6 +159,7 @@ class RawText extends Component
             text: $this->rawText,
             allowRepeated: false
         );
+
         if ($this->includeDdd) {
             $phonenumbers = Phonenumber::addDddToPhonenumbers(
                 phonenumbers: $phonenumbers,

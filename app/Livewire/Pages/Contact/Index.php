@@ -19,13 +19,14 @@ class Index extends Component
     use WithPagination;
     use Toast;
     public $headers = [
-        ['key' => 'id', 'label' => '#'],
+        ['key' => 'contact.id', 'label' => '#'],
         ['key' => 'contact.phonenumber', 'label' => 'Telefone'],
         ['key' => 'contact.description', 'label' => 'Descrição'] # <---- nested attributes
     ];
     public $ddds = [
         ['id' => 0, 'name' => "Todos"]
     ];
+
     public $dddSelected;
     public $selectedContacts = [];
     public $countSelectedContacts = 0;
@@ -58,15 +59,31 @@ class Index extends Component
         $this->reset(['description', 'phonenumber', 'isValidPhonenumber']);
     }
 
+    public function getFirstOnlineInstance()
+    {
+        $instances = Auth::user()->instances;
+        $instance = $instances->where('online', 1)->first();
+        return $instance ?? false;
+    }
+
     public function validatePhonenumber()
     {
+        $instance = $this->getFirstOnlineInstance();
+        if (!$instance) {
+            return $this->error("Nenhuma instancia encontrada");
+        }
         $this->validate();
         // pega alguma instancia do usuario;
         $result = $this->evolutionChatService->checkNumbersExistence(
-            instanceName: '2-instance-1',
+            instanceName: $instance->name,
             numbers: [$this->phonenumber]
         );
+        if (!$result) return $this->error("Ocorreu um erro");
         if (reset($result)) {
+            $this->info(
+                title: "O telefone existe no whatsapp. Agora você pode salva-lo como um contato",
+                timeout: 5000
+            );
             $this->isValidPhonenumber = true;
         } else {
             $this->isValidPhonenumber = false;
@@ -132,7 +149,6 @@ class Index extends Component
                 $q->where('active', 1);
             })
             ->paginate(200);
-        // dd($this->contacts);
         return view('livewire.pages.contact.index', compact('contacts'));
     }
 }

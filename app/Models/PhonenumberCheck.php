@@ -13,6 +13,10 @@ class PhonenumberCheck extends Model
 
     protected $fillable = ['user_id', 'description', 'done'];
 
+    protected $casts = [
+        'done' => 'boolean'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);

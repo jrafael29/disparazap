@@ -38,7 +38,6 @@ class EvolutionInstanceService
                 ->post($url, $body);
 
             $data = $response->body();
-
             $instance = $response->json('instance');
             if (!$instance) {
                 return false;
@@ -52,7 +51,9 @@ class EvolutionInstanceService
             ];
             return $instanceData;
         } catch (\Exception $e) {
+            dd($e);
             Log::info($e->getMessage());
+            return false;
         }
     }
     function getStateInstance($instanceName)
@@ -104,12 +105,16 @@ class EvolutionInstanceService
                 'apiKey' => $this->apiKey
             ];
             $response = Http::withHeaders($headers)->get($url);
-
             if ($response->body()) {
                 $instanceData = [];
                 foreach ($response->json() as $item) {
                     $instance = $item['instance'];
                     if ($instance['status'] == 'open') {
+                        if ($instance['instanceName'] == $instanceName) {
+                            $instanceData = $instance;
+                        }
+                    }
+                    if ($instance['status'] == 'connecting') {
                         if ($instance['instanceName'] == $instanceName) {
                             $instanceData = $instance;
                         }
@@ -151,6 +156,7 @@ class EvolutionInstanceService
             }
             return false;
         } catch (\Exception $e) {
+            dd($e);
             Log::info($e->getMessage());
             return false;
         }
@@ -196,7 +202,6 @@ class EvolutionInstanceService
     function removeInstance($instanceName)
     {
         try {
-
             $createInstanceRoute = '/instance/delete/' . $instanceName;
             $url = $this->apiUrl . $createInstanceRoute;
 

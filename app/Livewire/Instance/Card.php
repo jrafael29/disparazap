@@ -42,6 +42,13 @@ class Card extends Component
     function getQrCodeClick()
     {
         $result = $this->instanceService->updateQrInstance($this->instance->name);
+        if (!empty($result['error'])) {
+            return $this->error("Ocorreu um erro");
+        }
+        if (!empty($result['message']) && $result['message'] == 'Instance already opened.') {
+            $this->info("A instancia já esta conectada");
+            return;
+        }
         $this->redirect('/instance');
     }
 

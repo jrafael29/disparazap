@@ -23,12 +23,15 @@
         </x-button>
         @endif
         @endforeach
-
-
         @switch($importOption)
         @case('raw-text')
         <div class="my-3">
             <livewire:contact.import.raw-text />
+        </div>
+        @break
+        @case('group-contacts')
+        <div>
+            <livewire:contact.import.group-contacts />
         </div>
         @break
         @endswitch

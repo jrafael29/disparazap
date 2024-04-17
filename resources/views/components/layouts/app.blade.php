@@ -48,9 +48,12 @@
 
                 <x-menu-item title="Inicio" icon="o-home" link="{{route('home')}}" />
                 <x-menu-item title="Conectar WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />
+                <x-menu-item title="Verificações de existência" icon="o-clock" link="{{route('verify')}}" />
+                @can('have-online-instances')
                 <x-menu-item title="Contatos" icon="o-users" link="{{route('contact')}}" />
                 <x-menu-item title="Fluxo de Mensagens" icon="o-chat-bubble-oval-left-ellipsis"
                     link="{{route('flow')}}" />
+                @endcan
                 <x-menu-item title="Envios" icon="o-paper-airplane" link="{{route('sent')}}" />
 
                 {{--

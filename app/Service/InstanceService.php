@@ -131,8 +131,8 @@ class InstanceService
             }
 
             Storage::delete('public/' . $instanceModel->qrcode_path);
-            $this->instanceRepository->deleteInstanceByName($instanceModel->name);
             $this->evolutionInstanceService->removeInstance($instanceModel->name);
+            $this->instanceRepository->deleteInstanceByName($instanceModel->name);
 
             return $this->successResponse(data: [
                 'success' => true
@@ -164,40 +164,45 @@ class InstanceService
     {
         try {
             $instanceModel = Instance::query()->where('name', $instanceName)->first();
-
-            // se nao existir, cria
-            $result = $this->evolutionInstanceService->getInstance($instanceName);
-            if ($result === false) {
-                $this->evolutionInstanceService->createInstance($instanceName, $instanceModel->phonenumber);
-            }
             if (!$instanceModel) return false;
+            $instanceData = ''; // ponteiro para os dados com qrcode da instancia;
+
+            $instanceStateOnEvolution = $this->getInstanceState($instanceName);
+            if (!$instanceStateOnEvolution) {
+                $instanceData = $this->createEvolutionInstance($instanceModel->name, $instanceModel->phonenumber);
+            } else {
+                switch ($instanceStateOnEvolution['data']['state']) {
+                    case 'connecting':
+                        $result = $this->logoutInstance($instanceName);
+                        // desloga e loga dnv
+                        $instanceData = $this->evolutionInstanceService->connectInstance($instanceName);
+                        break;
+                    case 'close':
+                        $instanceData = $this->evolutionInstanceService->connectInstance($instanceName);
+                        break;
+                    case 'open':
+                        return $this->errorResponse('Instance already opened.');
+                        break;
+                    default:
+                        break;
+                }
+            }
+            // dd($instanceData);
+            if (empty($instanceData['base64'])) return $this->errorResponse("Erro ao obter QrCode.");
+
             if (!empty($instanceModel->qrcode_path)) {
+                // se existir qrcode no banco...
                 // remove existente qrcode;
                 Storage::delete('public/' . $instanceModel->qrcode_path);
                 $instanceModel->qrcode_path = '';
                 $instanceModel->save();
             }
 
-            // $instanceState = ['open' || 'close' || 'connecting']
-            $instanceState = $this->evolutionInstanceService->getStateInstance($instanceName);
-            if ($instanceState === 'open') {
-                return ['error' => true, 'message' => "Instance already opened."];
-            }
-
-            if ($instanceState === 'close') {
-                // return ['error' => true, 'message' => "Instance closed."];
-            }
-
-            $instanceData = $this->evolutionInstanceService->connectInstance($instanceName);
-
-            if (empty($instanceData['base64'])) return ['error' => true, 'message' => "Internal server Error."];
-
             $this->evolutionInstanceService->setWebhooks(
                 instanceName: $instanceModel->name,
                 // endPoint: '/updated-qrcode/webhook',
                 // webhooks: ["QRCODE_UPDATED"]
             );
-
 
             $filename = $this->updateQrInstanceHelper(base64: $instanceData['base64'], instanceName: $instanceModel->name);
             // $filename = 'qrcodes/qr_' . uniqid() . '.png';
@@ -207,8 +212,7 @@ class InstanceService
                 'qrcode_path' => $filename
             ]);
 
-            return ['error' => false, 'data' => ['filename' => $filename]];
-            // return $filename;
+            return $this->successResponse(['filename' => $filename]);
         } catch (\Exception $e) {
             Log::info($e->getMessage());
             return [
@@ -227,11 +231,15 @@ class InstanceService
         ];
 
         $result = $this->evolutionInstanceService->getStateInstance($instanceName);
-
         if ($result["error"] == true) {
             return false;
         }
 
-        return $result["data"]["state"];
+        return [
+            'error' => false,
+            'data' => [
+                'state' => $result["data"]["state"]
+            ]
+        ];
     }
 }

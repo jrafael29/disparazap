@@ -15,6 +15,9 @@ use App\Livewire\Pages\Contact\Create as ContactCreate;
 use App\Livewire\Pages\Contact\Import as ContactImport;
 use App\Livewire\Pages\Contact\Group\Index as ContactGroupIndex;
 
+use App\Livewire\Pages\Contact\Verify\Index as VerifyIndex;
+
+
 
 use App\Livewire\Pages\Sent\Index as SentIndex;
 
@@ -65,20 +68,38 @@ Route::middleware(['auth'])->group(function () {
         Auth::logout();
         return redirect()->to('/');
     });
+
     Route::get('/home', Home::class)->name('home');
     Route::get('/instance', InstanceIndex::class)->name('instance');
-    Route::get('/message-flow', FlowIndex::class)->name('flow');
-    Route::get('/message-flow/{flow}/message', MessageIndex::class)->name('flow.message');
-    Route::get('/message-flow/{flow}/sent', FlowToSentIndex::class)->name('flow.sent');
-    Route::get('/extractor', ExtractorIndex::class)->name('extractor');
+    Route::get('/message-flow', FlowIndex::class)
+        ->can('have-online-instances')
+        ->name('flow');
+    Route::get('/message-flow/{flow}/message', MessageIndex::class)
+        ->can('have-online-instances')
+        ->name('flow.message');
+    Route::get('/message-flow/{flow}/sent', FlowToSentIndex::class)
+        ->can('have-online-instances')
+        ->name('flow.sent');
+    // Route::get('/extractor', ExtractorIndex::class)->name('extractor');
 
-    Route::get('/contacts', ContactIndex::class)->name('contact');
-    Route::get('/contacts/create', ContactCreate::class)->name('contact.create');
-    Route::get('/contacts/import', ContactImport::class)->name('contact.import');
+    Route::get('/contacts', ContactIndex::class)
+        ->can('have-online-instances')
+        ->name('contact');
+    Route::get('/contacts/create', ContactCreate::class)
+        ->can('have-online-instances')
+        ->name('contact.create');
+    Route::get('/contacts/import', ContactImport::class)
+        ->can('have-online-instances')
+        ->name('contact.import');
 
-    Route::get('/contacts/groups', ContactGroupIndex::class)->name('contact.groups');
+    Route::get('/contacts/groups', ContactGroupIndex::class)
+        ->can('have-online-instances')
+        ->name('contact.groups');
 
     Route::get('/sents', SentIndex::class)->name('sent');
+
+
+    Route::get('/verify', VerifyIndex::class)->name('verify');
 });
 
 // admin routes
