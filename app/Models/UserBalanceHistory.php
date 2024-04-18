@@ -11,7 +11,7 @@ class UserBalanceHistory extends Model
 
     protected $table = 'user_balance_histories';
 
-    protected $fillable = ['user_id', 'operation', 'last_credit_amount'];
+    protected $fillable = ['user_id', 'operation', 'last_credit_amount', 'amount', 'description'];
 
     public function user()
     {

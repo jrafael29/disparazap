@@ -15,6 +15,8 @@ class Home extends Component
 
     public bool $drawer = false;
 
+    public string $group = 'group1';
+
     public array $sortBy = ['column' => 'name', 'direction' => 'asc'];
 
     // Clear filters

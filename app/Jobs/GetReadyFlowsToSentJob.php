@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\FlowToSent;
 use App\Models\Message;
 use App\Models\User;
+use App\Models\UserCredit;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -42,7 +43,13 @@ class GetReadyFlowsToSentJob implements ShouldQueue
             ->get()
             ->unique('instance_id')
             ->each(function (FlowToSent $flowToSent) {
-                VerifyFlowToSentJob::dispatch($flowToSent);
+                $userCredit = UserCredit::query()
+                    ->where('user_id', $flowToSent->user_id)
+                    ->firstOrFail();
+                $userHasCredit = $userCredit->credit > 0;
+                if ($userHasCredit) {
+                    VerifyFlowToSentJob::dispatch($flowToSent);
+                }
             });
     }
 }

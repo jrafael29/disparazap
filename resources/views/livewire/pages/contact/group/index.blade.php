@@ -42,7 +42,7 @@
                         <div class="flex gap-2">
                             <x-button icon="o-trash" tooltip-top="Excluir Grupo"
                                 wire:click='deleteUserGroup({{$group->id}})' class="btn-error" />
-                            <a wire:navigate href="{{route('contact.import')}}">
+                            <a wire:navigate href="{{route('import')}}">
                                 <x-button type="submit" label="Importar contatos" class="btn-outline" />
                             </a>
 

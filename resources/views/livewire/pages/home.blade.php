@@ -5,6 +5,19 @@
 
     <!-- TABLE  -->
 
+    <div>
+        <x-timeline-item first icon="o-inbox-stack" title="Conecte-se" subtitle="Primeiramente, conecte um whatsapp para continuar" />
+
+        <x-timeline-item pending icon="o-arrow-down-tray" title="Importe seus contatos" subtitle="E nossa IA irá verificar e salvar apenas contatos válidos no Whatsapp." />
+
+        <x-timeline-item pending icon="o-user-group" title="Reuna-os em grupos" subtitle="Reuna seus contatos em grupos, que serão alvos nos disparos" />
+
+        <x-timeline-item pending icon="o-chat-bubble-oval-left-ellipsis" title="Organize seu Fluxo de Mensagens" subtitle="Crie um Fluxo de Mensagens, adicione mídias ou textos na ordem que preferir" />
+
+        <x-timeline-item pending icon="m-bars-arrow-up" title="Agende seu disparo" subtitle="Agende o envio do seu Fluxo de Mensagens para seus grupos"  />
+        <x-timeline-item last pending icon="o-paper-airplane" title="Acompanhe seu disparo" subtitle="Acompanhe em tempo real o status do seu disparo"  />
+    </div>
+
     <div class="">
         <div class="bg-base-300">
             <x-card title="Sobre o DisparaZap" subtitle="O DisparaZap é uma ferramenta que permite criar e enviar

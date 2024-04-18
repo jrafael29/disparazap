@@ -2,10 +2,10 @@
     <!-- HEADER -->
     <x-header title="Gerenciar {{Auth::user()->contacts->count()}} contatos" subtitle="Crie, Gerencie, Importe seus contatos." separator progress-indicator>
         <x-slot:actions>
-            <a wire:navigate href="{{route('contact.groups')}}">
+            <a wire:navigate href="{{route('groups')}}">
                 <x-button tooltip-left="Grupo de contatos" icon="o-user-group" spinner class="btn-outline" />
             </a>
-            <a wire:navigate href="{{route('contact.import')}}">
+            <a wire:navigate href="{{route('import')}}">
                 <x-button tooltip-left="Importar contatos" icon="o-arrow-down-tray" spinner class="btn-outline" />
             </a>
 

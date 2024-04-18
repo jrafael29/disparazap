@@ -42,15 +42,19 @@
                                 no-wire-navigate link="/logout" />
                             <x-theme-toggle class="btn btn-circle" />
                         </div>
-
                     </x-slot:actions>
                 </x-list-item>
-
+                <x-menu-separator />
                 <x-menu-item title="Inicio" icon="o-home" link="{{route('home')}}" />
                 <x-menu-item title="Conectar WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />
                 <x-menu-item title="Verificações de existência" icon="o-clock" link="{{route('verify')}}" />
                 @can('have-online-instances')
-                <x-menu-item title="Contatos" icon="o-users" link="{{route('contact')}}" />
+
+                <x-menu-sub title="Contatos" icon="o-users" >
+                    <x-menu-item title="Importar" icon="o-arrow-down-tray" link="{{route('import')}}" />
+                    <x-menu-item title="Grupos de contatos" icon="o-user-group" link="{{route('groups')}}" />
+                </x-menu-sub>
+
                 <x-menu-item title="Fluxo de Mensagens" icon="o-chat-bubble-oval-left-ellipsis"
                     link="{{route('flow')}}" />
                 @endcan

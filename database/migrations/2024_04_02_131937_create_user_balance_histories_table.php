@@ -20,6 +20,9 @@ return new class extends Migration
                 ->cascadeOnUpdate();
             $table->enum('operation', ['credit', 'debit']);
             $table->integer('last_credit_amount');
+            $table->integer('amount')->default(0);
+            $table->text("description")->nullable();
+            $table->dateTime("expires_at")->default(now());
             $table->timestamps();
         });
     }

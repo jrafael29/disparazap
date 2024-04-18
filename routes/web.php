@@ -81,7 +81,6 @@ Route::middleware(['auth'])->group(function () {
         ->can('have-online-instances')
         ->name('flow.sent');
     // Route::get('/extractor', ExtractorIndex::class)->name('extractor');
-
     Route::get('/contacts', ContactIndex::class)
         ->can('have-online-instances')
         ->name('contact');
@@ -90,11 +89,11 @@ Route::middleware(['auth'])->group(function () {
         ->name('contact.create');
     Route::get('/contacts/import', ContactImport::class)
         ->can('have-online-instances')
-        ->name('contact.import');
+        ->name('import');
 
     Route::get('/contacts/groups', ContactGroupIndex::class)
         ->can('have-online-instances')
-        ->name('contact.groups');
+        ->name('groups');
 
     Route::get('/sents', SentIndex::class)->name('sent');
 
