@@ -7,7 +7,9 @@ use App\Models\Contact;
 use App\Models\FlowToSent;
 use App\Models\Instance;
 use App\Models\MessageFlow;
+use App\Models\PhonenumberCheck;
 use App\Models\UserContact;
+use App\Models\UserGroup;
 use App\Service\Evolution\EvolutionChatService;
 use App\Service\Evolution\EvolutionGroupService;
 use App\Service\FlowToSentService;
@@ -32,8 +34,9 @@ class Steps extends Component
     public array $selectedInstancesGroups = []; // grupos de todas as instancias selecionadas.
     public array $selectedInstances = []; // todas as instancias selecionadas.
     public $sendOptions = [
-        'group-contacts' => 'Contatos de um grupo',
-        'raw-text' => "Colar texto",
+        // 'group-contacts' => 'Contatos de um grupo',
+        // 'raw-text' => "Colar texto",
+        'dispara-groups' => "Meus grupos de contatos"
         // 'import-excel' => "Importar excel"
     ]; // opções de "alvos"
     public $steps = 5; // quantidade de passos no
@@ -45,6 +48,9 @@ class Steps extends Component
 
     #[Validate('required')]
     public $toSendDate = '';
+
+    public $disparaGroups;
+    public $disparaGroupSelectedId;
 
     public $groupsSelected; // grupos do whatsapp selecionados (step de alvos / contatos de um grupo)
     // public $groups; // todos os grupos do whatsapp.
@@ -92,6 +98,14 @@ class Steps extends Component
         return true;
     }
 
+    public function selectDisparaGroup($id)
+    {
+        if ($id === $this->disparaGroupSelectedId) {
+            $this->reset('disparaGroupSelectedId');
+            return;
+        }
+        $this->disparaGroupSelectedId = $id;
+    }
 
     public function getGroupsParticipantsPhonenumber($groups = [], $ddi = 0)
     {
@@ -163,6 +177,14 @@ class Steps extends Component
                 $this->groupsParticipantsPhonenumber = array_values($groupsPhonenumber);
                 $result = PhonenumberHelper::getPhonenumbersFromGroupsParticipants($this->groupsParticipantsPhonenumber);
                 $this->phonenumbers = $result;
+                return true;
+                break;
+            case 'dispara-groups':
+                $userGroup = UserGroup::query()->with(['userContacts'])->findOrFail($this->disparaGroupSelectedId);
+                $phonenumbers = $userGroup->userContacts->map(function ($item) {
+                    return $item->contact->phonenumber;
+                })->toArray();
+                $this->phonenumbers = $phonenumbers;
                 return true;
                 break;
             default:
@@ -260,6 +282,7 @@ class Steps extends Component
         $this->flow = $flow;
         // $this->groups = [];
         $this->groupsSelected = collect();
+        $this->disparaGroups = UserGroup::query()->where('user_id', Auth::user()->id)->get();
     }
 
     public function render()

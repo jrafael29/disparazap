@@ -10,7 +10,7 @@
                 <div wire:key='{{$group->id}}'>
                     <div class="border p-5 rounded {{$group->id !== $this->groupSelectedId ? '' : 'bg-gray-300'}}">
                         <h1 class="text-center">{{$group->name}}</h1>
-                        <p>Esse grupo já possui {{count($group->userContacts) > 0 ? $group->userContacts->count() : 0}}
+                        <p>Esse grupo possui {{count($group->userContacts) > 0 ? $group->userContacts->count() : 0}}
                             contatos</p>
                         <div class="flex justify-center mt-5">
                             @if($group->id === $this->groupSelectedId)
@@ -28,6 +28,11 @@
                 @empty
                 <div class="w-full">
                     <x-alert title="Ops... Nenhum grupo encontrado...." icon="o-exclamation-triangle" class="alert-warning">
+                        <x-slot:actions>
+                            <a href="{{route('groups')}}" wire:navigate>
+                                <x-button label="Cadastre um novo grupo" />
+                            </a>
+                        </x-slot:actions>
                     </x-alert>
                 </div>
                 @endforelse

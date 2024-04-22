@@ -3,16 +3,15 @@
 namespace App\Observers;
 
 use App\Models\User;
-use App\Models\UserCredit;
-use App\Service\UserCreditService;
+use App\Service\UserWalletService;
 use Illuminate\Support\Facades\App;
 
 class UserObserver
 {
-    private UserCreditService $userCreditService;
+    private UserWalletService $userWalletService;
     public function __construct()
     {
-        $this->userCreditService = App::make(UserCreditService::class);
+        $this->userWalletService = App::make(UserWalletService::class);
     }
 
     public function created(User $user): void
@@ -22,7 +21,7 @@ class UserObserver
             $credit = (int) env('USER_INITIAL_CREDITS');
         }
         // bonus de boas vindas expira em 15 dias.
-        $this->userCreditService->credit(
+        $this->userWalletService->credit(
             userId: $user->id,
             credit: $credit,
             description: "Bônus de boas vindas",

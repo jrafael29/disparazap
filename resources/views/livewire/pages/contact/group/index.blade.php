@@ -7,7 +7,7 @@
         </a>
     </div>
     <!-- HEADER -->
-    <x-header title="Gerenciar grupos de contatos" subtitle="Adicione contatos a seus grupos" separator
+    <x-header title="Grupos de contatos" subtitle="Adicione contatos a seus grupos" separator
         progress-indicator>
         <x-slot:actions>
 
@@ -21,6 +21,7 @@
     {{-- Knowing others is intelligence; knowing yourself is true wisdom. --}}
 
     <div>
+        @if(count($groups))
         <div class="h-96 overflow-y-auto">
             <x-table :headers="$headers" :rows="$groups" wire:model="expanded" expandable>
 
@@ -70,5 +71,10 @@
             </x-table>
 
         </div>
+        @else   
+        <x-alert title="Você ainda não cadastrou nenhum grupo." icon="o-exclamation-triangle"
+                    class="alert-warning" shadow/>
+
+        @endif
     </div>
 </div>

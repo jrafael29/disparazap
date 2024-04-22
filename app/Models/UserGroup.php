@@ -29,4 +29,16 @@ class UserGroup extends Model
             secondLocalKey: 'user_contact_id'
         );
     }
+
+    public function checks()
+    {
+        return $this->hasManyThrough(
+            related: PhonenumberCheck::class,
+            through: CheckGroup::class,
+            firstKey: 'group_id',
+            secondKey: 'id',
+            localKey: 'id',
+            secondLocalKey: 'check_id'
+        );
+    }
 }

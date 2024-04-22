@@ -33,4 +33,16 @@ class PhonenumberCheck extends Model
             secondLocalKey: 'verify_id'
         );
     }
+
+    public function checks()
+    {
+        return $this->hasManyThrough(
+            related: UserGroup::class,
+            through: CheckGroup::class,
+            firstKey: 'check_id',
+            secondKey: 'id',
+            localKey: 'id',
+            secondLocalKey: 'group_id'
+        );
+    }
 }

@@ -45,7 +45,7 @@ class RawText extends Component
 
     public $userOnlineInstancesCount = 0;
 
-    public $steps = 4; // quantidade de passos no
+    public $steps = 2; // quantidade de passos no
     public $step = 1; // step atual
 
     public $groups = [];
@@ -108,46 +108,23 @@ class RawText extends Component
 
         $this->reset('rawText', 'existentPhonenumbers', 'inexistentPhonenumbers');
 
-        $this->redirect('/contacts/groups');
+        $this->redirect('/groups', navigate: true);
     }
 
     public function checkExistence()
     {
         $firstInstanceName = Instance::query()->where('user_id', Auth::user()->id)->first()?->name;
         if (!$firstInstanceName) return false;
-        // $numbersExistence = $this->evolutionChatService->checkNumbersExistence(
-        //     numbers: $this->phonenumbers,
-        //     instanceName: $firstInstanceName
-        // );
-        // $numbersExistence = $this->phonenumberService->verifyPhonenumbersExistence(
-        //     phonenumbers: [...$this->phonenumbers],
-        //     instances: [$firstInstanceName]
-        // );
         StorePhonenumbersToVerifyJob::dispatch(
             Auth::user()->id,
             $this->phonenumbers
         );
-
-        // $phonenumbersExistenceSeparated = Phonenumber::divideNumberExistence($numbersExistence);
-        // dd($phonenumbersExistenceSeparated);
-        // $this->reset('existentPhonenumbers', 'inexistentPhonenumbers');
-        $this->existentPhonenumbers = [];
-        $this->inexistentPhonenumbers = [];
-        // $this->existentPhonenumbers = $phonenumbersExistenceSeparated['existents'];
-        // $this->inexistentPhonenumbers = $phonenumbersExistenceSeparated['inexistents'];
-
-        $this->info("Os números importados estão sendo verificados em segundo plano.");
-
-        $this->next();
+        $this->info("Os números serão verificados. Você ja pode acompanhar o status");
+        $this->redirect('/verify', navigate: true);
     }
 
     public function saveExistentPhonenumbers()
     {
-        // $this->userContactService->createManyUserContacts(
-        //     userId: Auth::user()->id,
-        //     phonenumbers: $this->existentPhonenumbers
-        // );
-        $this->success("Os números válidos serão salvos como Contatos");
     }
 
     public function handleSubmit()

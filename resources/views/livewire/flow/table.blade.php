@@ -14,7 +14,7 @@
                     <div>
                         @if(count($flow->messages) > 0)
                         <a wire:navigate href="{{route('flow.sent', ['flow' => $flow->id])}}">
-                            <x-button icon="m-bars-arrow-up" Label="Gerenciar Envios" />
+                            <x-button icon="m-bars-arrow-up" Label="Disparar fluxo" />
                         </a>
                         @else
                         <div>

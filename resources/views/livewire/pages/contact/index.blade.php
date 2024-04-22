@@ -1,6 +1,6 @@
 <div>
     <!-- HEADER -->
-    <x-header title="Gerenciar {{Auth::user()->contacts->count()}} contatos" subtitle="Crie, Gerencie, Importe seus contatos." separator progress-indicator>
+    <x-header title="{{Auth::user()->contacts->count()}} contatos" subtitle="Crie, Gerencie, Importe seus contatos." separator progress-indicator>
         <x-slot:actions>
             <a wire:navigate href="{{route('groups')}}">
                 <x-button tooltip-left="Grupo de contatos" icon="o-user-group" spinner class="btn-outline" />
@@ -46,16 +46,16 @@
 
     <!-- TABLE  -->
     <div class="">
-        <div class="mb-3">
+        {{-- <div class="mb-3">
             <x-select wire:change='orderContacts' label="Filtrar por DDD" icon="o-globe-americas"
                 hint="Digite o numero para buscar mais rapido" :options="$ddds" wire:model="dddSelected" />
-        </div>
+        </div> --}}
         <div class="h-96 overflow-y-auto">
             <x-table selectable wire:model='selectedContacts' :headers="$headers" :rows="$contacts" striped
                 @row-selection="$wire.updateSelectedContacts" with-pagination>
 
                 @scope("cell_contact.description", $contact)
-                    {{$contact->description ?? "Não definido"}}
+                    {{$contact->description ?? "Nenhuma"}}
                 @endscope
                 @scope('actions', $contact)
                 <x-button spinner icon="o-trash" wire:click="delete({{ $contact->id }})" spinner class="btn-sm" />
@@ -64,10 +64,9 @@
 
         </div>
         <div>
-
+            @if(count($contacts))
             <x-button label="Excluir selecionados" icon="o-trash" wire:click="deleteSelectedContacts" spinner />
-            <x-button label="Enviar para selecionados" icon="o-check" spinner />
-
+            @endif
         </div>
     </div>
 </div>

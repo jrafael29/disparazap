@@ -50,8 +50,8 @@ class FlowToSent extends Model
     {
         return $this->belongsTo(Contact::class);
     }
-    public function historic()
+    public function history()
     {
-        return $this->belongsTo(UserBalanceHistory::class);
+        return $this->belongsTo(UserWalletHistory::class);
     }
 }

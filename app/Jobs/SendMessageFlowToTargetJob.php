@@ -6,7 +6,7 @@ use App\Models\FlowToSent;
 use App\Models\Instance;
 use App\Models\MessageFlow;
 use App\Service\Evolution\EvolutionSendMessageService;
-use App\Service\UserCreditService;
+use App\Service\UserWalletService;
 use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -22,12 +22,12 @@ class SendMessageFlowToTargetJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
     private EvolutionSendMessageService $messageService;
     private FlowToSent $flowToSent;
-    private UserCreditService $userCreditService;
+    private UserWalletService $userWalletService;
 
     public function __construct(FlowToSent $flowToSent)
     {
         $this->messageService = App::make(EvolutionSendMessageService::class);
-        $this->userCreditService = App::make(UserCreditService::class);
+        $this->userWalletService = App::make(UserWalletService::class);
         $this->flowToSent = $flowToSent;
     }
 
@@ -81,16 +81,15 @@ class SendMessageFlowToTargetJob implements ShouldQueue
                     sleep(1); // 1 segundo entre uma mensagem e outra.
                 }
             }
-            DB::beginTransaction();
+            // DB::beginTransaction();
             $this->flowToSent->sent = 1;
             $this->flowToSent->save();
 
             // se ja foi enviado cobra
-            $this->userCreditService->debitOne(
+            $this->userWalletService->debitOne(
                 userId: $this->flowToSent->user_id,
                 description: "Cobrança referente ao envio do fluxo: (" . $this->flowToSent->flow->description . ") para o numero: (" . $this->flowToSent->to . ") na data: (" . now()->format('d/m/Y H:i') . ")"
             );
-
 
             $delayInSeconds = $this->flowToSent->delay_in_seconds ?? 15; // 15 segundos entre um chat e outro.
 
@@ -98,9 +97,9 @@ class SendMessageFlowToTargetJob implements ShouldQueue
             $instance = Instance::find($this->flowToSent->instance_id);
             $instance->available_at = $availableAt;
             $instance->save();
-            DB::commits();
+            // DB::commits();
         } catch (\Exception $e) {
-            DB::rollBack();
+            // DB::rollBack();
             Log::error("erro job:sendmessage= {$e->getMessage()}",);
         }
     }

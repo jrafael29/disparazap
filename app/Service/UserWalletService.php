@@ -3,20 +3,20 @@
 namespace App\Service;
 
 use App\Models\User;
-use App\Models\UserBalanceHistory;
-use App\Models\UserCredit;
+use App\Models\UserWalletHistory;
+use App\Models\UserWallet;
 use App\Traits\ServiceResponseTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class UserCreditService
+class UserWalletService
 {
     use ServiceResponseTrait;
     public function credit($userId, $credit, $description, $expireDays = 0)
     {
         try {
             DB::beginTransaction();
-            $userCredit = UserCredit::query()
+            $userWallet = UserWallet::query()
                 ->firstOrCreate(
                     ['user_id' => $userId],
                     ['user_id' => $userId, 'credit' => 0]
@@ -28,21 +28,21 @@ class UserCreditService
                 $expireCreditDays = (int) env('USER_CREDIT_EXPIRE_DAYS') ?? 1;
             }
             $expiresAt = Carbon::now()->addDays($expireCreditDays);
-            $userBalanceHistory = UserBalanceHistory::query()->create([
+            $userWalletHistory = UserWalletHistory::query()->create([
                 'user_id' => $userId,
                 'operation' => 'credit',
-                'last_credit_amount'  => $userCredit->credit,
+                'last_credit_amount'  => $userWallet->credit,
                 'amount' => $credit,
                 'description' => $description,
                 'expires_at' => $expiresAt
             ]);
-            $userCredit->increment('credit', $credit);
-            $userCredit->save();
+            $userWallet->increment('credit', $credit);
+            $userWallet->save();
             DB::commit();
             return $this->successResponse([
                 'operation' => 'credit',
-                'userCredit' => $userCredit,
-                'history' => $userBalanceHistory,
+                'wallet' => $userWallet,
+                'history' => $userWalletHistory,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
@@ -63,25 +63,25 @@ class UserCreditService
     {
         try {
             DB::beginTransaction();
-            $userCredit = UserCredit::query()
+            $userWallet = UserWallet::query()
                 ->firstOrCreate(
                     ['user_id' => $userId],
                     ['user_id' => $userId, 'credit' => 0]
                 );
-            $userBalanceHistory = UserBalanceHistory::query()->create([
+            $userWalletHistory = UserWalletHistory::query()->create([
                 'user_id' => $userId,
                 'operation' => 'debit',
-                'last_credit_amount'  => $userCredit->credit,
+                'last_credit_amount'  => $userWallet->credit,
                 'amount' => $value,
                 'description' => $description
             ]);
-            $userCredit->decrement('credit', $value);
-            $userCredit->save();
+            $userWallet->decrement('credit', $value);
+            $userWallet->save();
             DB::commit();
             return $this->successResponse([
                 'operation' => 'debit',
-                'userCredit' => $userCredit,
-                'history' => $userBalanceHistory,
+                'wallet' => $userWallet,
+                'history' => $userWalletHistory,
             ]);
         } catch (\Exception $e) {
             DB::rollBack();

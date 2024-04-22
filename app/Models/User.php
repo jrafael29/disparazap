@@ -48,6 +48,12 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+
+    public function wallet()
+    {
+        return $this->hasOne(UserWallet::class, 'user_id', 'id');
+    }
+
     public function flowToSent()
     {
         return $this->hasMany(FlowToSent::class, 'user_ud', 'id');

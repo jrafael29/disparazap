@@ -41,24 +41,28 @@
                             <x-button icon="o-power" class="btn btn-circle btn-ghost btn-xs" tooltip-left="logoff"
                                 no-wire-navigate link="/logout" />
                             <x-theme-toggle class="btn btn-circle" />
+                            <x-button icon="o-currency-dollar" class="btn btn-circle btn-ghost btn-xs" tooltip-left="Créditos: {{$user->wallet->credit}}"/>
                         </div>
                     </x-slot:actions>
                 </x-list-item>
                 <x-menu-separator />
                 <x-menu-item title="Inicio" icon="o-home" link="{{route('home')}}" />
-                <x-menu-item title="Conectar WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />
-                <x-menu-item title="Verificações de existência" icon="o-clock" link="{{route('verify')}}" />
+                <x-menu-item title="Conectar WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />                
                 @can('have-online-instances')
-
                 <x-menu-sub title="Contatos" icon="o-users" >
-                    <x-menu-item title="Importar" icon="o-arrow-down-tray" link="{{route('import')}}" />
+                    <x-menu-item title="Visualização" icon="o-list-bullet" link="{{route('contact')}}" />
                     <x-menu-item title="Grupos de contatos" icon="o-user-group" link="{{route('groups')}}" />
+                    <x-menu-item title="Importar" icon="o-arrow-down-tray" link="{{route('import')}}" />
+                    <x-menu-item title="Verificações de existência" icon="o-clock" link="{{route('verify')}}" />
                 </x-menu-sub>
 
-                <x-menu-item title="Fluxo de Mensagens" icon="o-chat-bubble-oval-left-ellipsis"
-                    link="{{route('flow')}}" />
-                @endcan
-                <x-menu-item title="Envios" icon="o-paper-airplane" link="{{route('sent')}}" />
+                
+                <x-menu-sub title="Envios" icon="o-paper-airplane">
+                    <x-menu-item title="Visualização" icon="o-list-bullet" link="{{route('sent')}}" />
+                    <x-menu-item title="Fluxo de Mensagens" icon="o-chat-bubble-oval-left-ellipsis"
+                        link="{{route('flow')}}" />
+                    @endcan
+                </x-menu-sub>
 
                 {{--
                 <x-menu-item title="Utilitário" icon="o-code-bracket-square" link="{{route('extractor')}}" /> --}}

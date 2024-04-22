@@ -94,6 +94,45 @@
                                     rows="5" inline />
                             </x-form>
                         </div>
+                        @case('dispara-groups')
+                        <div>
+                            <div class="mb-3">
+                                <h1>Seus grupos:</h1>
+                                <div class="flex mb-3">
+                                    @forelse($this->disparaGroups as $group)
+                                    <div wire:key='{{$group->id}}'>
+                                        <div class="border p-5 rounded {{$group->id !== $this->disparaGroupSelectedId ? '' : 'bg-gray-300'}}">
+                                            <h1 class="text-center">{{$group->name}}</h1>
+                                            <p>Esse grupo possui {{count($group->userContacts) > 0 ? $group->userContacts->count() : 0}}
+                                                contatos</p>
+                                            <div class="flex justify-center mt-5">
+                                                @if($group->id === $this->disparaGroupSelectedId)
+                                                        <x-button spinner wire:click="selectDisparaGroup({{$group->id}})">
+                                                            Grupo Selecionado
+                                                        </x-button>
+                                                    @else
+                                                        <x-button class="btn-outline" spinner wire:click="selectDisparaGroup({{$group->id}})">
+                                                            Selecionar Grupo
+                                                        </x-button>
+                                                    @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @empty
+                                    <div class="w-full">
+                                        <x-alert title="Ops... Nenhum grupo encontrado...." icon="o-exclamation-triangle" class="alert-warning">
+                                            <x-slot:actions>
+                                                <a href="{{route('groups')}}" wire:navigate>
+                                                    <x-button label="Cadastre um novo grupo" />
+                                                </a>
+                                            </x-slot:actions>
+                                        </x-alert>
+                                    </div>
+                                    @endforelse
+                                </div>
+
+                            </div>
+                        </div>
                         @break
                         @case('import-excel')
                         <div>
@@ -110,8 +149,7 @@
                 <div class="mb-3">
                     <h1> Revise os numeros a serem enviados.</h1>
 
-                    <p>Foram encontrados {{$countAllPhonenumbers}}, sendo {{count($existentPhonenumbers)}} existentes, e
-                        {{count($inexistentPhonenumbers)}} inexistentes</p>
+                    <p>Foram encontrados {{count($phonenumbers)}} números<p>
                 </div>
 
                 <div class="max-h-80 font-mono overflow-auto">
@@ -173,6 +211,16 @@
                         <h1 class="text-1xl">Nenhum participante no grupo...</h1>
                         @endforelse
                         @endif
+                    </div>
+                    @break
+                    @case('dispara-groups')
+                    <div>
+                        <div>
+                            @forelse($phonenumbers as $phonenumber)
+                            <p>{{$phonenumber}}</p>
+                            @empty
+                            @endforelse
+                        </div>
                     </div>
                     @break
                     @endswitch

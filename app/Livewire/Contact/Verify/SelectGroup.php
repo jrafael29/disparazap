@@ -53,7 +53,7 @@ class SelectGroup extends Component
         AddContactsToGroupJob::dispatch($userId, $groupId, $phonenumbers);
 
         $this->success("Os contatos serão adicionados ao grupo");
-        return $this->redirect('/contacts/groups', navigate: true);
+        return $this->redirect('/groups', navigate: true);
     }
 
     public function render()

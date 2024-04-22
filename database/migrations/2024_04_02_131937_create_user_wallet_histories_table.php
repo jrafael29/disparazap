@@ -11,14 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_credits', function (Blueprint $table) {
+        Schema::create('user_wallet_histories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')
                 ->references('id')
                 ->on('users')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->integer('credit')->default(0);
+            $table->enum('operation', ['credit', 'debit']);
+            $table->integer('last_credit_amount');
+            $table->integer('amount')->default(0);
+            $table->text("description")->nullable();
+            $table->dateTime("expires_at")->default(now());
             $table->timestamps();
         });
     }
@@ -28,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_credits');
+        Schema::dropIfExists('user_historic_credits');
     }
 };

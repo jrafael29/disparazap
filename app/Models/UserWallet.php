@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class UserBalanceHistory extends Model
+class UserWallet extends Model
 {
     use HasFactory;
 
-    protected $table = 'user_balance_histories';
+    protected $table = 'user_wallets';
 
-    protected $fillable = ['user_id', 'operation', 'last_credit_amount', 'amount', 'description'];
+    protected $fillable = ['user_id', 'credit'];
 
     public function user()
     {

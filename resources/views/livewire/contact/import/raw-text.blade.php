@@ -27,7 +27,7 @@
                                     wire:click='toggleIncludeDdi' />
                             </div>
                             @if($includeDdi)
-                            <x-input wire:model.live='ddi' type="number" label="Insira o DDD a ser incluido nos numeros"
+                            <x-input wire:model.live='ddi' type="number" label="Insira o DDI a ser incluido nos numeros"
                                 inline />
                             @endif
                         </div>
@@ -41,7 +41,7 @@
                 <x-textarea label="Texto com números"
                     hint="Cole qualquer texto com os números de telefone que iremos extrair para você."
                     wire:model="rawText"
-                    placeholder="Digite qualquer texto que será extraido apenas os números de telefone" rows="5"
+                    placeholder="Cole qualquer texto que será extraido apenas os números de telefone" rows="5"
                     inline />
 
                 <x-slot:actions>

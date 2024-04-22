@@ -87,11 +87,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/contacts/create', ContactCreate::class)
         ->can('have-online-instances')
         ->name('contact.create');
-    Route::get('/contacts/import', ContactImport::class)
+    Route::get('/import', ContactImport::class)
         ->can('have-online-instances')
         ->name('import');
 
-    Route::get('/contacts/groups', ContactGroupIndex::class)
+    Route::get('/groups', ContactGroupIndex::class)
         ->can('have-online-instances')
         ->name('groups');
 

@@ -11,17 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sents', function (Blueprint $table) {
+        Schema::create('check_groups', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
+            $table->foreignId('check_id')
                 ->references('id')
-                ->on('users')
+                ->on('phonenumber_checks')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->string("description");
-            $table->boolean("paused")->default(false);
-            $table->boolean('started')->default(false);
-            $table->dateTime("start_at");
+            $table->foreignId('group_id')
+                ->references('id')
+                ->on('user_groups')
+                ->cascadeOnDelete()
+                ->cascadeOnUpdate();
             $table->timestamps();
         });
     }
@@ -31,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sents');
+        Schema::dropIfExists('check_groups');
     }
 };

@@ -107,24 +107,6 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
                     );
                 }
             }
-
-            // 
-            // o check será concluido quando:
-
-            // a quantidade de numeros verificados for igual a quantidade de numeros a verificar
-
-            // $countPhonenumbersToVerify = VerifiedPhonenumberCheck::query()->where([
-            //     'check_id' => $check->check_id
-            // ])->count();
-
-            // $countDoneVerifies = $check->verifies->where('verified', 1)->count();
-
-            // if ($countPhonenumbersToVerify === $countDoneVerifies) {
-            //     $check->done = 1;
-            //     $check->save();
-            // }
-            // dd("bora", $countPhonenumbersToVerify, $countDoneVerifies);
-
             DB::commit();
         } catch (\Exception $e) {
             DB::rollback();

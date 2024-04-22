@@ -8,8 +8,9 @@
         @scope("cell_created_at", $sent)
         {{$sent->created_at->diffForHumans()}}
         @endscope
-
+        
         @scope('expansion', $sent)
+
         @php
         $flowToSentCount = \App\Models\FlowToSent::where('sent_id', $sent->id)->count();
         $doneFlowToSentCount = \App\Models\FlowToSent::where('sent_id', $sent->id)->where('sent', 1)->count();
@@ -18,20 +19,25 @@
         ->where('sent_id', $sent->id)
         ->groupBy('instance_id')->get();
 
-        $endsAt = 0;
+        $endsAt = null;
         $sentHasEnd = $flowToSentCount == $doneFlowToSentCount;
 
-        $lastFlow = $sent->flows->last();
-        if($lastFlow->sent){
-        $endsAt = $lastFlow->updated_at;
+        $lastFlowToSent = $sent->flows?->last();
+        
+        if($lastFlowToSent){
+            if($lastFlowToSent?->sent){
+                // foi enviado?
+                $endsAt = $lastFlowToSent->updated_at;
+            }else{
+                $endsAt = $lastFlowToSent->to_sent_at;
+            }
         }else{
-        $endsAt = $lastFlow->to_sent_at;
         }
 
         @endphp
         <div class="bg-base- ">
             <p> <span class="font-bold">Inicio:</span> {{$sent->created_at->format('d/m/Y H:i')}}</p>
-            <p> <span class="font-bold">Termino:</span> {{$endsAt->format('d/m/Y H:i')}}</p>
+            <p> <span class="font-bold">Termino:</span> {{$endsAt?->format('d/m/Y H:i')}}</p>
             <br />
             @if(count($sent->flows))
             <div>
@@ -72,6 +78,7 @@
                 @endif
             </div>
         </div>
+
         @endscope
 
     </x-table>

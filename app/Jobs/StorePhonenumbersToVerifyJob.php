@@ -44,12 +44,6 @@ class StorePhonenumbersToVerifyJob implements ShouldQueue
 
         foreach ($this->phonenumbers as $phonenumber) {
 
-            // this phonenumber do is already verified?
-            // $phonenumberAlreadyVerified = VerifiedPhonenumber::query()
-            //     ->where('phonenumber', $phonenumber)
-            //     ->where('verified', 1)
-            //     ->first();
-
             $phonenumberAlreadyVerified = VerifiedPhonenumberCheck::query()
                 ->whereHas('verify', function ($query) use ($phonenumber) {
                     $query
@@ -66,7 +60,7 @@ class StorePhonenumbersToVerifyJob implements ShouldQueue
                         'verify_id' => $phonenumberAlreadyVerified->verify->id,
                         'done' => 1
                     ]);
-                return;
+                continue;
             }
 
             $toVerifyPhonenumber = VerifiedPhonenumber::query()->firstOrCreate(
