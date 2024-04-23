@@ -37,51 +37,16 @@ class StorePhonenumbersToVerifyJob implements ShouldQueue
     {
         if (empty($this->phonenumbers)) return;
         Log::info("init StorePhonenumbersToVerifyJob");
-        // create check
         try {
-
-
             $check = PhonenumberCheck::query()->create([
                 'user_id' => $this->user->id,
                 'description' => Str::uuid()->toString()
             ]);
-
             foreach ($this->phonenumbers as $phonenumber) {
-
-                $phonenumberAlreadyVerified = VerifiedPhonenumberCheck::query()
-                    ->whereHas('verify', function ($query) use ($phonenumber) {
-                        $query
-                            ->where('phonenumber', $phonenumber)
-                            ->where('verified', 1);
-                    })
-                    ->where('done', 1)
-                    ->first();
-
-                if ($phonenumberAlreadyVerified) {
-                    VerifiedPhonenumberCheck::query()
-                        ->create([
-                            'check_id' => $check->id,
-                            'verify_id' => $phonenumberAlreadyVerified->verify->id,
-                            'done' => 1
-                        ]);
-                    continue;
-                }
-
-                $toVerifyPhonenumber = VerifiedPhonenumber::query()->firstOrCreate(
-                    ['phonenumber' => $phonenumber],
-                    ['phonenumber' => $phonenumber]
-                );
-
-                VerifiedPhonenumberCheck::query()
-                    ->create([
-                        'check_id' => $check->id,
-                        'verify_id' => $toVerifyPhonenumber->id,
-                        'done' => 0
-                    ]);
+                StorePhonenumberToVerifyJob::dispatch($check, $phonenumber);
             }
             Log::info("end StorePhonenumbersToVerifyJob");
         } catch (\Exception $e) {
-            //throw $th;
             Log::error("init StorePhonenumbersToVerifyJob", ['message' => $e->getMessage()]);
         }
     }
