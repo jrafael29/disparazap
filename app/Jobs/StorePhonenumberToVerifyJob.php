@@ -33,7 +33,7 @@ class StorePhonenumberToVerifyJob implements ShouldQueue
     public function handle(): void
     {
         try {
-            $phonenumber = $this->phonenumber;
+            $phonenumber = (string) $this->phonenumber;
             $phonenumberAlreadyVerified = VerifiedPhonenumberCheck::query()
                 ->whereHas('verify', function ($query) use ($phonenumber) {
                     $query
@@ -50,18 +50,18 @@ class StorePhonenumberToVerifyJob implements ShouldQueue
                         'verify_id' => $phonenumberAlreadyVerified->verify->id,
                         'done' => 1
                     ]);
-                return;
+            } else {
+                $toVerifyPhonenumber = VerifiedPhonenumber::query()->firstOrCreate(
+                    ['phonenumber' => $phonenumber],
+                    ['phonenumber' => $phonenumber]
+                );
+                VerifiedPhonenumberCheck::query()
+                    ->create([
+                        'check_id' => $this->check->id,
+                        'verify_id' => $toVerifyPhonenumber->id,
+                        'done' => 0
+                    ]);
             }
-            $toVerifyPhonenumber = VerifiedPhonenumber::query()->firstOrCreate(
-                ['phonenumber' => $phonenumber],
-                ['phonenumber' => $phonenumber]
-            );
-            VerifiedPhonenumberCheck::query()
-                ->create([
-                    'check_id' => $this->check->id,
-                    'verify_id' => $toVerifyPhonenumber->id,
-                    'done' => 0
-                ]);
         } catch (\Exception $e) {
             //throw $th;
             Log::error("error StorePhonenumberToVerifyJob", ['message' => $e->getMessage()]);
