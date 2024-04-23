@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 
 class AddContactsToGroupJob implements ShouldQueue
 {
@@ -43,7 +44,7 @@ class AddContactsToGroupJob implements ShouldQueue
                 contacts: $this->phonenumbers
             );
         } catch (\Exception $e) {
-            report($e);
+            Log::error("error: AddContactsToGroupJob", ['message' => $e->getMessage()]);
         }
     }
 }

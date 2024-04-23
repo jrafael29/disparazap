@@ -14,6 +14,17 @@ class FlowToSentService
     use ServiceResponseTrait;
     public function createFlowToSent($userId, $flowId, $sentId, $phonenumber, $instanceId, $sendAt, $delayInSeconds)
     {
+        if (
+            empty($userId) ||
+            empty($flowId) ||
+            empty($sentId) ||
+            empty($phonenumber) ||
+            empty($instanceId) ||
+            empty($sendAt) ||
+            empty($delayInSeconds)
+        ) {
+            return $this->errorResponse("invalid parameters");
+        }
         try {
             $contact = Contact::query()->firstOrCreate([
                 'phonenumber' => $phonenumber
@@ -41,7 +52,7 @@ class FlowToSentService
                 'flowToSent' => $flowToSent
             ], statusCode: 201);
         } catch (\Exception $e) {
-            dd($e);
+            // dd($e);
             report($e);
             return $this->errorResponse('Erro interno', 500);
             // Log::info("createFlowToSent: {$e->getMessage()}");

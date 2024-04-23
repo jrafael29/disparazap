@@ -66,61 +66,51 @@
                             <div>
                                 <livewire:contact.group.form-modal />
                             </div>
-                                Criar grupo
-                                <br />
+                            Criar grupo
+                            <br />
 
-                                <div class="flex">
-                                    @forelse($disparaGroups as $group)
-                                    <div class="border p-5 rounded {{$group->id !== $disparaGroupSelectedId ? '' : 'bg-gray-300'}}">
-                                        <h1 class="text-center">{{$group->name}}</h1>
-                                        <p>Esse grupo já possui {{count($group->userContacts) > 0 ? $group->userContacts->count() : 0}}
-                                            contatos</p>
-                                        <div class="flex justify-center mt-5">
-                                            <x-button wire:click="selectDisparaGroup({{$group->id}})">
-                                                @if($group->id === $disparaGroupSelectedId)
-                                                Grupo Selecionado
-                                                @else
-                                                Selecionar Grupo
-                                                @endif
-                                            </x-button>
-                                        </div>
+                            <div class="flex">
+                                @forelse($disparaGroups as $group)
+                                <div class="border p-5 rounded {{$group->id !== $disparaGroupSelectedId ? '' : 'bg-gray-300'}}">
+                                    <h1 class="text-center">{{$group->name}}</h1>
+                                    <p>Esse grupo já possui {{count($group->userContacts) > 0 ? $group->userContacts->count() : 0}}
+                                        contatos</p>
+                                    <div class="flex justify-center mt-5">
+                                        <x-button wire:click="selectDisparaGroup({{$group->id}})">
+                                            @if($group->id === $disparaGroupSelectedId)
+                                            Grupo Selecionado
+                                            @else
+                                            Selecionar Grupo
+                                            @endif
+                                        </x-button>
                                     </div>
-                                    @empty
-                                    <h1>alguma coisa</h1>
-                                    @endforelse
                                 </div>
-
+                                @empty
+                                <h1>alguma coisa</h1>
+                                @endforelse
+                            </div>
                         </div>
 
                     </div>
-                
+                    @if($disparaGroupSelectedId)
+                    <div class="mt-4">
+                        <x-button class="btn-primary" wire:click="handleSubmit">
+                            Confirmar e salvar contatos
+                        </x-button>
+                    </div>
+                    @endif
                 </div>
 
             </div>
-        </x-step>
-        <x-step step="4" text="Confirmar">
-            <h1>confirme para terminar a operação</h1>
-
-            <div>
-                @if($disparaGroupSelectedId)
-                    <p>Grupo Selecionado:</p>
-                    <p>{{$disparaGroupSelectedId}}</p>
-                @else
-                    <h1>Nenhum Grupo selecionado</h1>
-                @endif
-            </div>
-
-            <br>
-            <x-button class="btn-primary" wire:click="handleSubmit">
-                Confirmar e salvar contatos
-            </x-button>
         </x-step>
             
     </x-steps>
 
     <div>
+        @if($step < 3)
         <x-button spinner label="Voltar" wire:click="prev" />
         <x-button spinner class="btn-info" label="Avançar" wire:click="next" />
+        @endif
     </div>
     
 </div>

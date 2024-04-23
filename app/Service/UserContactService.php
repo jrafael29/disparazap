@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Models\Contact;
 use App\Models\UserContact;
 use App\Traits\ServiceResponseTrait;
+use Illuminate\Support\Facades\Log;
 
 class UserContactService
 {
@@ -28,7 +29,7 @@ class UserContactService
                 'userContact' => $userContact
             ]);
         } catch (\Exception $e) {
-            report($e->getMessage());
+            Log::error("error: UserContactService::createUserContact", ['message' => $e->getMessage()]);
             return $this->errorResponse($e->getMessage(), 500);
         }
     }

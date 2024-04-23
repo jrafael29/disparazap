@@ -100,7 +100,7 @@ class SendMessageFlowToTargetJob implements ShouldQueue
             // DB::commits();
         } catch (\Exception $e) {
             // DB::rollBack();
-            Log::error("erro job:sendmessage= {$e->getMessage()}",);
+            Log::error("error: SendMessageFlowToTargetJob", ['message' => $e->getMessage()]);
         }
     }
 }

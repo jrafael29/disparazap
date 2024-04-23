@@ -20,6 +20,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
 {
@@ -109,8 +110,8 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
             }
             DB::commit();
         } catch (\Exception $e) {
+            Log::error("error: GetReadyPhonenumbersToVerifyJob", ['message' => $e->getMessage()]);
             DB::rollback();
-            dd($e->getMessage());
         }
     }
 }

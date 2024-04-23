@@ -7,6 +7,7 @@ use App\Models\Sent;
 use App\Repository\SentRepository;
 use App\Traits\ServiceResponseTrait;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SentService
 {
@@ -18,27 +19,41 @@ class SentService
     }
     public function scheduleSent($userId, $flowId, $instances, $phonenumbers, $sendDate, $delay = 15, $description)
     {
-        if (!$userId || !$flowId || empty($instances) || empty($phonenumbers) || !$sendDate || !$description) return false;
-        $sent = Sent::query()->create([
-            'user_id' => $userId,
-            'description' => $description,
-            'start_at' => $sendDate
-        ]);
+        if (
+            !$userId ||
+            !$flowId ||
+            empty($instances) ||
+            empty($phonenumbers) ||
+            !$sendDate ||
+            !$description
+        ) return false;
+        try {
+            Log::info('init SentService::scheduleSent');
+            $sent = Sent::query()->create([
+                'user_id' => $userId,
+                'description' => $description,
+                'start_at' => $sendDate
+            ]);
 
-        $allInstancesPhonenumbers = PhonenumberHelper::dividePhonenumbersByInstances(
-            instances: $instances,
-            phonenumbers: $phonenumbers,
-        );
-        foreach ($allInstancesPhonenumbers as $instanceId => $instancePhonenumbers) {
-            $this->scheduleInstanceSents(
-                sentId: $sent->id,
-                instanceId: $instanceId,
-                phonenumbers: $instancePhonenumbers,
-                sendDate: $sendDate,
-                delay: $delay,
-                userId: $userId,
-                flowId: $flowId
+            $allInstancesPhonenumbers = PhonenumberHelper::dividePhonenumbersByInstances(
+                instances: $instances,
+                phonenumbers: $phonenumbers,
             );
+            foreach ($allInstancesPhonenumbers as $instanceId => $instancePhonenumbers) {
+                $this->scheduleInstanceSents(
+                    sentId: $sent->id,
+                    instanceId: $instanceId,
+                    phonenumbers: $instancePhonenumbers,
+                    sendDate: $sendDate,
+                    delay: $delay,
+                    userId: $userId,
+                    flowId: $flowId
+                );
+            }
+            Log::info('end SentService::scheduleSent');
+        } catch (\Exception $e) {
+            Log::error('error SentService::scheduleSent', ['message' => $e->getMessage()]);
+            //throw $th;
         }
     }
 
@@ -52,21 +67,27 @@ class SentService
         $flowId
     ) {
         if (!$sentId || !$instanceId || empty($phonenumbers) || !$sendDate || !$delay || !$userId || !$flowId) return false;
-        foreach ($phonenumbers as $index => $phonenumber) {
-            $toSentDate = Carbon::parse($sendDate)->addSeconds(($delay * $index) + 5);
-            // dd($sendDate);
-            $this->flowToSentService->createFlowToSent(
-                userId: $userId,
-                flowId: $flowId,
-                sentId: $sentId,
-                phonenumber: $phonenumber,
-                instanceId: $instanceId,
-                sendAt: $toSentDate,
-                delayInSeconds: $delay
-            );
+        Log::info('init SentService::scheduleInstanceSents');
+        try {
+            foreach ($phonenumbers as $index => $phonenumber) {
+                $toSentDate = Carbon::parse($sendDate)->addSeconds(($delay * $index) + 5);
+                // dd($sendDate);
+                $this->flowToSentService->createFlowToSent(
+                    userId: $userId,
+                    flowId: $flowId,
+                    sentId: $sentId,
+                    phonenumber: $phonenumber,
+                    instanceId: $instanceId,
+                    sendAt: $toSentDate,
+                    delayInSeconds: $delay
+                );
+            }
+            Log::info('end SentService::scheduleInstanceSents');
+            return true;
+        } catch (\Exception $e) {
+            Log::error('error SentService::schedulleSent', ['message' => $e->getMessage()]);
+            return false;
         }
-
-        return true;
     }
 
     public function pauseSent($sentId)
@@ -79,7 +100,7 @@ class SentService
                 ]);
             }
         } catch (\Exception $e) {
-            report($e->getMessage());
+            Log::error('error SentService::pauseSent', ['message' => $e->getMessage()]);
             return $this->errorResponse(message: $e->getMessage(), statusCode: 500);
         }
     }
@@ -94,7 +115,7 @@ class SentService
                 ]);
             }
         } catch (\Exception $e) {
-            report($e->getMessage());
+            Log::error('error SentService::playSent', ['message' => $e->getMessage()]);
             return $this->errorResponse(message: $e->getMessage(), statusCode: 500);
         }
     }
