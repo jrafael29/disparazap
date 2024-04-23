@@ -17,7 +17,7 @@ class FlowToSent extends Model
         'instance_id',
         'sent_id',
         'contact_id',
-        'user_historic_credit_id',
+        'user_history_credit_id',
         "to",
         "sent",
         "busy",

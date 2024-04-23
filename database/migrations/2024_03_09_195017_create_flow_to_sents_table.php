@@ -38,10 +38,10 @@ return new class extends Migration
                 ->on('contacts')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
-            $table->foreignId('user_historic_credit_id')
+            $table->foreignId('user_history_credit_id')
                 ->nullable()
                 ->references('id')
-                ->on('contacts')
+                ->on('user_wallet_histories')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
             $table->string("to");
