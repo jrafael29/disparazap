@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Helpers\Phonenumber;
 use App\Models\PhonenumberCheck;
 use App\Models\VerifiedPhonenumber;
 use App\Models\VerifiedPhonenumberCheck;
@@ -21,9 +22,9 @@ class StorePhonenumberToVerifyJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct($checkId, $phonenumber)
+    public function __construct($check, $phonenumber)
     {
-        $this->check = PhonenumberCheck::query()->findOrFail($checkId);
+        $this->check = $check;
         $this->phonenumber = $phonenumber;
     }
 
@@ -37,15 +38,21 @@ class StorePhonenumberToVerifyJob implements ShouldQueue
             Log::info("init StorePhonenumberToVerifyJob", ['phonenumber' => $phonenumber]);
 
             $phonenumberAlreadyVerified = VerifiedPhonenumberCheck::query()
+                ->with(['verify'])
                 ->whereHas('verify', function ($query) use ($phonenumber) {
+                    $phone = Phonenumber::lastEightDigits($phonenumber);
                     $query
-                        ->where('phonenumber', $phonenumber)
+                        ->where('phonenumber', 'like', '%' . $phone . '%')
                         ->where('verified', 1);
                 })
                 ->where('done', 1)
                 ->first();
 
             if ($phonenumberAlreadyVerified) {
+                Log::info("phonenumber already exists StorePhonenumberToVerifyJob", [
+                    'phonenumber' => $phonenumber,
+                    'queryResult' => $phonenumberAlreadyVerified
+                ]);
                 VerifiedPhonenumberCheck::create([
                     'check_id' => $this->check->id,
                     'verify_id' => $phonenumberAlreadyVerified->verify->id,
