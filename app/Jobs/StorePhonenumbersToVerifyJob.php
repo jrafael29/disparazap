@@ -42,9 +42,12 @@ class StorePhonenumbersToVerifyJob implements ShouldQueue
                 'description' => Str::uuid()->toString()
             ]);
             foreach ($this->phonenumbers as $phonenumber) {
-                StorePhonenumberToVerifyJob::dispatch($check, $phonenumber);
+                StorePhonenumberToVerifyJob::dispatch($check->id, $phonenumber);
             }
-            Log::info("end StorePhonenumbersToVerifyJob", ['check' => $check]);
+            Log::info("end StorePhonenumbersToVerifyJob", [
+                'phonenumbers' => $this->phonenumbers,
+                'check' => $check
+            ]);
         } catch (\Exception $e) {
             Log::error("error StorePhonenumbersToVerifyJob", ['message' => $e->getMessage()]);
         }
