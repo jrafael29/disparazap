@@ -42,6 +42,7 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
     public function handle(): void
     {
         try {
+
             DB::beginTransaction();
             // instancia do cara
             $checkVerifies = VerifiedPhonenumberCheck::query()
@@ -50,12 +51,12 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
                     $query->where('verified', 0);
                 })
                 ->where('done', 0);
-
-
+            Log::info("init GetReadyPhonenumbersToVerifyJob", [
+                'verifies' => $checkVerifies
+            ]);
             if ($checkVerifies->count() < 1) return;
 
             $check = PhonenumberCheck::query()->findOrFail($checkVerifies->first()->check_id);
-
 
             if (!$check) return;
             $firstInstance = Instance::query()
@@ -63,8 +64,15 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
                 ->where('user_id', $check->user_id)
                 ->where('online', 1)
                 ->first();
-            if (!$firstInstance) return;
-            //numeros a serem verificados
+
+            if (!$firstInstance) {
+                Log::warning("usuario nao possui instancia online GetReadyPhonenumbersToVerifyJob", [
+                    'instance' => $firstInstance
+                ]);
+                return;
+            };
+
+            // verifica de 75 em 75 numeros...
             $numbers = [];
             $checkVerifies
                 ->limit(75)
@@ -73,42 +81,16 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
                 ->each(function ($item) use (&$numbers) {
                     array_push($numbers, $item->verify->phonenumber);
                 });
-            // check 
-            $firstInstance->available_at = Carbon::now()->addSeconds(5);
-            $firstInstance->save();
             $filteredNumbers = Phonenumber::filterUniquePhonenumbers($numbers);
-            // dd($numbers, $filteredNumbers);
-            $result = $this->evolutionChatService->checkNumbers(
-                instanceName: $firstInstance->name,
-                numbers: $filteredNumbers
-            );
-            if (empty($result)) return;
-            foreach ($result as $phonenumber => $exists) {
-                $phonenumberWithoutDDs = substr($phonenumber, -8);
-                VerifiedPhonenumber::query()
-                    ->where('phonenumber', 'like', '%' . $phonenumberWithoutDDs)
-                    ->update([
-                        'verified' => 1,
-                        'isOnWhatsapp' => $exists
-                    ]);
-                VerifiedPhonenumberCheck::query()
-                    ->with(['verify'])
-                    ->whereHas('verify', function ($query) use ($phonenumberWithoutDDs) {
-                        $query->where('phonenumber', '%' . $phonenumberWithoutDDs);
-                    })
-                    ->update([
-                        'done' => 1
-                    ]);
 
-                if ($exists) {
-                    $this->userContactService->createUserContact(
-                        userId: $check->user_id,
-                        description: '',
-                        phonenumber: $phonenumber
-                    );
-                }
-            }
+            VerifyPhonenumbersExistenceJob::dispatch($firstInstance, $check, $filteredNumbers);
+
             DB::commit();
+            Log::info("end GetReadyPhonenumbersToVerifyJob", [
+                'check' => $check,
+                'instanceName' => $firstInstance->name,
+                'phonenumbers' => $filteredNumbers
+            ]);
         } catch (\Exception $e) {
             Log::error("error: GetReadyPhonenumbersToVerifyJob", ['message' => $e->getMessage()]);
             DB::rollback();

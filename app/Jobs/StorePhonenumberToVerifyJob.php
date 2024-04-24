@@ -11,21 +11,19 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class StorePhonenumberToVerifyJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private PhonenumberCheck $check;
-    private $phonenumber;
+
     /**
      * Create a new job instance.
      */
-    public function __construct($check, $phonenumber)
+    public function __construct(public PhonenumberCheck $check, public $phonenumber)
     {
-        $this->check = $check;
-        $this->phonenumber = $phonenumber;
     }
 
     /**
@@ -36,7 +34,7 @@ class StorePhonenumberToVerifyJob implements ShouldQueue
         try {
             $phonenumber = (string) $this->phonenumber;
             Log::info("init StorePhonenumberToVerifyJob", ['phonenumber' => $phonenumber]);
-
+            DB::beginTransaction();
             $phonenumberAlreadyVerified = VerifiedPhonenumberCheck::query()
                 ->with(['verify'])
                 ->whereHas('verify', function ($query) use ($phonenumber) {
@@ -69,12 +67,14 @@ class StorePhonenumberToVerifyJob implements ShouldQueue
                     'done' => 0
                 ]);
             }
+            DB::commit();
+
             Log::info("end StorePhonenumberToVerifyJob", [
                 'check' => $this->check,
                 'phonenumber' => $phonenumber
             ]);
         } catch (\Exception $e) {
-            //throw $th;
+            DB::rollBack();
             Log::error("error StorePhonenumberToVerifyJob", ['message' => $e->getMessage()]);
         }
     }

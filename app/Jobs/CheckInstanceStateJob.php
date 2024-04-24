@@ -29,21 +29,10 @@ class CheckInstanceStateJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Instance::query()->where('online', 1)->get()->each(function (Instance $instance) {
-            $stateInstance = $this->instanceService->getInstanceState($instance->name);
-            if ($stateInstance === false) {
-                // nao existe, cria uma.
-                $evolutionInstanceData = $this->instanceService->createEvolutionInstance($instance->name, $instance->phonenumber);
-                $instance->online = 0;
-            }
-
-            switch ($stateInstance) {
-                case 'close':
-                    // se estiver fechada, desconecta;
-                    $instance->online = 0;
-                    break;
-            }
-            $instance->save();
-        });
+        Instance::query()
+            ->where('active', 1)
+            ->get()->each(function (Instance $instance) {
+                HandleWithInstanceStatusJob::dispatch($instance);
+            });
     }
 }

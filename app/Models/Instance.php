@@ -17,7 +17,15 @@ class Instance extends Model
         'token',
         'active',
         'qrcode_path',
+        'verified_at',
         'available_at'
+    ];
+
+    protected $casts = [
+        'online' => 'boolean',
+        'active' => 'boolean',
+        'verified_at' => 'datetime',
+        'available_at' => 'datetime'
     ];
 
     public function user()
