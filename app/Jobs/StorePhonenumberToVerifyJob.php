@@ -46,25 +46,26 @@ class StorePhonenumberToVerifyJob implements ShouldQueue
                 ->first();
 
             if ($phonenumberAlreadyVerified) {
-                VerifiedPhonenumberCheck::query()
-                    ->create([
-                        'check_id' => $this->check->id,
-                        'verify_id' => $phonenumberAlreadyVerified->verify->id,
-                        'done' => 1
-                    ]);
+                VerifiedPhonenumberCheck::create([
+                    'check_id' => $this->check->id,
+                    'verify_id' => $phonenumberAlreadyVerified->verify->id,
+                    'done' => 1
+                ]);
             } else {
-                $toVerifyPhonenumber = VerifiedPhonenumber::query()->firstOrCreate(
+                $toVerifyPhonenumber = VerifiedPhonenumber::firstOrCreate(
                     ['phonenumber' => $phonenumber],
                     ['phonenumber' => $phonenumber]
                 );
-                VerifiedPhonenumberCheck::query()
-                    ->create([
-                        'check_id' => $this->check->id,
-                        'verify_id' => $toVerifyPhonenumber->id,
-                        'done' => 0
-                    ]);
+                VerifiedPhonenumberCheck::create([
+                    'check_id' => $this->check->id,
+                    'verify_id' => $toVerifyPhonenumber->id,
+                    'done' => 0
+                ]);
             }
-            Log::info("end StorePhonenumberToVerifyJob");
+            Log::info("end StorePhonenumberToVerifyJob", [
+                'check' => $this->check,
+                'phonenumber' => $phonenumber
+            ]);
         } catch (\Exception $e) {
             //throw $th;
             Log::error("error StorePhonenumberToVerifyJob", ['message' => $e->getMessage()]);
