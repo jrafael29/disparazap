@@ -26,7 +26,6 @@ class StorePhonenumbersToVerifyJob implements ShouldQueue
     public function __construct($userId, $phonenumbers = [])
     {
         $this->user = User::query()->findOrFail($userId);
-        // phonenumbers can be 100000 length
         $this->phonenumbers = $phonenumbers;
     }
 
@@ -45,9 +44,9 @@ class StorePhonenumbersToVerifyJob implements ShouldQueue
             foreach ($this->phonenumbers as $phonenumber) {
                 StorePhonenumberToVerifyJob::dispatch($check, $phonenumber);
             }
-            Log::info("end StorePhonenumbersToVerifyJob");
+            Log::info("end StorePhonenumbersToVerifyJob", ['check' => $check]);
         } catch (\Exception $e) {
-            Log::error("init StorePhonenumbersToVerifyJob", ['message' => $e->getMessage()]);
+            Log::error("error StorePhonenumbersToVerifyJob", ['message' => $e->getMessage()]);
         }
     }
 }
