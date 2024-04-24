@@ -117,12 +117,13 @@ class RawText extends Component
     {
         $firstInstanceName = Instance::query()->where('user_id', Auth::user()->id)->first()?->name;
         if (!$firstInstanceName) return false;
+        $userId = Auth::user()->id;
         $check = PhonenumberCheck::create([
-            'user_id' => $this->user->id,
+            'user_id' => $userId,
             'description' => Str::uuid()->toString()
         ]);
         StorePhonenumbersToVerifyJob::dispatch(
-            Auth::user()->id,
+            $userId,
             $check->id,
             $this->phonenumbers
         );
