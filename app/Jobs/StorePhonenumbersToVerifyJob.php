@@ -20,12 +20,14 @@ class StorePhonenumbersToVerifyJob implements ShouldQueue
 
     public $phonenumbers = [];
     public User $user;
+    public PhonenumberCheck $check;
     /**
      * Create a new job instance.
      */
-    public function __construct($userId, $phonenumbers = [])
+    public function __construct($userId, $checkId, $phonenumbers = [])
     {
         $this->user = User::query()->findOrFail($userId);
+        $this->check = PhonenumberCheck::query()->findOrFail($checkId);
         $this->phonenumbers = $phonenumbers;
     }
 
@@ -37,16 +39,12 @@ class StorePhonenumbersToVerifyJob implements ShouldQueue
         if (empty($this->phonenumbers)) return;
         Log::info("init StorePhonenumbersToVerifyJob");
         try {
-            $check = PhonenumberCheck::create([
-                'user_id' => $this->user->id,
-                'description' => Str::uuid()->toString()
-            ]);
             foreach ($this->phonenumbers as $phonenumber) {
-                StorePhonenumberToVerifyJob::dispatch($check->id, $phonenumber);
+                StorePhonenumberToVerifyJob::dispatch($this->check->id, $phonenumber);
             }
             Log::info("end StorePhonenumbersToVerifyJob", [
                 'phonenumbers' => $this->phonenumbers,
-                'check' => $check
+                'check' => $this->check
             ]);
         } catch (\Exception $e) {
             Log::error("error StorePhonenumbersToVerifyJob", ['message' => $e->getMessage()]);

@@ -5,6 +5,7 @@ namespace App\Livewire\Contact\Import;
 use App\Helpers\Phonenumber;
 use App\Jobs\StorePhonenumbersToVerifyJob;
 use App\Models\Instance;
+use App\Models\PhonenumberCheck;
 use App\Models\UserGroup;
 use App\Service\Evolution\EvolutionChatService;
 use App\Service\PhonenumberService;
@@ -15,6 +16,7 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Mary\Traits\Toast;
+use Illuminate\Support\Str;
 
 class RawText extends Component
 {
@@ -115,11 +117,16 @@ class RawText extends Component
     {
         $firstInstanceName = Instance::query()->where('user_id', Auth::user()->id)->first()?->name;
         if (!$firstInstanceName) return false;
+        $check = PhonenumberCheck::create([
+            'user_id' => $this->user->id,
+            'description' => Str::uuid()->toString()
+        ]);
         StorePhonenumbersToVerifyJob::dispatch(
             Auth::user()->id,
+            $check->id,
             $this->phonenumbers
         );
-        $this->info("Os números serão verificados. Você ja pode acompanhar o status");
+        $this->info("Os números serão verificados em minutos.");
         $this->redirect('/verify', navigate: true);
     }
 
