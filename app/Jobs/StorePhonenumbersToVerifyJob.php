@@ -37,7 +37,7 @@ class StorePhonenumbersToVerifyJob implements ShouldQueue
         if (empty($this->phonenumbers)) return;
         Log::info("init StorePhonenumbersToVerifyJob");
         try {
-            $check = PhonenumberCheck::query()->create([
+            $check = PhonenumberCheck::create([
                 'user_id' => $this->user->id,
                 'description' => Str::uuid()->toString()
             ]);
