@@ -48,7 +48,7 @@ class GetReadyFlowsToSentJob implements ShouldQueue
             ->get()
             ->unique('instance_id')
             ->each(function (FlowToSent $flowToSent) {
-                VerifyFlowToSentJob::dispatch($flowToSent);
+                VerifyFlowToSentJob::dispatch($flowToSent)->onQueue('high');
             });
     }
 }

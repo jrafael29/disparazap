@@ -50,7 +50,7 @@ class SelectGroup extends Component
         $userId = Auth::user()->id;
         $groupId = $this->groupSelectedId;
         $phonenumbers = $existentPhonenumbers;
-        AddContactsToGroupJob::dispatch($userId, $groupId, $phonenumbers);
+        AddContactsToGroupJob::dispatch($userId, $groupId, $phonenumbers)->onQueue('low');
 
         $this->success("Os contatos serão adicionados ao grupo");
         return $this->redirect('/groups', navigate: true);

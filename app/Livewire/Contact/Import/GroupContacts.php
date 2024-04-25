@@ -142,7 +142,7 @@ class GroupContacts extends Component
         if (empty($this->phonenumbers) || !$groupId) return;
         StoreContactsJob::dispatch($userId, $phonenumbers);
         // disparar job para adicionar contatos a um grupo
-        AddContactsToGroupJob::dispatch($userId, $groupId, $phonenumbers);
+        AddContactsToGroupJob::dispatch($userId, $groupId, $phonenumbers)->onQueue('low');
 
         $this->redirect('/groups', true);
     }
