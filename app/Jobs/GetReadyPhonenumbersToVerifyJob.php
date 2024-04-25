@@ -41,7 +41,7 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
         try {
             Log::info("init GetReadyPhonenumbersToVerifyJob");
             PhonenumberCheck::query()
-                ->with(['user'])
+                ->with(['user', 'verifies'])
                 ->whereHas('user', function ($userQuery) {
                     $userQuery
                         ->with(['wallet'])
@@ -49,11 +49,14 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
                             $walletQuery->where('credit', '>', 0);
                         });
                 })
-                ->where('done', 0)
+                ->whereHas('verifies', function ($verifiesQuery) {
+                    $verifiesQuery->where('verified', 0);
+                })
+                // ->where('done', 0)
                 ->get()
                 ->each(function (PhonenumberCheck $check) {
                     if ($check->verifies->count()) {
-                        GetCheckPhonenumbersToVerifyJob::dispatch($check)->onQueue('low');
+                        GetCheckPhonenumbersToVerifyJob::dispatch($check)->onQueue('high');
                     }
                 });
             Log::info("end GetReadyPhonenumbersToVerifyJob");
