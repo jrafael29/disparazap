@@ -39,64 +39,97 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
     public function handle(): void
     {
         try {
-            DB::beginTransaction();
-
-            $checkVerifies = VerifiedPhonenumberCheck::query()
+            // DB::beginTransaction();
+            Log::info("init GetReadyPhonenumbersToVerifyJob");
+            $testecheck = VerifiedPhonenumberCheck::query()
                 ->with(['verify'])
                 ->whereHas('verify', function ($query) {
                     $query->where('verified', 0);
                 })
-                ->where('done', 0);
-            Log::info("init GetReadyPhonenumbersToVerifyJob", [
-                'verifies' => $checkVerifies->count()
-            ]);
-            if ($checkVerifies->count() < 1) {
-                return;
-            };
+                ->where('done', 0)
+                ->get()
+                ->groupBy('check_id')
+                ->each(function ($verifiedPhonenumbersCheck) {
+                    // VerifiedPhonenumberCheck[] $verifiedPhonenumbersCheck
+                    $check = PhonenumberCheck::query()->findOrFail($verifiedPhonenumbersCheck->first()->check_id);
+                    $firstCheckUserInstance = Instance::query()
+                        ->where('available_at', '<', now()->subSecond())
+                        ->where('user_id', $check->user_id)
+                        ->where('online', 1)
+                        ->where('active', 1)
+                        ->first();
 
-            $check = PhonenumberCheck::query()->findOrFail($checkVerifies->first()->check_id);
+                    if (!$firstCheckUserInstance) {
+                        Log::warning("usuario nao possui instancia disponivel ou online GetReadyPhonenumbersToVerifyJob", [
+                            'check' => $check,
+                            'user' => $check->user,
+                            'instance' => $firstCheckUserInstance
+                        ]);
+                        return;
+                    };
+                    $numbers = [];
+                    $verifiedPhonenumbersCheck
+                        ->take(self::PHONENUMBERS_COUNT_PER_BATCH_TO_VERIFY)
+                        ->each(function ($item) use (&$numbers) {
+                            array_push($numbers, $item->verify->phonenumber);
+                        });
+                    $filteredNumbers = Phonenumber::filterUniquePhonenumbers($numbers);
+                    VerifyPhonenumbersExistenceJob::dispatch($firstCheckUserInstance, $check, $filteredNumbers);
+                });
 
-            if (!$check) {
-                Log::warning("verificação não encontrada GetReadyPhonenumbersToVerifyJob", [
-                    'check' => $check
-                ]);
-                return;
-            };
-            $firstInstance = Instance::query()
-                ->where('available_at', '<', now()->subSecond())
-                ->where('user_id', $check->user_id)
-                ->where('online', 1)
-                ->where('active', 1)
-                ->first();
 
-            if (!$firstInstance) {
-                Log::warning("usuario nao possui instancia disponivel ou online GetReadyPhonenumbersToVerifyJob", [
-                    'check' => $check,
-                    'user' => $check->user,
-                    'instance' => $firstInstance
-                ]);
-                return;
-            };
+            // $checkVerifies = VerifiedPhonenumberCheck::query()
+            //     ->with(['verify'])
+            //     ->whereHas('verify', function ($query) {
+            //         $query->where('verified', 0);
+            //     })
+            //     ->where('done', 0);
+
+
+            // if ($checkVerifies->count() < 1) {
+
+            //     return;
+            // };
+
+            // $check = PhonenumberCheck::query()->findOrFail($checkVerifies->first()->check_id);
+
+            // if (!$check) {
+            //     Log::warning("verificação não encontrada GetReadyPhonenumbersToVerifyJob", [
+            //         'check' => $check
+            //     ]);
+            //     return;
+            // };
+            // $firstInstance = Instance::query()
+            //     ->where('available_at', '<', now()->subSecond())
+            //     ->where('user_id', $check->user_id)
+            //     ->where('online', 1)
+            //     ->where('active', 1)
+            //     ->first();
+
+            // if (!$firstInstance) {
+            //     Log::warning("usuario nao possui instancia disponivel ou online GetReadyPhonenumbersToVerifyJob", [
+            //         'check' => $check,
+            //         'user' => $check->user,
+            //         'instance' => $firstInstance
+            //     ]);
+            //     return;
+            // };
 
             // verifica de 75 em 75 numeros...
-            $numbers = [];
-            $checkVerifies
-                ->limit(self::PHONENUMBERS_COUNT_PER_BATCH_TO_VERIFY)
-                ->get()
-                ->unique('verify.phonenumber')
-                ->each(function ($item) use (&$numbers) {
-                    array_push($numbers, $item->verify->phonenumber);
-                });
-            $filteredNumbers = Phonenumber::filterUniquePhonenumbers($numbers);
+            // $numbers = [];
+            // $checkVerifies
+            //     ->limit(self::PHONENUMBERS_COUNT_PER_BATCH_TO_VERIFY)
+            //     ->get()
+            //     ->unique('verify.phonenumber')
+            //     ->each(function ($item) use (&$numbers) {
+            //         array_push($numbers, $item->verify->phonenumber);
+            //     });
+            // $filteredNumbers = Phonenumber::filterUniquePhonenumbers($numbers);
 
-            VerifyPhonenumbersExistenceJob::dispatch($firstInstance, $check, $filteredNumbers);
+            // VerifyPhonenumbersExistenceJob::dispatch($firstInstance, $check, $filteredNumbers);
 
-            DB::commit();
-            Log::info("end GetReadyPhonenumbersToVerifyJob", [
-                'check' => $check,
-                'instanceName' => $firstInstance->name,
-                'phonenumbers' => $filteredNumbers
-            ]);
+            // DB::commit();
+            Log::info("end GetReadyPhonenumbersToVerifyJob");
         } catch (\Exception $e) {
             Log::error("error: GetReadyPhonenumbersToVerifyJob", ['message' => $e->getMessage()]);
             DB::rollback();
