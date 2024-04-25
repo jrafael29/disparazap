@@ -40,7 +40,7 @@ class StorePhonenumbersToVerifyJob implements ShouldQueue
         Log::info("init StorePhonenumbersToVerifyJob");
         try {
             foreach ($this->phonenumbers as $phonenumber) {
-                StorePhonenumberToVerifyJob::dispatch($this->check, $phonenumber);
+                StorePhonenumberToVerifyJob::dispatch($this->check, $phonenumber)->onQueue('low');
             }
             Log::info("end StorePhonenumbersToVerifyJob", [
                 'phonenumbers' => $this->phonenumbers,

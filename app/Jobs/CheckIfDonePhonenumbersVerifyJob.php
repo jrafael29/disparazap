@@ -33,7 +33,7 @@ class CheckIfDonePhonenumbersVerifyJob implements ShouldQueue
             ->limit(20)
             ->get()
             ->each(function (PhonenumberCheck $check) {
-                DonePhonenumberCheckJob::dispatch($check->id);
+                DonePhonenumberCheckJob::dispatch($check->id)->onQueue('low');
             });
     }
 }

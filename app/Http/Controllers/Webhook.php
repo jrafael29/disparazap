@@ -77,7 +77,7 @@ class Webhook extends Controller
 
             if ($state === 'open') {
                 Log::info('abriu', $data);
-                InstanceOpenHandleJob::dispatch($instanceModel);
+                InstanceOpenHandleJob::dispatch($instanceModel)->onQueue('low');
             }
 
             if ($state === 'close') {

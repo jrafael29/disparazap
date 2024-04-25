@@ -26,6 +26,6 @@ class CheckInstances extends Command
      */
     public function handle()
     {
-        CheckInstanceStateJob::dispatch();
+        CheckInstanceStateJob::dispatch()->onQueue('low');
     }
 }

@@ -52,5 +52,3 @@ class GetReadyFlowsToSentJob implements ShouldQueue
             });
     }
 }
-
-// FlowToSent::with(['instance'])->whereHas('instance', function ($query) {$query->where('available_at', '<', now()->subSecond())->where('active', 1)->where('online', 1);})->whereHas('sent', function ($query) {$query->where('paused', 0);})->where('to_sent_at', '<', now()->subSecond())->where('sent', 0)->get()->unique('instance_id')->each(function (FlowToSent $flowToSent) {VerifyFlowToSentJob::dispatch($flowToSent);});

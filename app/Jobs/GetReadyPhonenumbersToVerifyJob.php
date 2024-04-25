@@ -53,7 +53,7 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
                 ->get()
                 ->each(function (PhonenumberCheck $check) {
                     if ($check->verifies->count()) {
-                        GetCheckPhonenumbersToVerifyJob::dispatch($check);
+                        GetCheckPhonenumbersToVerifyJob::dispatch($check)->onQueue('low');
                     }
                 });
             Log::info("end GetReadyPhonenumbersToVerifyJob");

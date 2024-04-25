@@ -126,7 +126,7 @@ class RawText extends Component
             $userId,
             $check->id,
             $this->phonenumbers
-        );
+        )->onQueue('low');
         $this->info("Os números serão verificados em minutos.");
         $this->redirect('/verify', navigate: true);
     }

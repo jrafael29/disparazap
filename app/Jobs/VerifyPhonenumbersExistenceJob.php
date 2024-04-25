@@ -62,7 +62,7 @@ class VerifyPhonenumbersExistenceJob implements ShouldQueue
                     $this->check,
                     (string)$phonenumber,
                     (bool)$exists
-                );
+                )->onQueue('low');
             }
             $this->instance->available_at = Carbon::now()->addSeconds(1);
             $this->instance->save();
