@@ -10,13 +10,13 @@
 
                         <div>
                             <div class="my-2">
-                                <x-button class="btn-outline" label="{{$includeDdd ? ' Não Incluir' : 'Incluir' }} DDD"
+                                <x-button spinner class="btn-outline" label="{{$includeDdd ? ' Não Incluir' : 'Incluir' }} DDD"
                                     tooltip-right="Incluir DDD a número que não tiver" wire:click='toggleIncludeDdd' />
 
                             </div>
                             @if($includeDdd)
 
-                            <x-input wire:model.live='ddd' type="number" label="Insira o DDD a ser incluido nos numeros"
+                            <x-input spinner wire:model.live='ddd' type="number" label="Insira o DDD a ser incluido nos numeros"
                                 inline />
                             @endif
                         </div>

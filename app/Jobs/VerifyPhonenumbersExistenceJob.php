@@ -58,34 +58,11 @@ class VerifyPhonenumbersExistenceJob implements ShouldQueue
             ]);
             DB::beginTransaction();
             foreach ($result as $phonenumber => $exists) {
-                $ddiAndDddDigits = substr($phonenumber, 0, 4);
-                $phoneDigits = Phonenumber::lastEightDigits($phonenumber);
-
-                VerifiedPhonenumber::query()
-                    ->where('phonenumber', 'like',  $ddiAndDddDigits . '%')
-                    ->where('phonenumber', 'like', '%' . $phoneDigits)
-                    ->update([
-                        'verified' => 1,
-                        'isOnWhatsapp' => $exists
-                    ]);
-                VerifiedPhonenumberCheck::query()
-                    ->with(['verify'])
-                    ->whereHas('verify', function ($query) use ($ddiAndDddDigits, $phoneDigits) {
-                        $query
-                            ->where('phonenumber', 'like',  $ddiAndDddDigits . '%')
-                            ->where('phonenumber', 'like', '%' . $phoneDigits);
-                        // where('phonenumber', '%' . $phonenumberWithoutDDs);
-                    })
-                    ->update([
-                        'done' => 1
-                    ]);
-                if ($exists) {
-                    $userContactService->createUserContact(
-                        userId: $this->check->user_id,
-                        description: '',
-                        phonenumber: $phonenumber
-                    );
-                }
+                UpdatePhonenumberVerifyJob::dispatch(
+                    $this->check,
+                    (string)$phonenumber,
+                    (bool)$exists
+                );
             }
             $this->instance->available_at = Carbon::now()->addSeconds(1);
             $this->instance->save();
