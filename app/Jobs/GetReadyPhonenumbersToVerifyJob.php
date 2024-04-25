@@ -51,6 +51,7 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
                 'verifies' => $checkVerifies->count()
             ]);
             if ($checkVerifies->count() < 1) {
+                return;
             };
 
             $check = PhonenumberCheck::query()->findOrFail($checkVerifies->first()->check_id);
