@@ -37,10 +37,11 @@ class GetCheckPhonenumbersToVerifyJob implements ShouldQueue
             //code...
             $phonenumbers = [];
             $this->check->verifies
+                ->where('verified', 0)
                 ->take(self::PHONENUMBERS_COUNT_PER_BATCH_TO_VERIFY)
                 ->each(function ($item) use (&$phonenumbers) {
-                    if (!empty($item->verify->phonenumber)) {
-                        array_push($phonenumbers, $item->verify->phonenumber);
+                    if (!empty($item->phonenumber)) {
+                        array_push($phonenumbers, $item->phonenumber);
                     }
                 });
             $uniquePhonenumbers = Phonenumber::filterUniquePhonenumbers($phonenumbers);
