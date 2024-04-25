@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('run:get-ready-phonenumbers-to-verify')->everyFiveSeconds();
 
         // verifica todas as checagem, e finaliza caso tenha todas verificações concluidas
-        $schedule->command('run:check-if-done-phonenumbers-checks')->everyFiveSeconds();
+        $schedule->command('run:check-if-done-phonenumbers-checks')->everyTwentySeconds();
     }
 
 
