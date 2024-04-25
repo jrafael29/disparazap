@@ -25,15 +25,12 @@ use Illuminate\Support\Facades\Log;
 class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    private EvolutionChatService $evolutionChatService;
-    private UserContactService $userContactService;
     /**
      * Create a new job instance.
      */
+    const PHONENUMBERS_COUNT_PER_BATCH_TO_VERIFY = 75;
     public function __construct()
     {
-        $this->evolutionChatService = App::make(EvolutionChatService::class);
-        $this->userContactService = App::make(UserContactService::class);
     }
 
     /**
@@ -42,9 +39,8 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
     public function handle(): void
     {
         try {
-
             DB::beginTransaction();
-            // instancia do cara
+
             $checkVerifies = VerifiedPhonenumberCheck::query()
                 ->with(['verify'])
                 ->whereHas('verify', function ($query) {
@@ -52,21 +48,30 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
                 })
                 ->where('done', 0);
             Log::info("init GetReadyPhonenumbersToVerifyJob", [
-                'verifies' => $checkVerifies
+                'verifies' => $checkVerifies->count()
             ]);
-            if ($checkVerifies->count() < 1) return;
+            if ($checkVerifies->count() < 1) {
+            };
 
             $check = PhonenumberCheck::query()->findOrFail($checkVerifies->first()->check_id);
 
-            if (!$check) return;
+            if (!$check) {
+                Log::warning("verificação não encontrada GetReadyPhonenumbersToVerifyJob", [
+                    'check' => $check
+                ]);
+                return;
+            };
             $firstInstance = Instance::query()
                 ->where('available_at', '<', now()->subSecond())
                 ->where('user_id', $check->user_id)
                 ->where('online', 1)
+                ->where('active', 1)
                 ->first();
 
             if (!$firstInstance) {
-                Log::warning("usuario nao possui instancia online GetReadyPhonenumbersToVerifyJob", [
+                Log::warning("usuario nao possui instancia disponivel ou online GetReadyPhonenumbersToVerifyJob", [
+                    'check' => $check,
+                    'user' => $check->user,
                     'instance' => $firstInstance
                 ]);
                 return;
@@ -75,7 +80,7 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
             // verifica de 75 em 75 numeros...
             $numbers = [];
             $checkVerifies
-                ->limit(75)
+                ->limit(self::PHONENUMBERS_COUNT_PER_BATCH_TO_VERIFY)
                 ->get()
                 ->unique('verify.phonenumber')
                 ->each(function ($item) use (&$numbers) {

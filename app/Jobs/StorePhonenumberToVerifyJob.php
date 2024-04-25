@@ -38,9 +38,14 @@ class StorePhonenumberToVerifyJob implements ShouldQueue
             $phonenumberAlreadyVerified = VerifiedPhonenumberCheck::query()
                 ->with(['verify'])
                 ->whereHas('verify', function ($query) use ($phonenumber) {
-                    $phone = Phonenumber::lastEightDigits($phonenumber);
+                    $ddiAndDdd = substr($phonenumber, 0, 4); // 4 primeiros numeros
+                    $phone = Phonenumber::lastEightDigits($phonenumber); // 8 ultimos numeros
+                    // se o numero houver 9 ou não, nao importará
+                    // 5581991931921
+                    // 558191931921
                     $query
-                        ->where('phonenumber', 'like', '%' . $phone . '%')
+                        ->where('phonenumber', 'like', $ddiAndDdd . '%')
+                        ->where('phonenumber', 'like', '%' . $phone)
                         ->where('verified', 1);
                 })
                 ->where('done', 1)

@@ -46,6 +46,8 @@ class Card extends Component
             return $this->error("Ocorreu um erro");
         }
         if (!empty($result['message']) && $result['message'] == 'Instance already opened.') {
+            $this->instance->online = 1;
+            $this->instance->save();
             $this->info("A instancia já esta conectada");
             return;
         }
@@ -58,6 +60,14 @@ class Card extends Component
 
         if ($this->instance->online && !$this->profilePictureUrl) {
             $result = $this->instanceService->getInstance($this->instance->name);
+
+            if (!$result) {
+                // instancia nao existe
+                $this->instance->online = 0;
+                $this->instance->save();
+                return;
+            }
+
             if ($result['error'] === false) {
                 $this->profilePictureUrl = $result['data']['profilePictureUrl'];
                 $this->profileName = $result['data']['profileName'];

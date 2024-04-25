@@ -6,10 +6,14 @@ use Illuminate\Support\Facades\Storage;
 
 class Phonenumber
 {
-
+    static public function lastDigits($digitsCounts, $phonenumber)
+    {
+        return substr($phonenumber, -abs($digitsCounts));
+    }
     static public function lastEightDigits($phonenumber)
     {
-        return substr($phonenumber, -8);
+        return self::lastDigits(8, $phonenumber);
+        // return substr($phonenumber, -8);
     }
     static public function getPhonenumbersFromText($text, $allowRepeated = false): array
     {

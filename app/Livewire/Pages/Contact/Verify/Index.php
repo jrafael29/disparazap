@@ -15,9 +15,10 @@ class Index extends Component
         ['key' => 'id', 'label' => '#'],
         ['key' => 'description', 'label' => 'Descrição'],
         ['key' => 'created_at', 'label' => 'Inicio'],
+        ['key' => 'existents', 'label' => 'Existentes'],
+        ['key' => 'verified', 'label' => 'Verificados'],
         ['key' => 'count', 'label' => 'Números'],
         ['key' => 'done', 'label' => 'Completo'],
-
     ];
     public $sub_headers = [
         ['key' => 'id', 'label' => '#'],
@@ -46,7 +47,7 @@ class Index extends Component
 
     public function addVerifiedPhonenumberCheckToGroup($checkId)
     {
-        dd($checkId);
+        // dd($checkId);
         // grupo
     }
 
@@ -58,7 +59,8 @@ class Index extends Component
 
     public function render()
     {
-        $verifies = PhonenumberCheck::with(['verifies'])
+        $verifies = PhonenumberCheck::query()
+            // ->with(['verifies'])
             ->where('user_id', Auth::user()->id)
             ->orderBy('done', 'asc')
             ->orderBy('created_at', 'desc')

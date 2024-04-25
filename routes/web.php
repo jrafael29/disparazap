@@ -16,6 +16,7 @@ use App\Livewire\Pages\Contact\Import as ContactImport;
 use App\Livewire\Pages\Contact\Group\Index as ContactGroupIndex;
 
 use App\Livewire\Pages\Contact\Verify\Index as VerifyIndex;
+use App\Livewire\Pages\Contact\Verify\Show as VerifyShow;
 
 
 
@@ -99,6 +100,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::get('/verify', VerifyIndex::class)->name('verify');
+    Route::get('/verify/{id}', VerifyShow::class)->name('verify.show');
 });
 
 // admin routes

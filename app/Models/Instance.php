@@ -22,8 +22,6 @@ class Instance extends Model
     ];
 
     protected $casts = [
-        'online' => 'boolean',
-        'active' => 'boolean',
         'verified_at' => 'datetime',
         'available_at' => 'datetime'
     ];

@@ -58,17 +58,23 @@ class VerifyPhonenumbersExistenceJob implements ShouldQueue
             ]);
             DB::beginTransaction();
             foreach ($result as $phonenumber => $exists) {
-                $phonenumberWithoutDDs = Phonenumber::lastEightDigits($phonenumber);
+                $ddiAndDddDigits = substr($phonenumber, 0, 4);
+                $phoneDigits = Phonenumber::lastEightDigits($phonenumber);
+
                 VerifiedPhonenumber::query()
-                    ->where('phonenumber', 'like', '%' . $phonenumberWithoutDDs)
+                    ->where('phonenumber', 'like',  $ddiAndDddDigits . '%')
+                    ->where('phonenumber', 'like', '%' . $phoneDigits)
                     ->update([
                         'verified' => 1,
                         'isOnWhatsapp' => $exists
                     ]);
                 VerifiedPhonenumberCheck::query()
                     ->with(['verify'])
-                    ->whereHas('verify', function ($query) use ($phonenumberWithoutDDs) {
-                        $query->where('phonenumber', '%' . $phonenumberWithoutDDs);
+                    ->whereHas('verify', function ($query) use ($ddiAndDddDigits, $phoneDigits) {
+                        $query
+                            ->where('phonenumber', 'like',  $ddiAndDddDigits . '%')
+                            ->where('phonenumber', 'like', '%' . $phoneDigits);
+                        // where('phonenumber', '%' . $phonenumberWithoutDDs);
                     })
                     ->update([
                         'done' => 1
