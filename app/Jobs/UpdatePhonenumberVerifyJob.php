@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class UpdatePhonenumberVerifyJob implements ShouldQueue
@@ -41,7 +42,7 @@ class UpdatePhonenumberVerifyJob implements ShouldQueue
             'phonenumber' => $phonenumber,
             'exists' => $exists
         ]);
-
+        DB::beginTransaction();
         try {
             $ddiAndDddDigits = substr($phonenumber, 0, 4);
             $phoneDigits = Phonenumber::lastEightDigits($phonenumber);
@@ -50,7 +51,7 @@ class UpdatePhonenumberVerifyJob implements ShouldQueue
                 ->where('phonenumber', 'like', '%' . $phoneDigits)
                 ->update([
                     'verified' => 1,
-                    'isOnWhatsapp' => $exists
+                    'isOnWhatsapp' => !!$exists
                 ]);
             VerifiedPhonenumberCheck::query()
                 ->with(['verify'])
@@ -69,8 +70,12 @@ class UpdatePhonenumberVerifyJob implements ShouldQueue
                     phonenumber: $phonenumber
                 );
             }
+            DB::commit();
+
             Log::info('end UpdatePhonenumberVerifyJob');
         } catch (\Exception $e) {
+            DB::rollBack();
+
             Log::error("error UpdatePhonenumberVerifyJob", [
                 'message' => $e->getMessage()
             ]);

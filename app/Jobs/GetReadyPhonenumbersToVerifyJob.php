@@ -25,40 +25,70 @@ use Illuminate\Support\Facades\Log;
 class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    /**
-     * Create a new job instance.
-     */
-    const PHONENUMBERS_COUNT_PER_BATCH_TO_VERIFY = 75;
+
     public function __construct()
     {
     }
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
         try {
             Log::info("init GetReadyPhonenumbersToVerifyJob");
-            PhonenumberCheck::query()
-                ->with(['user', 'verifies'])
-                ->whereHas('user', function ($userQuery) {
-                    $userQuery
-                        ->with(['wallet'])
-                        ->whereHas('wallet', function ($walletQuery) {
-                            $walletQuery->where('credit', '>', 0);
-                        });
-                })
-                ->whereHas('verifies', function ($verifiesQuery) {
-                    $verifiesQuery->where('verified', 0);
-                })
-                // ->where('done', 0)
+
+            // o começo da verificação da existencia dos telefones pendentes (whatsapp).
+
+            // para verificar um numero, eu preciso de uma instancia
+
+            // usar a instancia online do usuario da checagem.
+            $checks = PhonenumberCheck::query()
+                ->with(
+                    [
+                        'user' => function ($userQuery) {
+                            $userQuery
+                                ->with(['instances', 'wallet'])
+                                ->whereHas('wallet', function ($walletQuery) {
+                                    $walletQuery->where('credit', '>', 0);
+                                })
+                                ->whereHas('instances', function ($instanceQuery) {
+                                    $instanceQuery->where('online', 1);
+                                });
+                        },
+                        'verifies' => function ($verifiesQuery) {
+                            $verifiesQuery->where('verified', 0)->take(75);
+                        }
+                    ]
+                )
                 ->get()
-                ->each(function (PhonenumberCheck $check) {
-                    if ($check->verifies->count()) {
+                ->each(function ($check) {
+                    if ($check)
                         GetCheckPhonenumbersToVerifyJob::dispatch($check)->onQueue('high');
-                    }
                 });
+
+            // dd($checks);
+            return;
+
+
+
+
+            // PhonenumberCheck::query()
+            //     ->with(['user', 'verifies'])
+            //     ->whereHas('user', function ($userQuery) {
+            //         $userQuery
+            //             ->with(['wallet'])
+            //             ->whereHas('wallet', function ($walletQuery) {
+            //                 $walletQuery->where('credit', '>', 0);
+            //             });
+            //     })
+            //     ->whereHas('verifies', function ($verifiesQuery) {
+            //         $verifiesQuery->where('verified', 0);
+            //     })
+            //     // ->where('done', 0)
+            //     ->get()
+            //     ->each(function (PhonenumberCheck $check) {
+            //         if ($check->verifies->count()) {
+            //             GetCheckPhonenumbersToVerifyJob::dispatch($check)->onQueue('high');
+            //         }
+            //     });
             Log::info("end GetReadyPhonenumbersToVerifyJob");
         } catch (\Exception $e) {
             Log::error("error: GetReadyPhonenumbersToVerifyJob", ['message' => $e->getMessage()]);

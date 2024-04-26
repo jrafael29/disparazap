@@ -15,13 +15,12 @@ class DonePhonenumberCheckJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private PhonenumberCheck $check;
+
     /**
      * Create a new job instance.
      */
-    public function __construct($checkId)
+    public function __construct(public PhonenumberCheck $check)
     {
-        $this->check = PhonenumberCheck::query()->findOrFail($checkId);
     }
 
     /**
@@ -32,14 +31,11 @@ class DonePhonenumberCheckJob implements ShouldQueue
         try {
             //code...
             Log::info('init DonePhonenumberCheckJob');
-            $countPhonenumbersToVerify = VerifiedPhonenumberCheck::query()->where([
-                'check_id' => $this->check->id
-            ])->count();
+            $countPhonenumbersToVerify = VerifiedPhonenumberCheck::query()->where(['check_id' => $this->check->id])->count();
             $countDoneVerifies = $this->check->verifies->where('verified', 1)->count();
             if ($countPhonenumbersToVerify === $countDoneVerifies) {
                 $this->check->done = 1;
                 $this->check->save();
-                return;
             }
             Log::info('end DonePhonenumberCheckJob', [
                 'countPhonenumbersToVerify' => $countPhonenumbersToVerify,

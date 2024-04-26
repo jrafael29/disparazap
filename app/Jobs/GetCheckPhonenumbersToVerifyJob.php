@@ -56,7 +56,15 @@ class GetCheckPhonenumbersToVerifyJob implements ShouldQueue
                     'uniquePhonenumbers' => $uniquePhonenumbers
                 ]);
             }
-            VerifyPhonenumbersExistenceJob::dispatch($firstCheckUserInstance, $this->check, $uniquePhonenumbers)->onQueue('high');
+            if ($firstCheckUserInstance && $this->check && $uniquePhonenumbers) {
+                VerifyPhonenumbersExistenceJob::dispatch($firstCheckUserInstance, $this->check, $uniquePhonenumbers)->onQueue('high');
+            } else {
+                Log::warning('empty data GetCheckPhonenumbersToVerifyJob data', [
+                    'firstCheckUserInstance' => $firstCheckUserInstance,
+                    'check' => $this->check,
+                    'uniquePhonenumbers' => $uniquePhonenumbers
+                ]);
+            }
             Log::info('end GetCheckPhonenumbersToVerifyJob data', [
                 'phonenumbers' => $phonenumbers,
                 'uniquePhonenumbers' => $uniquePhonenumbers

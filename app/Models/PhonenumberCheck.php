@@ -34,7 +34,7 @@ class PhonenumberCheck extends Model
         );
     }
 
-    public function checks()
+    public function groups()
     {
         return $this->hasManyThrough(
             related: UserGroup::class,

@@ -13,7 +13,7 @@
     </x-header>
 
 
-<div wire:key='expand-{{$verify->id}}' class="bg-base-200 p-8 ">
+<div wire:poll.4s wire:key='expand-{{$verify->id}}' class="bg-base-200 p-8 ">
     @php 
         $verifiedPhonenumbers = $verify->verifies;
 

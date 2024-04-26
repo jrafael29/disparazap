@@ -51,7 +51,7 @@ class VerifyPhonenumbersExistenceJob implements ShouldQueue
                 ]);
                 return;
             };
-            Log::warning("init VerifyPhonenumbersExistenceJob", [
+            Log::info("init VerifyPhonenumbersExistenceJob", [
                 'data' => $result,
                 'instanceName' => $this->instance->name,
                 'checkId' => $this->check->id
@@ -62,7 +62,7 @@ class VerifyPhonenumbersExistenceJob implements ShouldQueue
                     $this->check,
                     (string)$phonenumber,
                     (bool)$exists
-                )->onQueue('low');
+                )->onQueue('high');
             }
             $this->instance->available_at = Carbon::now()->addSeconds(1);
             $this->instance->save();
