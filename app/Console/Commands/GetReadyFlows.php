@@ -26,6 +26,7 @@ class GetReadyFlows extends Command
      */
     public function handle()
     {
-        GetReadyFlowsToSentJob::dispatch()->onQueue('high');
+        // GetReadyFlowsToSentJob::dispatch()->onQueue('high');
+        GetReadyFlowsToSentJob::dispatch()->onQueue('default');
     }
 }

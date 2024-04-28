@@ -70,8 +70,20 @@ class UpdatePhonenumberVerifyJob implements ShouldQueue
                     phonenumber: $phonenumber
                 );
             }
-            DB::commit();
 
+
+            // verifica se a checagem acabou.
+
+            $checkPendingVerifiesCount = VerifiedPhonenumberCheck::query()
+                ->where('check_id', $this->check->id)
+                ->where('done', 0)
+                ->count();
+            if ($checkPendingVerifiesCount < 1) {
+                $this->check->done = 1;
+                $this->check->save();
+            }
+
+            DB::commit();
             Log::info('end UpdatePhonenumberVerifyJob');
         } catch (\Exception $e) {
             DB::rollBack();

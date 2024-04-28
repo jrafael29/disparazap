@@ -41,35 +41,26 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
 
             // usar a instancia online do usuario da checagem.
             $checks = PhonenumberCheck::query()
-                ->with(
-                    [
-                        'user' => function ($userQuery) {
-                            $userQuery
-                                ->with(['instances', 'wallet'])
-                                ->whereHas('wallet', function ($walletQuery) {
-                                    $walletQuery->where('credit', '>', 0);
-                                })
-                                ->whereHas('instances', function ($instanceQuery) {
-                                    $instanceQuery->where('online', 1);
-                                });
-                        },
-                        'verifies' => function ($verifiesQuery) {
-                            $verifiesQuery->where('verified', 0)->take(75);
-                        }
-                    ]
-                )
+                ->whereHas('user', function ($userQuery) {
+                    $userQuery
+                        ->with(['instances', 'wallet'])
+                        ->whereHas('wallet', function ($walletQuery) {
+                            $walletQuery->where('credit', '>', 0);
+                        })
+                        ->whereHas('instances', function ($instanceQuery) {
+                            $instanceQuery->where('online', 1)
+                                ->where('available_at', '<', now()->subSecond());
+                        });
+                })
+                ->where('done', 0)
                 ->get()
                 ->each(function ($check) {
                     if ($check)
-                        GetCheckPhonenumbersToVerifyJob::dispatch($check)->onQueue('high');
+                        // GetCheckPhonenumbersToVerifyJob::dispatch($check)->onQueue('high');
+                        GetCheckPhonenumbersToVerifyJob::dispatch($check)->onQueue('default');
                 });
 
             // dd($checks);
-            return;
-
-
-
-
             // PhonenumberCheck::query()
             //     ->with(['user', 'verifies'])
             //     ->whereHas('user', function ($userQuery) {

@@ -35,39 +35,47 @@ class GetCheckPhonenumbersToVerifyJob implements ShouldQueue
                 'checkId' => $this->check->id
             ]);
             //code...
-            $phonenumbers = [];
-            $this->check->verifies
+            // $phonenumbers = [];
+            $phonenumbers = $this->check->verifies
                 ->where('verified', 0)
                 ->take(self::PHONENUMBERS_COUNT_PER_BATCH_TO_VERIFY)
-                ->each(function ($item) use (&$phonenumbers) {
-                    if (!empty($item->phonenumber)) {
-                        array_push($phonenumbers, $item->phonenumber);
-                    }
-                });
-            $uniquePhonenumbers = Phonenumber::filterUniquePhonenumbers($phonenumbers);
+                ->pluck('phonenumber');
+
+            if (empty($phonenumbers)) {
+                Log::warning('empty phonenumbers GetCheckPhonenumbersToVerifyJob data', [
+                    'check' => $this->check->id,
+                    'phonenumbers' => $phonenumbers
+                ]);
+                return;
+            }
+            // ->each(function ($item) use (&$phonenumbers) {
+            //     if (!empty($item->phonenumber)) {
+            //         array_push($phonenumbers, $item->phonenumber);
+            //     }
+            // });
+            // $uniquePhonenumbers = Phonenumber::filterUniquePhonenumbers($phonenumbers);
             $firstCheckUserInstance = Instance::query()
                 ->where('available_at', '<', now()->subSecond())
                 ->where('user_id', $this->check->user_id)
                 ->where('online', 1)
                 ->where('active', 1)
                 ->first();
-            if (empty($uniquePhonenumbers)) {
-                Log::warning('uniquePhonenumbers is empty GetCheckPhonenumbersToVerifyJob data', [
-                    'uniquePhonenumbers' => $uniquePhonenumbers
+
+            if (!$firstCheckUserInstance) {
+                Log::warning('user has not valid instance GetCheckPhonenumbersToVerifyJob data', [
+                    'check' => $this->check->id,
+                    'instance' => $firstCheckUserInstance
                 ]);
+                return;
             }
-            if ($firstCheckUserInstance && $this->check && $uniquePhonenumbers) {
-                VerifyPhonenumbersExistenceJob::dispatch($firstCheckUserInstance, $this->check, $uniquePhonenumbers)->onQueue('high');
-            } else {
-                Log::warning('empty data GetCheckPhonenumbersToVerifyJob data', [
-                    'firstCheckUserInstance' => $firstCheckUserInstance,
-                    'check' => $this->check,
-                    'uniquePhonenumbers' => $uniquePhonenumbers
-                ]);
-            }
+
+
+            // VerifyPhonenumbersExistenceJob::dispatch($firstCheckUserInstance, $this->check, $phonenumbers)->onQueue('high');
+            VerifyPhonenumbersExistenceJob::dispatch($firstCheckUserInstance, $this->check, $phonenumbers->toArray())->onQueue('default');
+
             Log::info('end GetCheckPhonenumbersToVerifyJob data', [
                 'phonenumbers' => $phonenumbers,
-                'uniquePhonenumbers' => $uniquePhonenumbers
+                'uniquePhonenumbers' => $phonenumbers
             ]);
         } catch (\Exception $e) {
             Log::error('error GetCheckPhonenumbersToVerifyJob message', [

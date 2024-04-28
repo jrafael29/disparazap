@@ -179,52 +179,64 @@ return [
     |
     */
 
-    // 'defaults' => [
-    //     'supervisor-low' => [
-    //         'connection' => 'redis',
-    //         'queue' => ['low', 'high'],
-    //         'balance' => 'auto',
-    //         'autoScalingStrategy' => 'time',
-    //         'maxProcesses' => 1,
-    //         'maxTime' => 0,
-    //         'maxJobs' => 0,
-    //         'memory' => 128,
-    //         'tries' => 3,
-    //         'timeout' => 60,
-    //         'nice' => 0,
-    //     ],
-    // ],
+    'defaults' => [
+        'supervisor-default' => [
+            'connection' => 'redis',
+            'queue' => ['default'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 128,
+            'tries' => 2,
+            'timeout' => 60,
+            'nice' => 0,
+        ],
+    ],
 
     'environments' => [
         'production' => [
-            'supervisor-low' => [
+            'supervisor-default' => [
                 'connection' => 'redis',
-                'queue' => ['low'],
-                'balance' => 'auto',
-                'minProcesses' => 1,
-                'maxProcesses' => 5,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
-                'memory' => 128,
-                'tries' => 4,
-                'timeout' => 60,
-            ],
-            'supervisor-high' => [
-                'connection' => 'redis',
-                'queue' => ['high'],
+                'queue' => ['default'],
                 'balance' => 'auto',
                 'minProcesses' => 1,
                 'maxProcesses' => 10,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
                 'memory' => 128,
-                'tries' => 4,
+                'tries' => 2,
                 'timeout' => 60,
             ],
+            // 'supervisor-low' => [
+            //     'connection' => 'redis',
+            //     'queue' => ['low'],
+            //     'balance' => 'auto',
+            //     'minProcesses' => 1,
+            //     'maxProcesses' => 5,
+            //     'balanceMaxShift' => 1,
+            //     'balanceCooldown' => 3,
+            //     'memory' => 128,
+            //     'tries' => 4,
+            //     'timeout' => 60,
+            // ],
+            // 'supervisor-high' => [
+            //     'connection' => 'redis',
+            //     'queue' => ['high'],
+            //     'balance' => 'auto',
+            //     'minProcesses' => 1,
+            //     'maxProcesses' => 10,
+            //     'balanceMaxShift' => 1,
+            //     'balanceCooldown' => 3,
+            //     'memory' => 128,
+            //     'tries' => 4,
+            //     'timeout' => 60,
+            // ],
         ],
 
         'local' => [
-            'supervisor-1' => [
+            'supervisor-default' => [
                 'maxProcesses' => 3,
             ],
         ],

@@ -32,7 +32,8 @@ class CheckInstanceStateJob implements ShouldQueue
         Instance::query()
             ->where('active', 1)
             ->get()->each(function (Instance $instance) {
-                HandleWithInstanceStatusJob::dispatch($instance)->onQueue('low');
+                // HandleWithInstanceStatusJob::dispatch($instance)->onQueue('low');
+                HandleWithInstanceStatusJob::dispatch($instance)->onQueue('default');
             });
     }
 }

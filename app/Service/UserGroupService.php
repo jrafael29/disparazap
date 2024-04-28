@@ -32,8 +32,11 @@ class UserGroupService
             if (empty($contacts)) return $this->errorResponse("invalid parameters");
             foreach ($contacts as $phonenumber) {
                 $userContact = UserContact::query()->whereHas('contact', function ($query) use ($phonenumber) {
-                    $ph = Phonenumber::lastEightDigits($phonenumber);
-                    $query->where('phonenumber', "like", '%' . $ph . '%');
+                    $ddiAndDdd = substr($phonenumber, 0, 4);
+                    $phone = Phonenumber::lastEightDigits($phonenumber);
+                    $query
+                        ->where('phonenumber', 'like', $ddiAndDdd . '%')
+                        ->where('phonenumber', 'like', '%' . $phone);
                 })
                     ->where('user_id', $userId)
                     ->first();
@@ -41,6 +44,16 @@ class UserGroupService
                 if (!$userContact) {
                     continue;
                 }
+
+                // verifica se o contato ja está no grupo
+
+                $groupHasContact = UserContactGroup::query()->where('user_contact_id', $userContact->id)->first();
+
+                if ($groupHasContact) {
+                    continue;
+                }
+                // se nao tiver insere.
+
                 UserContactGroup::query()->create([
                     'user_group_id' => $groupId,
                     'user_contact_id' => $userContact->id

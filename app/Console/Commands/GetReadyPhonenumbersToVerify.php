@@ -26,6 +26,7 @@ class GetReadyPhonenumbersToVerify extends Command
      */
     public function handle()
     {
-        GetReadyPhonenumbersToVerifyJob::dispatch()->onQueue('high');
+        // GetReadyPhonenumbersToVerifyJob::dispatch()->onQueue('high');
+        GetReadyPhonenumbersToVerifyJob::dispatch()->onQueue('default');
     }
 }

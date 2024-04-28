@@ -122,11 +122,16 @@ class RawText extends Component
             'user_id' => $userId,
             'description' => Str::uuid()->toString()
         ]);
+        // StorePhonenumbersToVerifyJob::dispatch(
+        //     $userId,
+        //     $check->id,
+        //     $this->phonenumbers
+        // )->onQueue('low');
         StorePhonenumbersToVerifyJob::dispatch(
             $userId,
             $check->id,
             $this->phonenumbers
-        )->onQueue('low');
+        )->onQueue('default');
         $this->info("Os números serão verificados em minutos.");
         $this->redirect('/verify', navigate: true);
     }

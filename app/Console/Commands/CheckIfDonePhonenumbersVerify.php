@@ -26,6 +26,7 @@ class CheckIfDonePhonenumbersVerify extends Command
      */
     public function handle()
     {
-        CheckIfDonePhonenumbersVerifyJob::dispatch()->onQueue('low');
+        // CheckIfDonePhonenumbersVerifyJob::dispatch()->onQueue('low');
+        CheckIfDonePhonenumbersVerifyJob::dispatch()->onQueue('default');
     }
 }

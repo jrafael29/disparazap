@@ -58,11 +58,16 @@ class VerifyPhonenumbersExistenceJob implements ShouldQueue
             ]);
             DB::beginTransaction();
             foreach ($result as $phonenumber => $exists) {
+                // UpdatePhonenumberVerifyJob::dispatch(
+                //     $this->check,
+                //     (string)$phonenumber,
+                //     (bool)$exists
+                // )->onQueue('high');
                 UpdatePhonenumberVerifyJob::dispatch(
                     $this->check,
                     (string)$phonenumber,
                     (bool)$exists
-                )->onQueue('high');
+                )->onQueue('default');
             }
             $this->instance->available_at = Carbon::now()->addSeconds(1);
             $this->instance->save();

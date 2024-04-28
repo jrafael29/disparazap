@@ -4,7 +4,7 @@
     <div class="mb-3">
         @if($this->showGroups)
         <div class="mb-3">
-            <h1>Seus grupos:</h1>
+            <h1 class="text-2xl">Meus grupos:</h1>
             <div class="flex mb-3">
                 @forelse($this->groups as $group)
                 <div wire:key='{{$group->id}}'>

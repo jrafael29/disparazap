@@ -28,13 +28,14 @@ class CheckIfDonePhonenumbersVerifyJob implements ShouldQueue
     public function handle(): void
     {
         PhonenumberCheck::query()
-            ->with(['verifies'])
+            // ->with(['verifies'])
             ->where('done', 0)
             ->where('created_at', '<', now()->subMinutes(2)) // created_at 17:04   --- now 17:24 
             ->limit(20)
             ->get()
             ->each(function (PhonenumberCheck $check) {
-                DonePhonenumberCheckJob::dispatch($check)->onQueue('low');
+                // DonePhonenumberCheckJob::dispatch($check)->onQueue('low');
+                DonePhonenumberCheckJob::dispatch($check)->onQueue('default');
             });
     }
 }
