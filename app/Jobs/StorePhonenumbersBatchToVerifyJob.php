@@ -12,40 +12,36 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class StorePhonenumberToVerifyJob implements ShouldQueue
+class StorePhonenumbersBatchToVerifyJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
 
     /**
      * Create a new job instance.
      */
-    public function __construct(public PhonenumberCheck $check, public $phonenumber)
+    public function __construct(public PhonenumberCheck $check, public $phonenumbers)
     {
+        //
     }
 
     /**
      * Execute the job.
      */
+
     public function handle(PhonenumberService $phonenumberService): void
     {
-        try {
-            Log::info("init StorePhonenumberToVerifyJob", ['phonenumber' => $this->phonenumber]);
+        $phonenumbers = $this->phonenumbers;
+        if (empty($phonenumbers)) {
+            return;
+        }
 
+        foreach ($phonenumbers as $phonenumber) {
             $phonenumberService->storeToVerify(
                 checkId: $this->check->id,
-                phonenumber: (string) $this->phonenumber
+                phonenumber: (string) $phonenumber
             );
-
-            Log::info("end StorePhonenumberToVerifyJob", [
-                'check' => $this->check,
-                'phonenumber' => $this->phonenumber
-            ]);
-        } catch (\Exception $e) {
-            Log::error("error StorePhonenumberToVerifyJob", ['message' => $e->getMessage()]);
         }
     }
 }

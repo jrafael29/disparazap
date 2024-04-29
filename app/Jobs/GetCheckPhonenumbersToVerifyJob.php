@@ -71,7 +71,11 @@ class GetCheckPhonenumbersToVerifyJob implements ShouldQueue
 
 
             // VerifyPhonenumbersExistenceJob::dispatch($firstCheckUserInstance, $this->check, $phonenumbers)->onQueue('high');
-            VerifyPhonenumbersExistenceJob::dispatch($firstCheckUserInstance, $this->check, $phonenumbers->toArray())->onQueue('default');
+            VerifyPhonenumbersExistenceJob::dispatch(
+                $firstCheckUserInstance,
+                $this->check,
+                $phonenumbers->toArray()
+            )->onQueue('default');
 
             Log::info('end GetCheckPhonenumbersToVerifyJob data', [
                 'phonenumbers' => $phonenumbers,

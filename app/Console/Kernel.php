@@ -21,10 +21,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('run:check-instances')->everyMinute();
 
         // inicia o processo de verificação de existencia dos telefones.
-        $schedule->command('run:get-ready-phonenumbers-to-verify')->everyTwoSeconds();
+        $schedule->command('run:get-ready-phonenumbers-to-verify')->everySecond();
 
         // verifica todas as checagem, e finaliza caso tenha todas verificações concluidas
-        // $schedule->command('run:check-if-done-phonenumbers-checks')->everyTwentySeconds();
+        $schedule->command('run:check-if-done-phonenumbers-checks')->everyTwentySeconds();
     }
 
 

@@ -46,31 +46,59 @@ class UpdatePhonenumberVerifyJob implements ShouldQueue
         try {
             $ddiAndDddDigits = substr($phonenumber, 0, 4);
             $phoneDigits = Phonenumber::lastEightDigits($phonenumber);
-            VerifiedPhonenumber::query()
+
+            $verifiedPhonenumber = VerifiedPhonenumber::query()
                 ->where('phonenumber', 'like',  $ddiAndDddDigits . '%')
                 ->where('phonenumber', 'like', '%' . $phoneDigits)
-                ->update([
-                    'verified' => 1,
-                    'isOnWhatsapp' => !!$exists
+                ->first();
+
+            if (!$verifiedPhonenumber) {
+                // o numero não está na tabela de numeros verificados
+                Log::warning("verified phonenumber doesnot exists or is already verified UpdatePhonenumberVerifyJob data", [
+                    'check' => $this->check->id,
+                    'phonenumber' => $phonenumber,
+                    'exists' => $exists
                 ]);
-            VerifiedPhonenumberCheck::query()
-                ->with(['verify'])
-                ->whereHas('verify', function ($query) use ($ddiAndDddDigits, $phoneDigits) {
-                    $query
-                        ->where('phonenumber', 'like',  $ddiAndDddDigits . '%')
-                        ->where('phonenumber', 'like', '%' . $phoneDigits);
-                })
-                ->update([
-                    'done' => 1
+                return;
+            }
+
+            if (!$verifiedPhonenumber->verified) {
+                // numero de telefone nao foi verificado ainda
+                $verifiedPhonenumber->verified = 1;
+                $verifiedPhonenumber->isOnWhatsapp = $exists;
+            } else {
+                // numero de telefone ja estava verificado
+            }
+
+            $verifiedPhonenumberCheck = VerifiedPhonenumberCheck::query()
+                ->where('verify_id', $verifiedPhonenumber->id)
+                ->first();
+
+            if (!$verifiedPhonenumberCheck) {
+                Log::warning("verified phonenumber check doesnot exists on table UpdatePhonenumberVerifyJob data", [
+                    'check' => $this->check->id,
+                    'phonenumber' => $phonenumber,
+                    'exists' => $exists,
+                    'verify_id' => $verifiedPhonenumber->id
                 ]);
+                return;
+            }
+
+            if (!$verifiedPhonenumberCheck->done) {
+                // checagem do telefone não foi concluida
+                $verifiedPhonenumberCheck->done = 1;
+            } else {
+                // checagem do telefone foi concluida
+            }
+
             if ($exists) {
+                // se o numero existir no whatsapp, salva ele no contato do usuario.
                 $userContactService->createUserContact(
                     userId: $this->check->user_id,
-                    description: '',
+                    description: 'Número existente no WhatsApp.',
                     phonenumber: $phonenumber
                 );
             }
-
 
             // verifica se a checagem acabou.
 
@@ -80,14 +108,15 @@ class UpdatePhonenumberVerifyJob implements ShouldQueue
                 ->count();
             if ($checkPendingVerifiesCount < 1) {
                 $this->check->done = 1;
-                $this->check->save();
             }
 
+            $verifiedPhonenumber->save();
+            $verifiedPhonenumberCheck->save();
+            $this->check->save();
             DB::commit();
             Log::info('end UpdatePhonenumberVerifyJob');
         } catch (\Exception $e) {
             DB::rollBack();
-
             Log::error("error UpdatePhonenumberVerifyJob", [
                 'message' => $e->getMessage()
             ]);

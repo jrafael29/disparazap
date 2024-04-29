@@ -39,6 +39,17 @@ class StorePhonenumbersToVerifyJob implements ShouldQueue
         if (empty($this->phonenumbers)) return;
         Log::info("init StorePhonenumbersToVerifyJob");
         try {
+            // salvar de 15 em 15
+            // $chunks = array_chunk($this->phonenumbers, 15);
+            // foreach ($chunks as $phonenumbers) {
+            //     // $chunk be = ["5599", "5599"]
+            //     StorePhonenumbersBatchToVerifyJob::dispatch(
+            //         $this->check,
+            //         $phonenumbers
+            //     );
+            // }
+
+            // salvar de 1 em 1
             foreach ($this->phonenumbers as $phonenumber) {
                 // StorePhonenumberToVerifyJob::dispatch($this->check, $phonenumber)->onQueue('low');
                 StorePhonenumberToVerifyJob::dispatch($this->check, $phonenumber)->onQueue('default');

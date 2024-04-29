@@ -37,8 +37,7 @@ class VerifyPhonenumbersExistenceJob implements ShouldQueue
      * Execute the job.
      */
     public function handle(
-        EvolutionChatService $evolutionChatService,
-        UserContactService $userContactService
+        EvolutionChatService $evolutionChatService
     ): void {
         try {
             $result = $evolutionChatService->checkNumbers(
@@ -69,8 +68,8 @@ class VerifyPhonenumbersExistenceJob implements ShouldQueue
                     (bool)$exists
                 )->onQueue('default');
             }
-            $this->instance->available_at = Carbon::now()->addSeconds(1);
-            $this->instance->save();
+            // $this->instance->available_at = Carbon::now()->addSeconds(1);
+            // $this->instance->save();
             DB::commit();
             Log::info("end VerifyPhonenumbersExistenceJob");
         } catch (\Exception $e) {
