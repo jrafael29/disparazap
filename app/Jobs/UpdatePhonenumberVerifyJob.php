@@ -7,6 +7,7 @@ use App\Models\PhonenumberCheck;
 use App\Models\VerifiedPhonenumber;
 use App\Models\VerifiedPhonenumberCheck;
 use App\Service\Evolution\EvolutionChatService;
+use App\Service\PhonenumberService;
 use App\Service\UserContactService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -34,63 +35,18 @@ class UpdatePhonenumberVerifyJob implements ShouldQueue
      * Execute the job.
      */
     public function handle(
-        UserContactService $userContactService
+        UserContactService $userContactService,
+        PhonenumberService $phonenumberService
     ): void {
-        $phonenumber = $this->phonenumber;
-        $exists = $this->exists;
-        Log::info('init UpdatePhonenumberVerifyJob', [
-            'phonenumber' => $phonenumber,
-            'exists' => $exists
-        ]);
         DB::beginTransaction();
         try {
-            $ddiAndDddDigits = substr($phonenumber, 0, 4);
-            $phoneDigits = Phonenumber::lastEightDigits($phonenumber);
-
-            $verifiedPhonenumber = VerifiedPhonenumber::query()
-                ->where('phonenumber', 'like',  $ddiAndDddDigits . '%')
-                ->where('phonenumber', 'like', '%' . $phoneDigits)
-                ->first();
-
-            if (!$verifiedPhonenumber) {
-                // o numero não está na tabela de numeros verificados
-                Log::warning("verified phonenumber doesnot exists or is already verified UpdatePhonenumberVerifyJob data", [
-                    'check' => $this->check->id,
-                    'phonenumber' => $phonenumber,
-                    'exists' => $exists
-                ]);
-                return;
-            }
-
-            if (!$verifiedPhonenumber->verified) {
-                // numero de telefone nao foi verificado ainda
-                $verifiedPhonenumber->verified = 1;
-                $verifiedPhonenumber->isOnWhatsapp = $exists;
-            } else {
-                // numero de telefone ja estava verificado
-            }
-
-            $verifiedPhonenumberCheck = VerifiedPhonenumberCheck::query()
-                ->where('verify_id', $verifiedPhonenumber->id)
-                ->first();
-
-            if (!$verifiedPhonenumberCheck) {
-                Log::warning("verified phonenumber check doesnot exists on table UpdatePhonenumberVerifyJob data", [
-                    'check' => $this->check->id,
-                    'phonenumber' => $phonenumber,
-                    'exists' => $exists,
-                    'verify_id' => $verifiedPhonenumber->id
-                ]);
-                return;
-            }
-
-            if (!$verifiedPhonenumberCheck->done) {
-                // checagem do telefone não foi concluida
-                $verifiedPhonenumberCheck->done = 1;
-            } else {
-                // checagem do telefone foi concluida
-            }
-
+            $phonenumber = $this->phonenumber;
+            $exists = $this->exists;
+            Log::info('init UpdatePhonenumberVerifyJob', [
+                'phonenumber' => $phonenumber,
+                'exists' => $exists
+            ]);
+            $phonenumberService->updatePhonenumberExistence($phonenumber, $exists);
             if ($exists) {
                 // se o numero existir no whatsapp, salva ele no contato do usuario.
                 $userContactService->createUserContact(
@@ -99,20 +55,8 @@ class UpdatePhonenumberVerifyJob implements ShouldQueue
                     phonenumber: $phonenumber
                 );
             }
-
             // verifica se a checagem acabou.
-
-            $checkPendingVerifiesCount = VerifiedPhonenumberCheck::query()
-                ->where('check_id', $this->check->id)
-                ->where('done', 0)
-                ->count();
-            if ($checkPendingVerifiesCount < 1) {
-                $this->check->done = 1;
-                $this->check->save();
-            }
-
-            $verifiedPhonenumber->save();
-            $verifiedPhonenumberCheck->save();
+            $this->verifyIfCheckIsDone(check: $this->check);
             DB::commit();
             Log::info('end UpdatePhonenumberVerifyJob');
         } catch (\Exception $e) {
@@ -120,6 +64,18 @@ class UpdatePhonenumberVerifyJob implements ShouldQueue
             Log::error("error UpdatePhonenumberVerifyJob", [
                 'message' => $e->getMessage()
             ]);
+        }
+    }
+
+    private function verifyIfCheckIsDone(PhonenumberCheck $check)
+    {
+        $checkPendingVerifiesCount = VerifiedPhonenumberCheck::query()
+            ->where('check_id', $check->id)
+            ->where('done', 0)
+            ->count();
+        if ($checkPendingVerifiesCount < 1) {
+            $check->done = 1;
+            $check->save();
         }
     }
 }

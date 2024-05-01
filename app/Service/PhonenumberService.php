@@ -34,6 +34,45 @@ class PhonenumberService
         // $phonenumbersLength = count($phonenumbers);
     }
 
+    public function updatePhonenumberExistence($phonenumber, $exists)
+    {
+        DB::beginTransaction();
+        try {
+
+            $ddiAndDddDigits = substr($phonenumber, 0, 4);
+            $phoneDigits = Phonenumber::lastEightDigits($phonenumber);
+
+            $verifiedPhonenumber = VerifiedPhonenumber::query()
+                ->where('phonenumber', 'like',  $ddiAndDddDigits . '%')
+                ->where('phonenumber', 'like', '%' . $phoneDigits)
+                ->first();
+
+            if (!$verifiedPhonenumber->verified) {
+                $verifiedPhonenumber->verified = 1;
+                $verifiedPhonenumber->isOnWhatsapp = $exists;
+            }
+
+            $verifiedPhonenumberCheck = VerifiedPhonenumberCheck::query()
+                ->where('verify_id', $verifiedPhonenumber->id)
+                ->first();
+
+            if (!$verifiedPhonenumberCheck->done) {
+                // checagem do telefone não foi concluida
+                $verifiedPhonenumberCheck->done = 1;
+            }
+            return $this->successResponse([]);
+            $verifiedPhonenumber->save();
+            $verifiedPhonenumberCheck->save();
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("PhonenumberService::updatePhonenumberExistence", [
+                'message' => $e->getMessage()
+            ]);
+            return $this->errorResponse($e->getMessage());
+        }
+    }
+
     public function storeToVerify($checkId, $phonenumber)
     {
         try {
@@ -71,11 +110,13 @@ class PhonenumberService
                 ]);
             }
             DB::commit();
+            return $this->successResponse([]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("PhonenumberService::storeToVerify", [
                 'message' => $e->getMessage()
             ]);
+            return $this->errorResponse($e->getMessage());
         }
     }
 }

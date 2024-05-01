@@ -40,7 +40,6 @@ class GetCheckPhonenumbersToVerifyJob implements ShouldQueue
                 ->where('verified', 0)
                 ->take(self::PHONENUMBERS_COUNT_PER_BATCH_TO_VERIFY)
                 ->pluck('phonenumber');
-
             if (empty($phonenumbers)) {
                 Log::warning('empty phonenumbers GetCheckPhonenumbersToVerifyJob data', [
                     'check' => $this->check->id,
@@ -48,12 +47,6 @@ class GetCheckPhonenumbersToVerifyJob implements ShouldQueue
                 ]);
                 return;
             }
-            // ->each(function ($item) use (&$phonenumbers) {
-            //     if (!empty($item->phonenumber)) {
-            //         array_push($phonenumbers, $item->phonenumber);
-            //     }
-            // });
-            // $uniquePhonenumbers = Phonenumber::filterUniquePhonenumbers($phonenumbers);
             $firstCheckUserInstance = Instance::query()
                 ->where('available_at', '<', now()->subSecond())
                 ->where('user_id', $this->check->user_id)
