@@ -202,7 +202,7 @@ return [
                 'queue' => ['default'],
                 'balance' => 'auto',
                 'minProcesses' => 1,
-                'maxProcesses' => 13,
+                'maxProcesses' => 10,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
                 'memory' => 128,
