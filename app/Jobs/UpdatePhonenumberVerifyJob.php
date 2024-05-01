@@ -108,11 +108,11 @@ class UpdatePhonenumberVerifyJob implements ShouldQueue
                 ->count();
             if ($checkPendingVerifiesCount < 1) {
                 $this->check->done = 1;
+                $this->check->save();
             }
 
             $verifiedPhonenumber->save();
             $verifiedPhonenumberCheck->save();
-            $this->check->save();
             DB::commit();
             Log::info('end UpdatePhonenumberVerifyJob');
         } catch (\Exception $e) {

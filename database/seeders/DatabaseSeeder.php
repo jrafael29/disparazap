@@ -29,6 +29,12 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('useruser'),
             'isAdmin' => false
         ]);
+        \App\Models\User::factory()->create([
+            'name' => 'DisparaZap',
+            'email' => 'one@mail.com',
+            'password' => Hash::make('oneone'),
+            'isAdmin' => false
+        ]);
         // \App\Models\Contact::factory(10)->create();
         // \App\Models\UserContact::factory(1)->create();
     }

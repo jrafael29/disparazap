@@ -15,16 +15,24 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         // verifica os fluxos a serem enviados
-        $schedule->command('run:get-ready-flows')->everyFiveSeconds();
+        $schedule->command('run:get-ready-flows')
+            ->withoutOverlapping()
+            ->everyFiveSeconds();
 
         // verifica instancias a cada dois minutos
-        $schedule->command('run:check-instances')->everyMinute();
+        $schedule->command('run:check-instances')
+            ->withoutOverlapping()
+            ->everyMinute();
 
         // inicia o processo de verificação de existencia dos telefones.
-        $schedule->command('run:get-ready-phonenumbers-to-verify')->everySecond();
+        $schedule->command('run:get-ready-phonenumbers-to-verify')
+            ->withoutOverlapping()
+            ->everySecond();
 
         // verifica todas as checagem, e finaliza caso tenha todas verificações concluidas
-        $schedule->command('run:check-if-done-phonenumbers-checks')->everyTwentySeconds();
+        $schedule->command('run:check-if-done-phonenumbers-checks')
+            ->withoutOverlapping()
+            ->everyTenSeconds();
     }
 
 
