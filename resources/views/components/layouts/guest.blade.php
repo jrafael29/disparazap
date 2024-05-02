@@ -18,9 +18,9 @@
                 <x-icon name="o-rocket-launch" />
             </a>
         </div>
-        <div class="">
+        <div class="flex items-center">
             @if(Auth::check())
-                <div class="mb-3">
+                <div class="">
                     <h1 class="text-1xl">Bem vindo, <a class="text-blue-400" wire:navigate href="{{route('home')}}"> {{Auth::user()->name}}</a></h1>
                 </div>
             @else
