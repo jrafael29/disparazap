@@ -15,7 +15,6 @@ class StoreContactsJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private UserContactService $userContactService;
     private User $user;
     private $phonenumbers;
     /**
@@ -25,16 +24,15 @@ class StoreContactsJob implements ShouldQueue
     {
         $this->phonenumbers = $phonenumbers;
         $this->user = User::query()->find($userId);
-        $this->userContactService = App::make(UserContactService::class);
     }
 
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(UserContactService $userContactService): void
     {
         //
-        $this->userContactService->createManyUserContacts(
+        $userContactService->createManyUserContacts(
             userId: $this->user->id,
             phonenumbers: $this->phonenumbers
         );

@@ -18,10 +18,8 @@ class CheckInstanceStateJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    private InstanceService $instanceService;
     public function __construct()
     {
-        $this->instanceService = App::make(InstanceService::class);
     }
 
     /**

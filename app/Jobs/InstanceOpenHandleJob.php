@@ -20,22 +20,19 @@ class InstanceOpenHandleJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    private Instance $instance;
-    private InstanceService $instanceService;
+
     public function __construct(
-        Instance $instance,
+        public Instance $instance,
     ) {
-        $this->instanceService = App::make(InstanceService::class);
-        $this->instance = $instance;
     }
 
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle(InstanceService $instanceService): void
     {
         // Log::info("iniciou o job");
-        $instanceData = $this->instanceService->getInstance($this->instance->name);
+        $instanceData = $instanceService->getInstance($this->instance->name);
         if ($instanceData) {
             $instanceData = $instanceData['data'];
             // Log::info("instance data", $instanceData);

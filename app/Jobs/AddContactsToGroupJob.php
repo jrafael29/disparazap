@@ -27,8 +27,8 @@ class AddContactsToGroupJob implements ShouldQueue
     public function __construct($userId, $groupId, $phonenumbers = [])
     {
         $this->phonenumbers = $phonenumbers;
-        $this->user = User::query()->findOrFail($userId);
-        $this->userGroup = UserGroup::query()->findOrFail($groupId);
+        $this->user = User::query()->find($userId);
+        $this->userGroup = UserGroup::query()->find($groupId);
         $this->userGroupService = App::make(UserGroupService::class);
     }
 
