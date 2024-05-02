@@ -42,28 +42,34 @@ class PhonenumberService
             $ddiAndDddDigits = substr($phonenumber, 0, 4);
             $phoneDigits = Phonenumber::lastEightDigits($phonenumber);
 
+            Log::info("init update phonenumber existence", [
+                'ddi and ddd' => $ddiAndDddDigits,
+                'phone diigts' => $phoneDigits
+            ]);
+
             $verifiedPhonenumber = VerifiedPhonenumber::query()
                 ->where('phonenumber', 'like',  $ddiAndDddDigits . '%')
                 ->where('phonenumber', 'like', '%' . $phoneDigits)
                 ->first();
 
-            if (!$verifiedPhonenumber->verified) {
-                $verifiedPhonenumber->verified = 1;
-                $verifiedPhonenumber->isOnWhatsapp = $exists;
-            }
+            if ($verifiedPhonenumber) {
 
-            $verifiedPhonenumberCheck = VerifiedPhonenumberCheck::query()
-                ->where('verify_id', $verifiedPhonenumber->id)
-                ->first();
-
-            if (!$verifiedPhonenumberCheck->done) {
-                // checagem do telefone não foi concluida
-                $verifiedPhonenumberCheck->done = 1;
+                if (!$verifiedPhonenumber->verified) {
+                    $verifiedPhonenumber->verified = 1;
+                    $verifiedPhonenumber->isOnWhatsapp = $exists;
+                }
+                $verifiedPhonenumberCheck = VerifiedPhonenumberCheck::query()
+                    ->where('verify_id', $verifiedPhonenumber->id)
+                    ->first();
+                if (!$verifiedPhonenumberCheck->done) {
+                    // checagem do telefone não foi concluida
+                    $verifiedPhonenumberCheck->done = 1;
+                }
+                $verifiedPhonenumber->save();
+                $verifiedPhonenumberCheck->save();
             }
-            return $this->successResponse([]);
-            $verifiedPhonenumber->save();
-            $verifiedPhonenumberCheck->save();
             DB::commit();
+            return $this->successResponse([]);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("PhonenumberService::updatePhonenumberExistence", [
