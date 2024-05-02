@@ -1,14 +1,10 @@
 <?php
 
-use App\Helpers\Base64ToFile;
 use App\Http\Controllers\Webhook;
-use App\Jobs\GetReadyFlowsToSentJob;
-use App\Livewire\Pages\Auth\Register;
 use App\Livewire\Pages\Auth\Login;
 use App\Livewire\Pages\Flow\Index as FlowIndex;
 use App\Livewire\Pages\Flow\Message\Index as MessageIndex;
 use App\Livewire\Pages\Flow\Sent\Index as FlowToSentIndex;
-use App\Livewire\Pages\Extractor\Index as ExtractorIndex;
 use App\Livewire\Pages\Instance\Index as InstanceIndex;
 use App\Livewire\Pages\Contact\Index as ContactIndex;
 use App\Livewire\Pages\Contact\Create as ContactCreate;
@@ -18,48 +14,28 @@ use App\Livewire\Pages\Contact\Group\Index as ContactGroupIndex;
 use App\Livewire\Pages\Contact\Verify\Index as VerifyIndex;
 use App\Livewire\Pages\Contact\Verify\Show as VerifyShow;
 
-
-
 use App\Livewire\Pages\Sent\Index as SentIndex;
 
+use App\Livewire\Pages\Admin\User\Index as AdminUsersPage;
+use App\Livewire\Pages\Admin\User\Show as AdminShowUserPage;
 
-use App\Livewire\Pages\Admin\User\Index as AdminUserPage;
-
-
+use App\Livewire\Pages\Admin\Dashboard\Index as AdminDashboard;
 
 use App\Livewire\Pages\Home;
 use App\Livewire\Welcome;
-use App\Mail\User\Welcome as UserWelcome;
-use App\Models\Instance;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 
-Route::get('/', Welcome::class);
+Route::post('/webhook', [Webhook::class, 'webhookHandle']);
+
+Route::get('/', Welcome::class)->name('welcome');
 
 Route::middleware(['guest'])->group(function () {
     // Route::get('/register', Register::class)->name('register');
     // Route::get('/register', function () {
     //     return redirect()->to('/login');
     // })->name('register');
-
     Route::get('/login', Login::class)->name('login');
 });
 
@@ -105,18 +81,7 @@ Route::middleware(['auth'])->group(function () {
 
 // admin routes
 Route::middleware(['auth', 'isAdmin'])->group(function () {
-    Route::get('/admin/users', AdminUserPage::class)->name('admin.user');
+    Route::get('/admin/users', AdminUsersPage::class)->name('admin.user');
+    Route::get('/admin/users/{id}', AdminShowUserPage::class)->name('admin.user.show');
+    Route::get('/admin/dashboard', AdminDashboard::class)->name('admin.dashboard');
 });
-
-
-Route::get('/linkstorage', function () {
-    Artisan::call('storage:link');
-    return redirect()->to('/');
-});
-
-Route::get('/testando', function () {
-});
-
-
-
-Route::post('/webhook', [Webhook::class, 'webhookHandle']);

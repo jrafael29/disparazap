@@ -159,4 +159,21 @@ class Phonenumber
             'inexistents' => $inexistentPhonenumbers
         ];
     }
+
+    static public function generateBrazilPhonenumber($ddd)
+    {
+        if ($ddd < 11 || $ddd > 99) {
+            return false;
+        }
+        $ddi = 55;
+        // Define the minimum and maximum values
+        $min = 91000000;
+        $max = 99999999;
+
+        // Generate a random integer within the range
+        $randomNumber = mt_rand($min, $max);
+
+        // Convert the random number to a string and prepend "9"
+        return $ddi . $ddd . "9" . (string)$randomNumber;
+    }
 }

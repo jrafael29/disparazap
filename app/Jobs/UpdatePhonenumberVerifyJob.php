@@ -2,11 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Helpers\Phonenumber;
 use App\Models\PhonenumberCheck;
-use App\Models\VerifiedPhonenumber;
 use App\Models\VerifiedPhonenumberCheck;
-use App\Service\Evolution\EvolutionChatService;
 use App\Service\PhonenumberService;
 use App\Service\UserContactService;
 use Illuminate\Bus\Queueable;

@@ -34,18 +34,31 @@
             <x-menu activate-by-route>
                 {{-- User --}}
                 @if($user = auth()->user())
+
+                
                 <x-list-item :item="$user" value="name" sub-value="email" no-separator no-hover
                     class="mb-5 -mx-2 rounded">
                     <x-slot:actions>
-                        <div class="flex gap-3 items-center justify-center">
-                            <x-button icon="o-power" class="btn btn-circle btn-ghost btn-xs" tooltip-left="logoff"
-                                no-wire-navigate link="/logout" />
-                            <x-theme-toggle class="btn btn-circle" />
-                            <x-button icon="o-currency-dollar" class="btn btn-circle btn-ghost btn-xs" tooltip-left="Créditos: {{$user->wallet->credit}}"/>
-                        </div>
+                        <x-dropdown>
+                            <div class="flex gap-3 items-center justify-center">
+                                <x-button icon="o-power" class="btn btn-circle btn-ghost btn-xs" tooltip-left="logoff"
+                                    no-wire-navigate link="/logout" />
+                                <x-theme-toggle class="btn btn-circle" />
+                                <x-button icon="o-currency-dollar" class="btn btn-circle btn-ghost btn-xs" tooltip-left="Créditos: {{$user->wallet->credit}}"/>
+                            </div>
+                        </x-dropdown>
+                        
                     </x-slot:actions>
                 </x-list-item>
                 <x-menu-separator />
+                @if(Auth::user()->isAdmin)
+                <x-menu-sub title="Administração" icon="o-users" >
+                    <x-menu-item title="Dashboard" icon="o-list-bullet" link="{{route('admin.dashboard')}}" />
+                    <x-menu-item title="Usuários" icon="o-user-group" link="{{route('admin.user')}}" />
+                </x-menu-sub>
+                <x-menu-separator />
+                @endif
+                @endif
                 <x-menu-item title="Inicio" icon="o-home" link="{{route('home')}}" />
                 <x-menu-item title="Conectar WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />                
                 @can('have-online-instances')
@@ -63,17 +76,9 @@
                         link="{{route('flow')}}" />
                     @endcan
                 </x-menu-sub>
-
-                {{--
-                <x-menu-item title="Utilitário" icon="o-code-bracket-square" link="{{route('extractor')}}" /> --}}
-                @if(Auth::user()->isAdmin)
                 <x-menu-item title="Bonus" icon="o-gift" />
                 {{--
-                <x-menu-item title="Usuários" link="{{route('admin.user')}}" icon="o-user" /> --}}
-
-                @endif
-
-                @endif
+                <x-menu-item title="Utilitário" icon="o-code-bracket-square" link="{{route('extractor')}}" /> --}}
             </x-menu>
         </x-slot:sidebar>
 

@@ -119,4 +119,20 @@ class PhonenumberService
             return $this->errorResponse($e->getMessage());
         }
     }
+
+    public function generatePhonenumber(int $ddi, int $ddd, int $amount)
+    {
+        if (!$ddi || $ddd < 10 || $ddd > 99 || !$amount) {
+            return false;
+        }
+        $phonenumbers = [];
+        for ($i = 0; $i < $amount; $i++) {
+            switch ($ddi) {
+                case 55:
+                    array_push($phonenumbers, Phonenumber::generateBrazilPhonenumber(ddd: $ddd));
+                    break;
+            }
+        }
+        return $phonenumbers;
+    }
 }

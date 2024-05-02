@@ -2,6 +2,9 @@
     <div>
         <x-header title="Gerenciamento de usuários" subtitle="Aqui você pode gerenciar os usuarios cadastrados."
             separator progress-indicator>
+            <x-slot:actions>
+                <livewire:admin.user.create />
+            </x-slot:actions>
         </x-header>
     </div>
     {{-- Do your work, then step back. --}}
@@ -22,32 +25,9 @@
 
         {{-- Special `actions` slot --}}
         @scope('actions', $user)
-
-        <x-modal id="modal-{{$user->id}}" title="#{{$user->id}} - {{$user->name}}" subtitle="{{$user->email}}">
-            <div>Usuario ID {{$user->id}}</div>
-            <div class="bg-red-500">
-                <x-tabs selected="users-tab">
-                    <x-tab name="info-tab" label="Informações" icon="o-users">
-                        <div>Informações básicas</div>
-                    </x-tab>
-                    <x-tab name="credit-tab" label="Carteira" icon="o-sparkles">
-                        <div>Crédito</div>
-                    </x-tab>
-                    <x-tab name="musics-tab" label="Fluxos" icon="o-musical-note">
-                        <div>Disparo</div>
-                    </x-tab>
-                </x-tabs>
-            </div>
-            <x-slot name="actions">
-                {{-- Buttons should be inside the actions slot --}}
-                <x-button label="Cancel" onclick="document.getElementById('modal-{{$user->id}}').close()" />
-                <x-button label="Confirm" class="btn-primary" />
-            </x-slot>
-        </x-modal>
-
-        {{-- Button to open modal --}}
-        <x-button icon="o-envelope" label="" class="btn-primary btn-sm"
-            onclick="document.getElementById('modal-{{$user->id}}').showModal()" />
+            <a wire:navigate href="{{route('admin.user.show', ['id' =>$user->id])}}">
+                <x-button icon="o-pencil-square" tooltip-left="editar" class="btn-sm btn-outline"/>
+            </a>
         @endscope
 
     </x-table>

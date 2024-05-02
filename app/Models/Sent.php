@@ -10,7 +10,7 @@ class Sent extends Model
     use HasFactory;
 
     protected $table = 'sents';
-    protected $fillable = ['user_id', 'description', 'start_at'];
+    protected $fillable = ['user_id', 'description', 'start_at', 'paused', 'started', 'done'];
 
     protected $casts = [
         'start_at' => 'datetime',

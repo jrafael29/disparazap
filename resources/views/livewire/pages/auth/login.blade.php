@@ -1,4 +1,4 @@
-<div class="flex items-center justify-center h-screen">
+<div class="flex items-center justify-center">
     <div class="sm:w-1/3 md:2/3 ">
         <div class="mb-5">
             <h1 class="text-center text-4xl">Login</h1>

@@ -11,10 +11,30 @@
 </head>
 
 <body class="min-h-screen font-sans antialiased bg-base-200/50 dark:bg-base-200">
-    {{ $slot }}
+    <div class="flex justify-around p-5 mb-10">
+        
+        <div class="flex items-center">
+            <a wire:navigate href="{{route('welcome')}}">
+                <x-icon name="o-rocket-launch" />
+            </a>
+        </div>
+        <div class="">
+            @if(Auth::check())
+                <div class="mb-3">
+                    <h1 class="text-1xl">Bem vindo, <a class="text-blue-400" wire:navigate href="{{route('home')}}"> {{Auth::user()->name}}</a></h1>
+                </div>
+            @else
+                <a wire:navigate href="{{route('login')}}">
+                    <x-button class="btn-sm " label="Login" />
+                </a>
+            @endif
+        </div>
+    </div>
+
+    {{$slot}}
     {{-- MAIN --}}
     {{-- TOAST area --}}
-    <x-toast />
+    
 </body>
 
 </html>

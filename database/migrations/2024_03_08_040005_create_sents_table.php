@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string("description");
             $table->boolean("paused")->default(false);
             $table->boolean('started')->default(false);
+            $table->boolean('done')->default(false);
             $table->dateTime("start_at");
             $table->timestamps();
         });
