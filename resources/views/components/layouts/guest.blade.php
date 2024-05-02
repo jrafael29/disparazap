@@ -35,7 +35,7 @@
     {{-- MAIN --}}
     {{-- TOAST area --}}
     <footer>
-        <div class="pb-5">
+        <div class="pb-5 flex justify-center">
             <span class="block text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2024 <a href="https://flowbite.com/" class="hover:underline">DisparaZap</a>. Todos os direitos reservados.</span>
         </div>
     </footer>
