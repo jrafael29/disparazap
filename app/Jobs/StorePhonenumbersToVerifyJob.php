@@ -26,8 +26,8 @@ class StorePhonenumbersToVerifyJob implements ShouldQueue
      */
     public function __construct($userId, $checkId, $phonenumbers = [])
     {
-        $this->user = User::query()->find($userId);
-        $this->check = PhonenumberCheck::query()->find($checkId);
+        $this->user = User::find($userId);
+        $this->check = PhonenumberCheck::find($checkId);
         $this->phonenumbers = $phonenumbers;
     }
 

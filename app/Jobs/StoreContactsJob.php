@@ -23,7 +23,7 @@ class StoreContactsJob implements ShouldQueue
     public function __construct($userId, $phonenumbers = [])
     {
         $this->phonenumbers = $phonenumbers;
-        $this->user = User::query()->find($userId);
+        $this->user = User::find($userId);
     }
 
     /**
