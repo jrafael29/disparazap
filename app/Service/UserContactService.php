@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Models\Contact;
 use App\Models\UserContact;
 use App\Traits\ServiceResponseTrait;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class UserContactService
@@ -13,6 +14,7 @@ class UserContactService
     public function createUserContact($userId, $description = null, $phonenumber)
     {
         try {
+            DB::beginTransaction();
             $contact = Contact::query()->firstOrCreate([
                 'phonenumber' => $phonenumber
             ], [
@@ -23,12 +25,13 @@ class UserContactService
                 'user_id' => $userId,
                 'contact_id' => $contact->id
             ]);
-
+            DB::commit();
             return $this->successResponse([
                 'contact' => $contact,
                 'userContact' => $userContact
             ]);
         } catch (\Exception $e) {
+            DB::rollBack();
             Log::error("error: UserContactService::createUserContact", ['message' => $e->getMessage()]);
             return $this->errorResponse($e->getMessage(), 500);
         }

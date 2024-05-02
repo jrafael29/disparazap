@@ -49,9 +49,10 @@ class GetReadyPhonenumbersToVerifyJob implements ShouldQueue
                 ->where('done', 0)
                 ->get()
                 ->each(function ($check) {
-                    if ($check)
+                    if ($check) {
                         // GetCheckPhonenumbersToVerifyJob::dispatch($check)->onQueue('high');
                         GetCheckPhonenumbersToVerifyJob::dispatch($check)->onQueue('default');
+                    }
                 });
             Log::info("end GetReadyPhonenumbersToVerifyJob");
         } catch (\Exception $e) {

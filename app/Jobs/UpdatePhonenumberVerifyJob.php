@@ -35,7 +35,6 @@ class UpdatePhonenumberVerifyJob implements ShouldQueue
         UserContactService $userContactService,
         PhonenumberService $phonenumberService
     ): void {
-        DB::beginTransaction();
         try {
             $phonenumber = $this->phonenumber;
             $exists = $this->exists;
@@ -54,10 +53,8 @@ class UpdatePhonenumberVerifyJob implements ShouldQueue
             }
             // verifica se a checagem acabou.
             $this->verifyIfCheckIsDone(check: $this->check);
-            DB::commit();
             Log::info('end UpdatePhonenumberVerifyJob');
         } catch (\Exception $e) {
-            DB::rollBack();
             Log::error("error UpdatePhonenumberVerifyJob", [
                 'message' => $e->getMessage()
             ]);
