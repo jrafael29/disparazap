@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
         // verifica os fluxos a serem enviados
         $schedule->command('run:get-ready-flows')
             ->withoutOverlapping()
-            ->everyTwoSeconds();
+            ->everyFiveSeconds();
 
         // verifica instancias a cada dois minutos
         $schedule->command('run:check-instances')
@@ -26,7 +26,7 @@ class Kernel extends ConsoleKernel
 
         // inicia o processo de verificação de existencia dos telefones.
         $schedule->command('run:get-ready-phonenumbers-to-verify')
-            ->withoutOverlapping()
+            // ->withoutOverlapping()
             ->everySecond();
 
         // verifica todas as checagem, e finaliza caso tenha todas verificações concluidas
