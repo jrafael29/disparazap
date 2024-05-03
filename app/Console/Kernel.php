@@ -17,7 +17,7 @@ class Kernel extends ConsoleKernel
         // verifica os fluxos a serem enviados
         $schedule->command('run:get-ready-flows')
             ->withoutOverlapping()
-            ->everyFiveSeconds();
+            ->everyTwoSeconds();
 
         // verifica instancias a cada dois minutos
         $schedule->command('run:check-instances')

@@ -35,8 +35,8 @@ class VerifyFlowToSentJob implements ShouldQueue
         if ($ownerAlreadyHasBusyFlow) return;
         // SendMessageFlowToTargetJob::dispatch($this->flowToSent)->onQueue('high');
         SendMessageFlowToTargetJob::dispatch($this->flowToSent)->onQueue('default');
-        $this->flowToSent->busy = 1;
-        $this->flowToSent->save();
+        // $this->flowToSent->busy = 1;
+        // $this->flowToSent->save();
         return;
     }
 }

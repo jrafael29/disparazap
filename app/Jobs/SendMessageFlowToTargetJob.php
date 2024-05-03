@@ -29,8 +29,17 @@ class SendMessageFlowToTargetJob implements ShouldQueue
         EvolutionSendMessageService $messageService,
         UserWalletService $userWalletService
     ): void {
+        $this->flowToSent->busy = 1;
+        $this->flowToSent->save();
+
+        if (!$this->flowToSent->sent->started) {
+            // marcar o disparo como iniciado (SENT);
+            $this->flowToSent->sent->update(['started' => 1]);
+        }
+
         $messages = $this->flowToSent->flow->messages;
-        // Log::alert('starting send message');
+
+        Log::alert('init send message');
         if (empty($messages)) return;
         try {
             $instance = $this->flowToSent->instance;

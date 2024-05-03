@@ -13,6 +13,7 @@ use App\Livewire\Pages\Contact\Group\Index as ContactGroupIndex;
 
 use App\Livewire\Pages\Contact\Verify\Index as VerifyIndex;
 use App\Livewire\Pages\Contact\Verify\Show as VerifyShow;
+use App\Livewire\Pages\Generate\Index as GenerateIndex;
 
 use App\Livewire\Pages\Sent\Index as SentIndex;
 
@@ -23,7 +24,10 @@ use App\Livewire\Pages\Admin\Dashboard\Index as AdminDashboard;
 
 use App\Livewire\Pages\Home;
 use App\Livewire\Welcome;
+use App\Mail\User\Welcome as UserWelcome;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 
 
@@ -77,6 +81,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/verify', VerifyIndex::class)->name('verify');
     Route::get('/verify/{id}', VerifyShow::class)->name('verify.show');
+
+    Route::get('/generate', GenerateIndex::class)->name('generate');
 });
 
 // admin routes
@@ -84,4 +90,10 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('/admin/users', AdminUsersPage::class)->name('admin.user');
     Route::get('/admin/users/{id}', AdminShowUserPage::class)->name('admin.user.show');
     Route::get('/admin/dashboard', AdminDashboard::class)->name('admin.dashboard');
+});
+
+
+Route::get('/teste', function () {
+    $user = User::find(1);
+    Mail::send(new UserWelcome($user));
 });
