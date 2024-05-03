@@ -8,6 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class GetReadyFlowsToSentJob implements ShouldQueue
 {
@@ -26,6 +27,7 @@ class GetReadyFlowsToSentJob implements ShouldQueue
      */
     public function handle(): void
     {
+        Log::info("init GetReadyFlowsToSentJob");
         FlowToSent::with(['instance', 'sent', 'user'])
             ->whereHas('user', function ($userQuery) {
                 $userQuery
@@ -48,6 +50,10 @@ class GetReadyFlowsToSentJob implements ShouldQueue
             ->get()
             ->unique('instance_id')
             ->each(function (FlowToSent $flowToSent) {
+                Log::info("encountered FlowToSent", [
+                    'flowToSent' => $flowToSent->id
+                ]);
+
                 // VerifyFlowToSentJob::dispatch($flowToSent)->onQueue('high');
                 VerifyFlowToSentJob::dispatch($flowToSent)->onQueue('default');
             });

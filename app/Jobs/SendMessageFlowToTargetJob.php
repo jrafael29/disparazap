@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\FlowToSent;
 use App\Models\Instance;
 use App\Models\MessageFlow;
+use App\Models\Sent;
 use App\Service\Evolution\EvolutionSendMessageService;
 use App\Service\UserWalletService;
 use Carbon\Carbon;
@@ -29,17 +30,21 @@ class SendMessageFlowToTargetJob implements ShouldQueue
         EvolutionSendMessageService $messageService,
         UserWalletService $userWalletService
     ): void {
+        Log::alert('init send message');
         $this->flowToSent->busy = 1;
         $this->flowToSent->save();
 
-        if (!$this->flowToSent->sent->started) {
+        $sent = Sent::query()
+            ->where('id', $this->flowToSent->sent_id)
+            ->first();
+        if (!$sent->started) {
             // marcar o disparo como iniciado (SENT);
-            $this->flowToSent->sent->update(['started' => 1]);
+            $sent->started = 1;
+            $sent->save();
         }
 
         $messages = $this->flowToSent->flow->messages;
 
-        Log::alert('init send message');
         if (empty($messages)) return;
         try {
             $instance = $this->flowToSent->instance;

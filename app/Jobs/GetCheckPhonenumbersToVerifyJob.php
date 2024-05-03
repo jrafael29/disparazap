@@ -47,6 +47,7 @@ class GetCheckPhonenumbersToVerifyJob implements ShouldQueue
                 ]);
                 return;
             }
+
             $firstCheckUserInstance = Instance::query()
                 ->where('available_at', '<', now()->subSecond())
                 ->where('user_id', $this->check->user_id)
