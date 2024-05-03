@@ -9,7 +9,7 @@ use Livewire\Component;
 class Index extends Component
 {
     #[Rule('required|gt:9|max:100')]
-    public int $count = 10;
+    public int $count = 100;
     #[Rule('required|gt:10|lt:100')]
     public int $ddd = 81;
     #[Rule('required')]
