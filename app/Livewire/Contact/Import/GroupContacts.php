@@ -137,14 +137,14 @@ class GroupContacts extends Component
     public function handleSubmit()
     {
         $phonenumbers = $this->phonenumbers;
-        $groupId = $this->disparaGroupSelectedId;
-        $userId = Auth::user()->id;
-        if (empty($this->phonenumbers) || !$groupId) return;
+        $userGroup = UserGroup::query()->findOrFail($this->disparaGroupSelectedId);
+        $user = Auth::user();
+        if (empty($this->phonenumbers) || !$userGroup || !$user) return;
         // StoreContactsJob::dispatch($userId, $phonenumbers)->onQueue('low');
-        StoreContactsJob::dispatch($userId, $phonenumbers)->onQueue('default');
+        StoreContactsJob::dispatch($user->id, $phonenumbers)->onQueue('default');
         // disparar job para adicionar contatos a um grupo
         // AddContactsToGroupJob::dispatch($userId, $groupId, $phonenumbers)->onQueue('low');
-        AddContactsToGroupJob::dispatch($userId, $groupId, $phonenumbers)->onQueue('default');
+        AddContactsToGroupJob::dispatch($user, $userGroup, $phonenumbers)->onQueue('default');
 
         $this->redirect('/groups', true);
     }
