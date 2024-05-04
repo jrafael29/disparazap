@@ -32,7 +32,7 @@ class Kernel extends ConsoleKernel
         // verifica todas as checagem, e finaliza caso tenha todas verificações concluidas
         $schedule->command('run:check-if-done-phonenumbers-checks')
             ->withoutOverlapping()
-            ->everyTenSeconds();
+            ->everyFiveSeconds();
     }
 
 

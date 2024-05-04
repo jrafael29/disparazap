@@ -16,6 +16,7 @@ class Table extends Component
     public $headers = [
         ['key' => 'id', 'label' => '#', 'class' => 'hidden'],
         ['key' => 'description', 'label' => '#'],
+        ['key' => 'status', 'label' => 'Status'],
         ['key' => 'start_at', 'label' => 'Inicio'],
         ['key' => 'created_at', 'label' => 'Criado'],
 

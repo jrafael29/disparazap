@@ -8,7 +8,31 @@
         @scope("cell_created_at", $sent)
         {{$sent->created_at->diffForHumans()}}
         @endscope
-        
+
+        @scope("cell_status", $sent)
+        @if(!$sent->started && !$sent->done)
+        <div>
+            <x-button tooltip-right="Agendado" icon="o-clock" class="btn-sm" />
+            <x-badge value="Agendado" class="badge-secondary" />
+        </div>
+        @elseif($sent->done)
+        <div>
+            <x-button tooltip-right="Finalizado" icon="o-check" class="btn-sm" />
+            <x-badge value="Finalizado" class="badge-success" />
+        </div>
+        @elseif($sent->paused)
+        <div>
+            <x-button tooltip-right="Pausado" icon="o-play" class="btn-sm" />
+            <x-badge value="Pausado" class="badge-warning" />
+        </div>
+        @else
+        <div>
+            <x-button tooltip-right="Em andamento" icon="o-pause" class="btn-sm" />
+            <x-badge value="Em andamento" class="badge-primary" />
+        </div>
+        @endif
+        @endscope
+
         @scope('expansion', $sent)
 
         @php
@@ -69,10 +93,10 @@
             </div>
             <br />
             <div class="flex justify-end">
-                @if($sent->paused)
+                @if(!$sent->done && $sent->paused)
                 <x-button spinner wire:click='playSent({{$sent->id}})' spinner icon="o-play-circle"
                     label="Continuar envio" class="btn-success" />
-                @else
+                @elseif(!$sent->done && !$sent->paused)
                 <x-button spinner wire:click='pauseSent({{$sent->id}})' spinner icon="o-pause-circle"
                     label="Pausar envio" class="btn-warning" />
                 @endif

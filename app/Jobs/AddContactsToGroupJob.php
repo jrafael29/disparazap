@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\PhonenumberCheck;
 use App\Models\User;
 use App\Models\UserGroup;
 use App\Service\UserGroupService;
@@ -17,19 +18,22 @@ class AddContactsToGroupJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private UserGroupService $userGroupService;
-    private User $user;
-    private UserGroup $userGroup;
-    private $phonenumbers;
+    // private UserGroupService $userGroupService;
+    // private User $user;
+    // private UserGroup $userGroup;
+    // private $phonenumbers;
     /**
      * Create a new job instance.
      */
-    public function __construct($userId, $groupId, $phonenumbers = [])
-    {
-        $this->phonenumbers = $phonenumbers;
-        $this->user = User::find($userId);
-        $this->userGroup = UserGroup::find($groupId);
-        $this->userGroupService = App::make(UserGroupService::class);
+    public function __construct(
+        public User $user,
+        public UserGroup $userGroup,
+        public $phonenumbers = [],
+    ) {
+        // $this->phonenumbers = $phonenumbers;
+        // $this->user = User::find($userId);
+        // $this->userGroup = UserGroup::find($groupId);
+        // $this->userGroupService = App::make(UserGroupService::class);
     }
 
     /**
@@ -38,11 +42,12 @@ class AddContactsToGroupJob implements ShouldQueue
     public function handle(): void
     {
         try {
-            $result = $this->userGroupService->addContactsToGroup(
-                userId: $this->user->id,
-                groupId: $this->userGroup->id,
-                contacts: $this->phonenumbers
-            );
+            Log::info("init AddContactsToGroupJob", [
+                'count' => count($this->phonenumbers)
+            ]);
+            foreach ($this->phonenumbers as $phonenumber) {
+                AddContactToGroupJob::dispatch($this->user, $this->userGroup, $phonenumber);
+            }
         } catch (\Exception $e) {
             Log::error("error: AddContactsToGroupJob", ['message' => $e->getMessage()]);
         }

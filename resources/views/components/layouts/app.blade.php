@@ -27,27 +27,22 @@
         <x-slot:sidebar drawer="main-drawer" collapsible class="bg-base-100 lg:bg-base-100">
 
             {{-- BRAND --}}
-            {{--
-            <x-app-brand class="p-5 pt-3" /> --}}
+
+            {{-- <x-app-brand class="w-24" /> --}}
 
             {{-- MENU --}}
             <x-menu activate-by-route>
                 {{-- User --}}
                 @if($user = auth()->user())
-
-                
+            
                 <x-list-item :item="$user" value="name" sub-value="email" no-separator no-hover
                     class="mb-5 -mx-2 rounded">
                     <x-slot:actions>
-                        <x-dropdown>
-                            <div class="flex gap-3 items-center justify-center">
-                                <x-button icon="o-power" class="btn btn-circle btn-ghost btn-xs" tooltip-left="logoff"
-                                    no-wire-navigate link="/logout" />
-                                <x-theme-toggle class="btn btn-circle" />
-                                <x-button icon="o-currency-dollar" class="btn btn-circle btn-ghost btn-xs" tooltip-left="Créditos: {{$user->wallet->credit}}"/>
-                            </div>
-                        </x-dropdown>
-                        
+                        <div class="flex gap-3 items-center justify-center">
+                            <x-button icon="o-power" class="btn btn-circle btn-ghost btn-xs" tooltip-left="logoff"
+                                no-wire-navigate link="/logout" />
+                            <x-theme-toggle class="btn btn-circle" />
+                        </div>
                     </x-slot:actions>
                 </x-list-item>
                 <x-menu-separator />
@@ -59,6 +54,8 @@
                 <x-menu-separator />
                 @endif
                 @endif
+                <x-menu-item title="Créditos: {{$user->wallet->credit}}" icon="o-currency-dollar" class="{{$user->wallet->credit > 10 ? 'text-green-400' : ($user->wallet->credit > 0 ? 'text-yellow-500' : 'text-red-600')}}
+                    " />
                 <x-menu-item title="Inicio" icon="o-home" link="{{route('home')}}" />
                 <x-menu-item title="Conectar WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />                
                 @can('have-online-instances')
@@ -77,7 +74,6 @@
                         link="{{route('flow')}}" />
                     @endcan
                 </x-menu-sub>
-                <x-menu-item title="Bonus" icon="o-gift" />
                 {{--
                 <x-menu-item title="Utilitário" icon="o-code-bracket-square" link="{{route('extractor')}}" /> --}}
             </x-menu>

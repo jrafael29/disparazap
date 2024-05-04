@@ -3,6 +3,7 @@
 namespace App\Livewire\Contact\Verify;
 
 use App\Jobs\AddContactsToGroupJob;
+use App\Models\CheckGroup;
 use App\Models\PhonenumberCheck;
 use App\Models\UserGroup;
 use Illuminate\Support\Facades\Auth;
@@ -22,8 +23,25 @@ class SelectGroup extends Component
     {
         $this->checkId = $verifyId;
         $this->showGroups = $showGroups;
-        $this->groups = UserGroup::query()->where('user_id', Auth::user()->id)->get();
+
+        $groupsToSkipIds = $this->getGroupsRelatedWithVerify($verifyId);
+        if (count($groupsToSkipIds)) {
+            $this->groups = UserGroup::query()
+                ->where('user_id', Auth::user()->id)
+                ->whereNotIn('id', $groupsToSkipIds)
+                ->get();
+        } else {
+            $this->groups = UserGroup::query()
+                ->where('user_id', Auth::user()->id)
+                ->get();
+        }
     }
+
+    public function getGroupsRelatedWithVerify($verifyId)
+    {
+        return CheckGroup::query()->where('check_id', $verifyId)->get()->pluck('group_id')->toArray();
+    }
+
     public function toggleShowGroups()
     {
         $this->showGroups = !$this->showGroups;
@@ -47,13 +65,20 @@ class SelectGroup extends Component
             ->get(['phonenumber'])
             ->pluck('phonenumber')
             ->toArray();
-        $userId = Auth::user()->id;
-        $groupId = $this->groupSelectedId;
+        $user = Auth::user();
+        $userGroup = UserGroup::findOrFail($this->groupSelectedId);
         $phonenumbers = $existentPhonenumbers;
 
-        if ($userId && $groupId && !empty($phonenumbers)) {
+        if ($user && $userGroup && !empty($phonenumbers)) {
             // AddContactsToGroupJob::dispatch($userId, $groupId, $phonenumbers)->onQueue('low');
-            AddContactsToGroupJob::dispatch($userId, $groupId, $phonenumbers)->onQueue('default');
+            AddContactsToGroupJob::dispatch($user, $userGroup, $phonenumbers)->onQueue('default');
+            CheckGroup::query()->firstOrCreate([
+                'check_id' => $check->id,
+                'group_id' => $userGroup->id
+            ], [
+                'check_id' => $check->id,
+                'group_id' => $userGroup->id
+            ]);
         }
         $this->success("Os contatos existentes serão adicionados ao grupo");
         return $this->redirect('/groups', navigate: true);

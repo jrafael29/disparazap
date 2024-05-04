@@ -68,7 +68,7 @@
                 class="progress-primary h-3"
             />
         @endif
-        <div class=" flex justify-center ">
+        <div class=" flex justify-center mb-5">
             <div class="flex justify-center items-start gap-10 pt-10">
                 <div class="flex flex-col-reverse gap-10">
                     <div class="flex justify-center">
@@ -133,6 +133,34 @@
 
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="h-96 overflow-y-auto">
+            <div class=" flex">
+                <div class="flex-1 ">
+                    <x-badge value="Numeros existentes" class="badge-success" />
+                    <div class="flex flex-wrap">
+                        @forelse($existentPhonenumbers as $phonenumber)
+                        <p class="text-green-500 p-1">{{$phonenumber}}</p>
+                        @empty
+                        <p>Nenhum número existente</p>
+                        @endforelse
+                    </div>
+                    
+                </div>
+                <div class="flex-1 ">
+                    <x-badge value="Numeros inexistentes" class="bg-red-500" />
+                    <div class="flex flex-wrap">
+                        @forelse($inexistentPhonenumbers as $phonenumber)
+                        <p class="text-red-800 p-1">{{$phonenumber}}</p>
+                        @empty
+                        <p>Nenhum número inexistente</p>
+                        @endforelse
+                    </div>
+                    
+
                 </div>
             </div>
         </div>
