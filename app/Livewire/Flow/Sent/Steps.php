@@ -41,7 +41,7 @@ class Steps extends Component
     ]; // opções de "alvos"
     public $steps = 5; // quantidade de passos no
     public $step = 1; // step atual
-    public $delay = 21; // delay entre um chat e outro (step de agendamento)
+    public $delay = 60; // delay entre um chat e outro (step de agendamento)
     public $minDelay = 10;
     public $maxDelay = 90;
     public string $sendOption = ''; // opção de envio (step de alvos)
