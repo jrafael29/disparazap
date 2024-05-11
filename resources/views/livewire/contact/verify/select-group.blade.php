@@ -2,6 +2,7 @@
     {{-- If you look to others for fulfillment, you will never truly be fulfilled. --}}
 
     <div class="mb-3">
+        <h1 class="text-2xlm my-2"> {{$validPhonenumbers}} Contatos serão salvos.</h1>
         @if($this->showGroups)
         <div class="mb-3">
             <h1 class="text-2xl">Meus grupos:</h1>

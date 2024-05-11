@@ -34,6 +34,11 @@
             <livewire:contact.import.group-contacts />
         </div>
         @break
+        @case('generate')
+        <div>
+            <livewire:contact.import.generate />
+        </div>
+        @break
         @endswitch
 
     </div>

@@ -51,7 +51,7 @@ class EvolutionInstanceService
             ];
             return $instanceData;
         } catch (\Exception $e) {
-            dd($e);
+            dd($e->getMessage());
             Log::info($e->getMessage());
             return false;
         }

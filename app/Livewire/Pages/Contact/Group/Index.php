@@ -2,17 +2,21 @@
 
 namespace App\Livewire\Pages\Contact\Group;
 
+use App\Exports\GroupUserContactsExport;
+use App\Models\User;
 use App\Models\UserGroup;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Maatwebsite\Excel\Exporter;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
+use Mary\Traits\Toast;
 
 class Index extends Component
 {
-    #[Validate('required|min:4')]
-    public $name;
-    public $description;
+    use Toast;
 
     public $groups = [];
 
@@ -26,11 +30,6 @@ class Index extends Component
         ['key' => 'description', 'label' => 'Descrição']
     ];
 
-    public function deleteUserGroup($userGroupId)
-    {
-        $userGroup = UserGroup::query()->findOrFail($userGroupId);
-        $userGroup->delete();
-    }
 
     public function save()
     {
@@ -44,6 +43,7 @@ class Index extends Component
 
         $this->openModal = false;
     }
+
 
     #[On('userGroup::created')]
     public function render()

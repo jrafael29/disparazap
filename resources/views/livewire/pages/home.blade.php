@@ -8,7 +8,7 @@
     <div>
         <x-timeline-item first icon="o-inbox-stack" title="Conecte-se" subtitle="Conecte múltiplos WhatsApp's" />
 
-        <x-timeline-item pending icon="o-arrow-down-tray" title="Importe seus contatos" subtitle="Nossa I.A verificará e salvará apenas contatos existentes no Whatsapp." />
+        <x-timeline-item pending icon="o-arrow-up-tray" title="Importe seus contatos" subtitle="Nossa I.A verificará e salvará apenas contatos existentes no Whatsapp." />
 
         <x-timeline-item pending icon="o-user-group" title="Reuna-os em grupos" subtitle="Reuna seus contatos em grupos, para uma melhor organização dos disparos." />
 

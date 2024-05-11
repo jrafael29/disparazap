@@ -10,6 +10,7 @@ use App\Models\VerifiedPhonenumber;
 use App\Models\VerifiedPhonenumberCheck;
 use App\Service\Evolution\EvolutionChatService;
 use App\Traits\ServiceResponseTrait;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -140,5 +141,20 @@ class PhonenumberService
             }
         }
         return $phonenumbers;
+    }
+
+    public function generatePhonenumbersForManyDdds(int $ddi, array $ddds, int $count)
+    {
+        $amountByDdd = (int)($count / count($ddds));
+        $allDddPhonenumbers = [];
+        foreach ($ddds as $ddd) {
+            $phonenumbersForDdd = $this->generatePhonenumber(
+                ddi: $ddi,
+                ddd: $ddd,
+                amount: $amountByDdd
+            );
+            array_push($allDddPhonenumbers, $phonenumbersForDdd);
+        };
+        return Arr::flatten($allDddPhonenumbers);
     }
 }

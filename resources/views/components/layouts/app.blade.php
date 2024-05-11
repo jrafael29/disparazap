@@ -62,9 +62,8 @@
                 <x-menu-sub title="Contatos" icon="o-users" >
                     <x-menu-item title="Visualização" icon="o-list-bullet" link="{{route('contact')}}" />
                     <x-menu-item title="Grupos de contatos" icon="o-user-group" link="{{route('groups')}}" />
-                    <x-menu-item title="Importar" icon="o-arrow-down-tray" link="{{route('import')}}" />
+                    <x-menu-item title="Importar" icon="o-arrow-up-tray" link="{{route('import')}}" />
                     <x-menu-item title="Verificações de existência" icon="o-clock" link="{{route('verify')}}" />
-                    <x-menu-item title="Gerar números" icon="o-arrow-path-rounded-square" link="{{route('generate')}}" />
                 </x-menu-sub>
 
                 

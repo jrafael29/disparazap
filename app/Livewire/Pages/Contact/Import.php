@@ -10,6 +10,7 @@ class Import extends Component
     public $importOptions = [
         'group-contacts' => 'Grupos do whatsapp',
         'raw-text' => "Colar texto",
+        'generate' => "Gerar números"
         // 'import-excel' => "Importar excel"
     ]; // opções de "alvos"
 

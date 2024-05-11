@@ -136,10 +136,6 @@ class RawText extends Component
         $this->redirect('/verify', navigate: true);
     }
 
-    public function saveExistentPhonenumbers()
-    {
-    }
-
     public function handleSubmit()
     {
 

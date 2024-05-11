@@ -17,11 +17,11 @@ class SelectGroup extends Component
     public $groupSelectedId = 0;
     public $groups;
 
-    public $checkId;
+    public PhonenumberCheck $check;
 
     public function mount($showGroups, $verifyId)
     {
-        $this->checkId = $verifyId;
+        $this->check = PhonenumberCheck::find($verifyId);
         $this->showGroups = $showGroups;
 
         $groupsToSkipIds = $this->getGroupsRelatedWithVerify($verifyId);
@@ -58,8 +58,7 @@ class SelectGroup extends Component
 
     public function addVerifiedPhonenumberCheckToGroup()
     {
-        $check = PhonenumberCheck::query()->with(['verifies'])->findOrFail($this->checkId);
-        $existentPhonenumbers = $check->verifies()
+        $existentPhonenumbers = $this->check->verifies()
             ->where('verified', 1)
             ->where('isOnWhatsapp', 1)
             ->get(['phonenumber'])
@@ -73,10 +72,10 @@ class SelectGroup extends Component
             // AddContactsToGroupJob::dispatch($userId, $groupId, $phonenumbers)->onQueue('low');
             AddContactsToGroupJob::dispatch($user, $userGroup, $phonenumbers)->onQueue('default');
             CheckGroup::query()->firstOrCreate([
-                'check_id' => $check->id,
+                'check_id' => $this->check->id,
                 'group_id' => $userGroup->id
             ], [
-                'check_id' => $check->id,
+                'check_id' => $this->check->id,
                 'group_id' => $userGroup->id
             ]);
         }
@@ -86,6 +85,11 @@ class SelectGroup extends Component
 
     public function render()
     {
-        return view('livewire.contact.verify.select-group');
+        $validPhonenumbers = $this->check->verifies()
+            ->where('verified', 1)
+            ->where('isOnWhatsapp', 1)
+            ->get(['phonenumber'])
+            ->count();
+        return view('livewire.contact.verify.select-group', compact('validPhonenumbers'));
     }
 }
