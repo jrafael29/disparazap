@@ -19,6 +19,6 @@
 
     </div>
 
-    <x-button tooltip-left="Novo grupo" icon="o-plus" spinner class="btn-outline" @click="$wire.openModal = true" />
+    <x-button tooltip-left="Novo grupo" icon="o-plus" spinner class="btn-primary" @click="$wire.openModal = true" />
 
 </div>

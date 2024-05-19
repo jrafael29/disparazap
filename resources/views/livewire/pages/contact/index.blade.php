@@ -9,7 +9,7 @@
                 <x-button tooltip-left="Importar contatos" icon="o-arrow-up-tray" spinner class="btn-outline" />
             </a>
 
-            <x-button tooltip-left="Novo contato" icon="o-user-plus" spinner class="btn-outline"
+            <x-button tooltip-left="Novo contato" icon="o-user-plus" spinner class="btn-primary"
                 @click="$wire.openModal = true" />
             {{-- <a wire:navigate href="{{route('contact.create')}}">
                 <x-button tooltip-left="Novo contato" icon="o-user-plus" spinner class="btn-outline" />

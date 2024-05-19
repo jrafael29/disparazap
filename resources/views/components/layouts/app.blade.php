@@ -59,6 +59,8 @@
                 <x-menu-item title="Inicio" icon="o-home" link="{{route('home')}}" />
                 <x-menu-item title="Conectar WhatsApp" icon="o-inbox-stack" link="{{route('instance')}}" />                
                 @can('have-online-instances')
+                <x-menu-item title="Agendar Disparo" icon="m-bars-arrow-up"
+                link="{{route('flow')}}" />
                 <x-menu-sub title="Contatos" icon="o-users" >
                     <x-menu-item title="Visualização" icon="o-list-bullet" link="{{route('contact')}}" />
                     <x-menu-item title="Grupos de contatos" icon="o-user-group" link="{{route('groups')}}" />
@@ -69,8 +71,6 @@
                 
                 <x-menu-sub title="Envios" icon="o-paper-airplane">
                     <x-menu-item title="Visualização" icon="o-list-bullet" link="{{route('sent')}}" />
-                    <x-menu-item title="Fluxo de Mensagens" icon="o-chat-bubble-oval-left-ellipsis"
-                        link="{{route('flow')}}" />
                     @endcan
                 </x-menu-sub>
                 {{--
