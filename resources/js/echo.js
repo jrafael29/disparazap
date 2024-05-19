@@ -12,4 +12,5 @@ const echoConfig = {
     forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
     enabledTransports: ['ws'],
 }
+console.log(JSON.parse(echoConfig));
 window.Echo = new Echo(echoConfig);
