@@ -39,21 +39,24 @@
             {{-- end edit modal --}}
 
             {{-- modal delete --}}
-            <x-modal wire:model="modalDelete" title="Confirmar exclusão" subtitle="Confirme para excluir o grupo {{$group->name}}" separator>
-                    <x-slot:actions>
-                        <x-button label="Cancelar" @click="$wire.modalDelete = false" />
-                        <x-button label="Confirmar Exclusão" wire:click='deleteUserGroup' class="btn-error" />
-                    </x-slot:actions>
+
+            <x-modal wire:model="modalDelete" class="backdrop-blur" title="Confirmar exclusão">
+                <div class="mb-5">Confirme para excluir o grupo `<span class="font-extrabold">{{$group->name}}</span>`.</div>
+                <div class="flex justify-center gap-5 ">
+                    <x-button label="Cancelar" @click="$wire.modalDelete = false" />
+                    <x-button label="Confirmar Exclusão" wire:click='deleteUserGroup' class="btn-error" />
+                </div>
             </x-modal>
             {{-- end modal delete --}}
 
             {{-- export modal --}}
 
-            <x-modal wire:model="modalExport" title="Exportar contatos" subtitle="Exportar todos contatos do grupo" separator>
-                    <x-slot:actions>
-                        <x-button label="Cancelar" @click="$wire.modalExport = false" />
-                        <x-button label="Exportar" wire:click='export' class="btn-primary" spinner="export" />
-                    </x-slot:actions>
+            <x-modal wire:model="modalExport" class="backdrop-blur" title="Exportar contatos" >
+                <div class="mb-5">Confirme para Baixar/Exportar os contatos do grupo `<span class="font-extrabold">{{$group->name}}</span>`.</div>
+                <div class="flex justify-center gap-5 ">
+                    <x-button label="Cancelar" @click="$wire.modalExport = false" />
+                    <x-button label="Baixar contatos" wire:click='export' class="btn-primary" spinner="export" />
+                </div>
             </x-modal>
 
             {{-- end export modal --}}

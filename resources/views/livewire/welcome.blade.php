@@ -12,7 +12,9 @@
             </p>
             <div class="max-w-xs mx-auto sm:max-w-none sm:flex sm:justify-center aos-init aos-animate" data-aos="zoom-y-out" data-aos-delay="300">
                 <div class="flex justify-center gap-5">
-                    <x-button class="btn btn-primary" label="Comece agora"/>
+                    <a target="_blank" href="https://api.whatsapp.com/send/?phone=5581991931921&text=Tenho+interesse+no+disparazap">
+                        <x-button class="btn btn-primary" label="Comece agora"/>
+                    </a>
                     <x-button class="btn btn-outline" label="Saiba mais"/>
                 </div>
             </div>

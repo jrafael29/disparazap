@@ -35,6 +35,11 @@ class Webhook extends Controller
                 case 'connection.update':
                     $this->connectionUpdateHandle($requestBody);
                     break;
+                default:
+                    Log::info("webhook receveid:", [
+                        'event' => json_encode($event)
+                    ]);
+                    break;
             }
 
             // $filename = 'qrcode-updated-' . uniqid() . '.txt';

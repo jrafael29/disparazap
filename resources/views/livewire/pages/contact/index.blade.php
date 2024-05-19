@@ -38,7 +38,6 @@
                         </x-slot:actions>
                     </x-form>
                 </x-modal>
-
             </div>
 
         </x-slot:actions>
@@ -58,7 +57,13 @@
                     {{$contact->description ?? "Nenhuma"}}
                 @endscope
                 @scope('actions', $contact)
+                <div class="flex">
+
+                {{-- <a wire:navigate.hover href="{{route('send-whatsapp-message', ['contact' => $contact])}}">
+                    <x-button spinner icon="o-chat-bubble-bottom-center-text" tooltip-bottom="Enviar mensagem" class="btn-sm"/>
+                </a> --}}
                 <x-button spinner icon="o-trash" wire:click="delete({{ $contact->id }})" spinner class="btn-sm" />
+                </div>
                 @endscope
             </x-table>
 

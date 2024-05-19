@@ -1,5 +1,6 @@
 <?php
 
+use App\Events\PrivateChannelMessage;
 use App\Http\Controllers\Webhook;
 use App\Livewire\Pages\Auth\Login;
 use App\Livewire\Pages\Flow\Index as FlowIndex;
@@ -21,6 +22,7 @@ use App\Livewire\Pages\Admin\User\Index as AdminUsersPage;
 use App\Livewire\Pages\Admin\User\Show as AdminShowUserPage;
 
 use App\Livewire\Pages\Admin\Dashboard\Index as AdminDashboard;
+use App\Livewire\Pages\SendWhatsappMessage\Index as SendWhatsappMessageIndex;
 
 use App\Livewire\Pages\Home;
 use App\Livewire\Welcome;
@@ -83,6 +85,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/verify/{id}', VerifyShow::class)->name('verify.show');
 
     Route::get('/generate', GenerateIndex::class)->name('generate');
+    Route::get('/send-whatsapp-message/{contact}', SendWhatsappMessageIndex::class)->name('send-whatsapp-message');
 });
 
 // admin routes
@@ -95,5 +98,7 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
 
 Route::get('/teste', function () {
     $user = User::find(1);
-    Mail::send(new UserWelcome($user));
+    broadcast(new PrivateChannelMessage());
 });
+
+

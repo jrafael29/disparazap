@@ -176,6 +176,11 @@ class EvolutionInstanceService
                 "events" => [
                     "QRCODE_UPDATED",
                     "CONNECTION_UPDATE",
+                    
+                    "MESSAGES_UPSERT",
+                    "MESSAGES_UPDATE",
+                    "MESSAGES_DELETE",
+                    "SEND_MESSAGE",
                 ]
             ];
 

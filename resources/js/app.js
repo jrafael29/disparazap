@@ -1,4 +1,5 @@
 import "./bootstrap";
+import "./echo";
 
 import Sortablejs from "sortablejs";
 

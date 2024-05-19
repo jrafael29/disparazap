@@ -86,6 +86,13 @@
 
     {{-- TOAST area --}}
     <x-toast />
+    <script type="module">
+        Echo.channel(`privadinhu`)
+        .listen('PrivateChannelMessage', (e) => {
+            console.log(e);
+        });
+    </script>
+
 </body>
 
 </html>
